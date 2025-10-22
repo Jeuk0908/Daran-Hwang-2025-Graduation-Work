@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/common/BottomNav'
+import IconShowcase from './pages/Dev/IconShowcase'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
@@ -8,38 +9,49 @@ const ExhibitionPage = () => <div style={{ padding: '20px' }}><h1>전시 페이�
 const ArtistPage = () => <div style={{ padding: '20px' }}><h1>작가 페이지</h1></div>
 const MyPage = () => <div style={{ padding: '20px' }}><h1>마이 페이지</h1></div>
 
+function AppContent() {
+  const location = useLocation();
+  const isDevPage = location.pathname.startsWith('/dev');
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      minHeight: '-webkit-fill-available',
+      width: '100%',
+      maxWidth: isDevPage ? 'none' : '430px',
+      margin: '0 auto',
+      position: 'relative',
+      backgroundColor: '#ffffff'
+    }}>
+      <main style={{
+        flex: 1,
+        paddingBottom: isDevPage ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+        width: '100%'
+      }}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/exhibition" element={<ExhibitionPage />} />
+          <Route path="/artist" element={<ArtistPage />} />
+          <Route path="/mypage" element={<MyPage />} />
+          {/* 개발용 페이지 */}
+          <Route path="/dev/icons" element={<IconShowcase />} />
+        </Routes>
+      </main>
+      {!isDevPage && <BottomNav />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        minHeight: '-webkit-fill-available',
-        width: '100%',
-        maxWidth: '393px',
-        margin: '0 auto',
-        position: 'relative',
-        backgroundColor: '#ffffff'
-      }}>
-        <main style={{
-          flex: 1,
-          paddingBottom: '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          width: '100%'
-        }}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/exhibition" element={<ExhibitionPage />} />
-            <Route path="/artist" element={<ArtistPage />} />
-            <Route path="/mypage" element={<MyPage />} />
-          </Routes>
-        </main>
-        <BottomNav />
-      </div>
+      <AppContent />
     </Router>
   )
 }
