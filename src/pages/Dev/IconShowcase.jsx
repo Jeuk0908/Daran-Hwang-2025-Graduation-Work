@@ -8,13 +8,15 @@ import { TipCard } from '../../components/common/TipCard.jsx';
 import { StockFilterToggle, GeneralToggle, SmallToggle } from '../../components/common/ToggleButton.jsx';
 import { CaptionButton, CaptionIconButton } from '../../components/common/CaptionButton.jsx';
 import { SelectionCard } from '../../components/common/SelectionCard.jsx';
-import { Chip } from '../../components/common/Chip.jsx';
+import { Chip, TrendChip } from '../../components/common/Chip.jsx';
 import { StockChangeCard } from '../../components/common/StockChangeCard.jsx';
 import { Label } from '../../components/common/Label.jsx';
 import { RebalanceButton } from '../../components/common/RebalanceButton.jsx';
 import { RebalanceInfoCard } from '../../components/common/RebalanceInfoCard.jsx';
 import TextField from '../../components/common/TextField.jsx';
 import RebalanceETFCard from '../../components/common/RebalanceETFCard.jsx';
+import { PortfolioCard } from '../../components/common/PortfolioCard.jsx';
+import VocabularyCard from '../../components/common/VocabularyCard.jsx';
 
 // 아이콘 SVG 파일 imports
 import iconSearch from '../../assets/icon_search.svg';
@@ -144,6 +146,29 @@ import termIndexIcon2Inactive from '../../assets/비활성화 아이콘/인덱�
 import termTotalFeeInactive from '../../assets/비활성화 아이콘/총보수_비활성화.svg';
 import termTrackingErrorInactive from '../../assets/비활성화 아이콘/추적오차_비활성화.svg';
 import termCashDividendInactive from '../../assets/비활성화 아이콘/현금배당_비활성화.svg';
+
+// 큰 단어카드 SVG (탐색_용어)
+import largeCard1 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어.svg';
+import largeCard2 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-1.svg';
+import largeCard3 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-2.svg';
+import largeCard4 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-3.svg';
+import largeCard5 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-4.svg';
+import largeCard6 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-5.svg';
+import largeCard7 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-6.svg';
+import largeCard8 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-7.svg';
+import largeCard9 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-8.svg';
+import largeCard10 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-9.svg';
+import largeCard11 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-10.svg';
+import largeCard12 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-11.svg';
+import largeCard13 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-12.svg';
+import largeCard14 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-13.svg';
+import largeCard15 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-14.svg';
+import largeCard16 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-15.svg';
+import largeCard17 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-16.svg';
+import largeCard18 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-17.svg';
+import largeCard19 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-18.svg';
+import largeCard20 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-19.svg';
+import largeCard21 from '../../assets/LargeVocabularyCard/단어장 해금/탐색_용어-20.svg';
 
 const IconShowcase = () => {
   const [inputValue, setInputValue] = useState('');
@@ -348,6 +373,32 @@ const IconShowcase = () => {
         { name: '추적오차(비활성화)', src: termTrackingErrorInactive, size: 24, color: 'Inactive' },
         { name: '현금배당(비활성화)', src: termCashDividendInactive, size: 24, color: 'Inactive' },
       ]
+    },
+    {
+      category: '큰 단어카드 (탐색_용어)',
+      icons: [
+        { name: '탐색_용어', src: largeCard1, size: 166, desc: 'ETF' },
+        { name: '탐색_용어-1', src: largeCard2, size: 166, desc: 'NAV' },
+        { name: '탐색_용어-2', src: largeCard3, size: 166, desc: 'TER' },
+        { name: '탐색_용어-3', src: largeCard4, size: 166, desc: '거래대금' },
+        { name: '탐색_용어-4', src: largeCard5, size: 166, desc: '거래량' },
+        { name: '탐색_용어-5', src: largeCard6, size: 166, desc: '괴리율' },
+        { name: '탐색_용어-6', src: largeCard7, size: 166, desc: '기초자산' },
+        { name: '탐색_용어-7', src: largeCard8, size: 166, desc: '기초지수' },
+        { name: '탐색_용어-8', src: largeCard9, size: 166, desc: '레버리지' },
+        { name: '탐색_용어-9', src: largeCard10, size: 166, desc: '리밸런싱' },
+        { name: '탐색_용어-10', src: largeCard11, size: 166, desc: '분배금 재투자' },
+        { name: '탐색_용어-11', src: largeCard12, size: 166, desc: '분배금' },
+        { name: '탐색_용어-12', src: largeCard13, size: 166, desc: '순자산' },
+        { name: '탐색_용어-13', src: largeCard14, size: 166, desc: '스왑' },
+        { name: '탐색_용어-14', src: largeCard15, size: 166, desc: '시가총액' },
+        { name: '탐색_용어-15', src: largeCard16, size: 166, desc: '운용방식-실물' },
+        { name: '탐색_용어-16', src: largeCard17, size: 166, desc: '운용방식-합성' },
+        { name: '탐색_용어-17', src: largeCard18, size: 166, desc: '인덱스' },
+        { name: '탐색_용어-18', src: largeCard19, size: 166, desc: '총보수' },
+        { name: '탐색_용어-19', src: largeCard20, size: 166, desc: '추적오차' },
+        { name: '탐색_용어-20', src: largeCard21, size: 166, desc: '현금배당' },
+      ]
     }
   ];
 
@@ -387,90 +438,145 @@ const IconShowcase = () => {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(140px, 100%), 1fr))',
+            gridTemplateColumns: group.category === '큰 단어카드 (탐색_용어)'
+              ? 'repeat(auto-fill, minmax(min(166px, 100%), 1fr))'
+              : 'repeat(auto-fill, minmax(min(140px, 100%), 1fr))',
             gap: 'clamp(12px, 2vw, 20px)',
             maxWidth: '100%'
           }}>
             {group.icons.map((icon, iconIndex) => (
-              <div
-                key={iconIndex}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: 'clamp(12px, 2vw, 20px)',
-                  backgroundColor: '#F7F7F8',
-                  borderRadius: '12px',
-                  border: '1px solid #E6E7EA',
-                  minHeight: 'clamp(140px, 15vw, 160px)',
-                  justifyContent: 'space-between',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 'clamp(48px, 8vw, 72px)',
-                  height: 'clamp(48px, 8vw, 72px)',
-                  backgroundColor: '#ffffff',
-                  borderRadius: '8px'
-                }}>
+              group.category === '큰 단어카드 (탐색_용어)' ? (
+                // 큰 단어카드는 SVG를 그대로 표시
+                <div
+                  key={iconIndex}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <img
                     src={icon.src}
                     alt={icon.name}
                     style={{
-                      width: icon.size === 48 ? 'clamp(36px, 6vw, 48px)' : icon.size === 24 ? 'clamp(20px, 3vw, 24px)' : `${icon.size}px`,
-                      height: icon.size === 48 ? 'clamp(36px, 6vw, 48px)' : icon.size === 24 ? 'clamp(20px, 3vw, 24px)' : `${icon.size}px`,
+                      width: '166px',
+                      height: '166px',
                       objectFit: 'contain'
                     }}
                   />
-                </div>
-                <div style={{ textAlign: 'center', width: '100%', padding: '0 4px' }}>
-                  <p style={{
-                    fontFamily: 'Pretendard, sans-serif',
-                    fontSize: 'clamp(11px, 1.5vw, 13px)',
-                    fontWeight: 500,
-                    color: '#1A1C20',
-                    marginBottom: '4px',
-                    wordBreak: 'break-word',
-                    lineHeight: '1.4'
-                  }}>
-                    {icon.name}
-                  </p>
-                  {icon.desc && (
+                  <div style={{ textAlign: 'center', width: '100%' }}>
                     <p style={{
                       fontFamily: 'Pretendard, sans-serif',
-                      fontSize: 'clamp(10px, 1.3vw, 12px)',
-                      fontWeight: 400,
+                      fontSize: '13px',
+                      fontWeight: 500,
                       color: '#3490FF',
                       marginBottom: '4px',
                       lineHeight: '1.3'
                     }}>
                       {icon.desc}
                     </p>
-                  )}
-                  <p style={{
-                    fontFamily: 'Pretendard, sans-serif',
-                    fontSize: 'clamp(9px, 1.2vw, 11px)',
-                    fontWeight: 400,
-                    color: '#757E8F',
-                    margin: 0
-                  }}>
-                    {icon.size}px {icon.color && `• ${icon.color}`}
-                  </p>
+                    <p style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '11px',
+                      fontWeight: 400,
+                      color: '#757E8F',
+                      margin: 0
+                    }}>
+                      {icon.size}px
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                // 기존 아이콘 레이아웃
+                <div
+                  key={iconIndex}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: 'clamp(12px, 2vw, 20px)',
+                    backgroundColor: '#F7F7F8',
+                    borderRadius: '12px',
+                    border: '1px solid #E6E7EA',
+                    minHeight: 'clamp(140px, 15vw, 160px)',
+                    justifyContent: 'space-between',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 'clamp(48px, 8vw, 72px)',
+                    height: 'clamp(48px, 8vw, 72px)',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '8px'
+                  }}>
+                    <img
+                      src={icon.src}
+                      alt={icon.name}
+                      style={{
+                        width: icon.size === 48 ? 'clamp(36px, 6vw, 48px)' : icon.size === 24 ? 'clamp(20px, 3vw, 24px)' : `${icon.size}px`,
+                        height: icon.size === 48 ? 'clamp(36px, 6vw, 48px)' : icon.size === 24 ? 'clamp(20px, 3vw, 24px)' : `${icon.size}px`,
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
+                  <div style={{ textAlign: 'center', width: '100%', padding: '0 4px' }}>
+                    <p style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: 'clamp(11px, 1.5vw, 13px)',
+                      fontWeight: 500,
+                      color: '#1A1C20',
+                      marginBottom: '4px',
+                      wordBreak: 'break-word',
+                      lineHeight: '1.4'
+                    }}>
+                      {icon.name}
+                    </p>
+                    {icon.desc && (
+                      <p style={{
+                        fontFamily: 'Pretendard, sans-serif',
+                        fontSize: 'clamp(10px, 1.3vw, 12px)',
+                        fontWeight: 400,
+                        color: '#3490FF',
+                        marginBottom: '4px',
+                        lineHeight: '1.3'
+                      }}>
+                        {icon.desc}
+                      </p>
+                    )}
+                    <p style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: 'clamp(9px, 1.2vw, 11px)',
+                      fontWeight: 400,
+                      color: '#757E8F',
+                      margin: 0
+                    }}>
+                      {icon.size}px {icon.color && `• ${icon.color}`}
+                    </p>
+                  </div>
+                </div>
+              )
             ))}
           </div>
         </div>
@@ -2149,7 +2255,7 @@ const IconShowcase = () => {
           </div>
         </div>
 
-        {/* 트렌드 칩 (상승/하락) */}
+        {/* 트렌드 칩 (상승/하락) - 일반 Chip */}
         <div style={{ marginBottom: 'clamp(24px, 3vw, 32px)' }}>
           <h3 style={{
             fontFamily: 'Pretendard, sans-serif',
@@ -2158,11 +2264,49 @@ const IconShowcase = () => {
             color: '#1A1C20',
             marginBottom: 'clamp(12px, 1.5vw, 16px)'
           }}>
-            트렌드 칩 (상승/하락)
+            트렌드 칩 (상승/하락) - 일반 Chip
           </h3>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Chip title="꾸준 인기" color="upTrend" showIcon={true} />
             <Chip title="꾸준 인기" color="downTrend" showIcon={true} />
+          </div>
+        </div>
+
+        {/* TrendChip (토글 가능한 트렌드 칩) */}
+        <div style={{ marginBottom: 'clamp(24px, 3vw, 32px)' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 16px)',
+            fontWeight: 600,
+            color: '#1A1C20',
+            marginBottom: 'clamp(12px, 1.5vw, 16px)'
+          }}>
+            TrendChip (토글 가능한 트렌드 칩)
+          </h3>
+          <p style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '13px',
+            color: '#757E8F',
+            marginBottom: '12px'
+          }}>
+            클릭하면 상승 트렌드와 하락 트렌드가 자동으로 전환됩니다.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <TrendChip
+              title="꾸준 인기"
+              isUpTrend={true}
+              onToggle={(newState) => console.log('트렌드 변경:', newState ? '상승' : '하락')}
+            />
+            <TrendChip
+              title="거래량"
+              isUpTrend={true}
+              onToggle={(newState) => console.log('거래량 트렌드 변경:', newState ? '상승' : '하락')}
+            />
+            <TrendChip
+              title="꾸준 인기"
+              isUpTrend={true}
+              disabled={true}
+            />
           </div>
         </div>
 
@@ -2749,6 +2893,422 @@ const IconShowcase = () => {
           </div>
         </div>
       </div>
+
+      {/* PortfolioCard 컴포넌트 섹션 */}
+      <div style={{
+        marginTop: 'clamp(40px, 5vw, 60px)',
+        padding: 'clamp(20px, 3vw, 40px)',
+        backgroundColor: '#F8F9FA',
+        borderRadius: '16px'
+      }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(20px, 2.5vw, 28px)',
+          fontWeight: 700,
+          marginBottom: 'clamp(20px, 3vw, 30px)',
+          color: '#000000'
+        }}>
+          PortfolioCard 컴포넌트
+        </h2>
+
+        <p style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: '14px',
+          color: '#757E8F',
+          marginBottom: '20px'
+        }}>
+          사용자 포트폴리오 정보를 표시하는 카드 컴포넌트 (금액, 수익률, 북마크 기능 포함)
+        </p>
+
+        {/* 수익 상태 (양수) */}
+        <div style={{ marginBottom: '40px' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(16px, 2vw, 20px)',
+            fontWeight: 600,
+            marginBottom: '20px',
+            color: '#000000'
+          }}>
+            수익 상태 (양수 수익률)
+          </h3>
+
+          <div style={{ marginBottom: '30px' }}>
+            <h4 style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '12px',
+              color: '#474C57'
+            }}>
+              대표 포트폴리오 - 북마크 안됨
+            </h4>
+            <PortfolioCard
+              isMainPortfolio={true}
+              investmentStyle="안정형"
+              investmentKeyword="배당"
+              title="미국 빅테크 배당금"
+              amount={999999999}
+              returnRate={27.3}
+              isBookmarked={false}
+              onBookmarkToggle={(bookmarked) => console.log('북마크 상태:', bookmarked)}
+              onRebalanceClick={() => alert('리밸런싱 확인 클릭!')}
+              onCheckpointClick={() => alert('체크포인트 클릭!')}
+            />
+          </div>
+
+          <div style={{ marginBottom: '30px' }}>
+            <h4 style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '12px',
+              color: '#474C57'
+            }}>
+              일반 포트폴리오 - 북마크됨
+            </h4>
+            <PortfolioCard
+              isMainPortfolio={false}
+              investmentStyle="공격형"
+              investmentKeyword="성장"
+              title="글로벌 테크 성장 포트폴리오"
+              amount={1234567890}
+              returnRate={15.8}
+              isBookmarked={true}
+              onBookmarkToggle={(bookmarked) => console.log('북마크 상태:', bookmarked)}
+              onRebalanceClick={() => alert('리밸런싱 확인 클릭!')}
+              onCheckpointClick={() => alert('체크포인트 클릭!')}
+            />
+          </div>
+        </div>
+
+        {/* 손실 상태 (음수) */}
+        <div style={{ marginBottom: '40px' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(16px, 2vw, 20px)',
+            fontWeight: 600,
+            marginBottom: '20px',
+            color: '#000000'
+          }}>
+            손실 상태 (음수 수익률)
+          </h3>
+
+          <div style={{ marginBottom: '30px' }}>
+            <h4 style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '12px',
+              color: '#474C57'
+            }}>
+              손실 포트폴리오
+            </h4>
+            <PortfolioCard
+              isMainPortfolio={false}
+              investmentStyle="중립형"
+              investmentKeyword="밸런스"
+              title="안정적 자산 배분 전략"
+              amount={5000000}
+              returnRate={-8.5}
+              isBookmarked={false}
+              onBookmarkToggle={(bookmarked) => console.log('북마크 상태:', bookmarked)}
+              onRebalanceClick={() => alert('리밸런싱 확인 클릭!')}
+              onCheckpointClick={() => alert('체크포인트 클릭!')}
+            />
+          </div>
+        </div>
+
+        {/* 다양한 금액 표시 */}
+        <div style={{ marginBottom: '40px' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(16px, 2vw, 20px)',
+            fontWeight: 600,
+            marginBottom: '20px',
+            color: '#000000'
+          }}>
+            다양한 금액 표시 예제
+          </h3>
+
+          <div style={{ marginBottom: '30px' }}>
+            <h4 style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '12px',
+              color: '#474C57'
+            }}>
+              소액 포트폴리오 (100만원)
+            </h4>
+            <PortfolioCard
+              investmentStyle="보수형"
+              investmentKeyword="안전"
+              title="첫 투자 포트폴리오"
+              amount={1000000}
+              returnRate={3.2}
+              onRebalanceClick={() => console.log('리밸런싱 확인')}
+              onCheckpointClick={() => console.log('체크포인트')}
+            />
+          </div>
+
+          <div style={{ marginBottom: '30px' }}>
+            <h4 style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '12px',
+              color: '#474C57'
+            }}>
+              대형 포트폴리오 (10억원)
+            </h4>
+            <PortfolioCard
+              isMainPortfolio={true}
+              investmentStyle="적극형"
+              investmentKeyword="고수익"
+              title="프리미엄 자산 운용"
+              amount={1000000000}
+              returnRate={42.7}
+              isBookmarked={true}
+              onRebalanceClick={() => console.log('리밸런싱 확인')}
+              onCheckpointClick={() => console.log('체크포인트')}
+            />
+          </div>
+        </div>
+
+        {/* 인터랙티브 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(16px, 2vw, 20px)',
+            fontWeight: 600,
+            marginBottom: '20px',
+            color: '#000000'
+          }}>
+            인터랙티브 예제 (모든 기능 활성화)
+          </h3>
+
+          <p style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '13px',
+            color: '#757E8F',
+            marginBottom: '12px'
+          }}>
+            북마크, 리밸런싱, 체크포인트 버튼을 클릭해보세요!
+          </p>
+
+          <PortfolioCard
+            isMainPortfolio={true}
+            investmentStyle="균형형"
+            investmentKeyword="배당+성장"
+            title="나만의 포트폴리오"
+            amount={50000000}
+            returnRate={18.9}
+            isBookmarked={false}
+            onBookmarkToggle={(bookmarked) => {
+              alert(`북마크 ${bookmarked ? '추가' : '제거'}됨!`);
+              console.log('북마크 상태:', bookmarked);
+            }}
+            onRebalanceClick={() => {
+              alert('리밸런싱 확인 페이지로 이동합니다');
+              console.log('리밸런싱 확인 클릭');
+            }}
+            onCheckpointClick={() => {
+              alert('체크포인트 페이지로 이동합니다');
+              console.log('체크포인트 클릭');
+            }}
+          />
+        </div>
+      </div>
+
+      {/* VocabularyCard 컴포넌트 섹션 */}
+      <div style={{ marginBottom: 'clamp(32px, 4vw, 60px)' }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(16px, 2vw, 20px)',
+          fontWeight: 600,
+          color: '#5E6573',
+          marginBottom: 'clamp(16px, 2vw, 24px)'
+        }}>
+          VocabularyCard 컴포넌트 - 미해금 상태 (Locked)
+        </h2>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(176px, 100%), 1fr))',
+          gap: 'clamp(12px, 2vw, 20px)',
+          maxWidth: '100%'
+        }}>
+          <VocabularyCard icon={termETFInactive} isLocked={true} />
+          <VocabularyCard icon={termNAVInactive} isLocked={true} />
+          <VocabularyCard icon={termTradeAmountInactive} isLocked={true} />
+          <VocabularyCard icon={termTradeVolumeInactive} isLocked={true} />
+          <VocabularyCard icon={termDeviationInactive} isLocked={true} />
+          <VocabularyCard icon={termUnderlyingInactive} isLocked={true} />
+          <VocabularyCard icon={termIndexInactive} isLocked={true} />
+          <VocabularyCard icon={termLeverageInactive} isLocked={true} />
+          <VocabularyCard icon={termRebalancingInactive} isLocked={true} />
+          <VocabularyCard icon={termDistReinvestInactive} isLocked={true} />
+          <VocabularyCard icon={termDistributionInactive} isLocked={true} />
+          <VocabularyCard icon={termNetAssetInactive} isLocked={true} />
+          <VocabularyCard icon={termSwapInactive} isLocked={true} />
+          <VocabularyCard icon={termMarketCapInactive} isLocked={true} />
+          <VocabularyCard icon={termPhysicalInactive} isLocked={true} />
+          <VocabularyCard icon={termSyntheticInactive} isLocked={true} />
+          <VocabularyCard icon={termIndexIconInactive} isLocked={true} />
+          <VocabularyCard icon={termIndexIcon2Inactive} isLocked={true} />
+          <VocabularyCard icon={termTotalFeeInactive} isLocked={true} />
+          <VocabularyCard icon={termTrackingErrorInactive} isLocked={true} />
+          <VocabularyCard icon={termCashDividendInactive} isLocked={true} />
+        </div>
+      </div>
+
+      {/* VocabularyCard 컴포넌트 - 해금 상태 */}
+      <div style={{ marginBottom: 'clamp(32px, 4vw, 60px)' }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(16px, 2vw, 20px)',
+          fontWeight: 600,
+          color: '#5E6573',
+          marginBottom: 'clamp(16px, 2vw, 24px)'
+        }}>
+          VocabularyCard 컴포넌트 - 해금 상태 (Unlocked)
+        </h2>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(176px, 100%), 1fr))',
+          gap: 'clamp(12px, 2vw, 20px)',
+          maxWidth: '100%'
+        }}>
+          <VocabularyCard
+            icon={termETF}
+            isLocked={false}
+            title="ETF"
+            description="여러 주식이나 채권을 바구니에 담아 묶음으로 만든 후 주식처럼 거래소에 상장시켜 사고팔 수 있도록 만든 상품"
+          />
+          <VocabularyCard
+            icon={termNAV}
+            isLocked={false}
+            title="NAV"
+            description="ETF의 1주당 순자산 가치"
+          />
+          <VocabularyCard
+            icon={termTradeAmount}
+            isLocked={false}
+            title="거래대금"
+            description="일정 기간 동안 거래된 ETF의 총 금액"
+          />
+          <VocabularyCard
+            icon={termTradeVolume}
+            isLocked={false}
+            title="거래량"
+            description="일정 기간 동안 사고팔린 ETF의 수량"
+          />
+          <VocabularyCard
+            icon={termDeviation}
+            isLocked={false}
+            title="괴리율"
+            description="ETF의 시장 가격과 순자산가치의 차이를 나타내는 비율"
+          />
+          <VocabularyCard
+            icon={termUnderlying}
+            isLocked={false}
+            title="기초자산"
+            description="ETF가 투자하고 있는 주식, 채권, 원자재 등 실제 자산"
+          />
+          <VocabularyCard
+            icon={termIndex}
+            isLocked={false}
+            title="기초지수"
+            description="ETF가 수익률을 추종하는 기준이 되는 지표"
+          />
+          <VocabularyCard
+            icon={termLeverage}
+            isLocked={false}
+            title="레버리지"
+            description="기초지수의 일일 수익률을 2배, 3배 등 정해진 배수만큼 따라가도록 설계된 ETF"
+          />
+          <VocabularyCard
+            icon={termRebalancing}
+            isLocked={false}
+            title="리밸런싱"
+            description="기초지수의 구성 종목 비중을 맞추기 위해 ETF 구성 종목을 주기적으로 조정하는 작업"
+          />
+          <VocabularyCard
+            icon={termDistReinvest}
+            isLocked={false}
+            title="분배금 재투자"
+            description="지급받은 분배금을 다시 ETF에 재투자하는 것"
+          />
+          <VocabularyCard
+            icon={termDistribution}
+            isLocked={false}
+            title="분배금"
+            description="ETF가 보유한 자산에서 발생한 이자, 배당금 등을 투자자에게 지급하는 것"
+          />
+          <VocabularyCard
+            icon={termNetAsset}
+            isLocked={false}
+            title="순자산"
+            description="ETF가 보유한 모든 자산에서 부채를 뺀 가치"
+          />
+          <VocabularyCard
+            icon={termSwap}
+            isLocked={false}
+            title="스왑"
+            description="증권사와 계약을 맺어 기초지수 수익률을 따라가도록 하는 계약"
+          />
+          <VocabularyCard
+            icon={termMarketCap}
+            isLocked={false}
+            title="시가총액"
+            description="ETF가 보유한 모든 자산의 시장 가치를 합산한 총 순자산 규모"
+          />
+          <VocabularyCard
+            icon={termPhysical}
+            isLocked={false}
+            title="운용방식-실물"
+            description="기초지수를 구성하는 종목들을 실제 매입하여 지수를 추종하는 방식"
+          />
+          <VocabularyCard
+            icon={termSynthetic}
+            isLocked={false}
+            title="운용방식-합성"
+            description="실제 기초자산을 보유하지 않고 증권사와 스왑(Swap) 계약을 통해 기초지수의 수익률을 추종하는 방식"
+          />
+          <VocabularyCard
+            icon={termIndexIcon}
+            isLocked={false}
+            title="인덱스"
+            description="특정 시장이나 섹터의 전체적인 움직임을 나타내는 지표로, ETF가 추종하는 기준이 됩니다"
+          />
+          <VocabularyCard
+            icon={termIndexIcon2}
+            isLocked={false}
+            title="인덱스"
+            description="시장의 움직임을 보여주는 지표"
+          />
+          <VocabularyCard
+            icon={termTotalFee}
+            isLocked={false}
+            title="총보수"
+            description="ETF 운용에 필요한 총 비용을 나타내는 비율"
+          />
+          <VocabularyCard
+            icon={termTrackingError}
+            isLocked={false}
+            title="추적오차"
+            description="ETF의 수익률이 기초지수 수익률과의 차이 지표"
+          />
+          <VocabularyCard
+            icon={termCashDividend}
+            isLocked={false}
+            title="현금배당"
+            description="보유한 ETF에서 발생하는 현금을 투자자에게 지급하는 것"
+          />
+        </div>
+      </div>
+
     </div>
   );
 };

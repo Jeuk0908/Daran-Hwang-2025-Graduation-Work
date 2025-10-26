@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 /**
  * Chip Components
  *
@@ -191,6 +193,95 @@ export const Chip = ({
     >
       {title}
       {renderIcon()}
+    </button>
+  );
+};
+
+/**
+ * TrendChip - 트렌드 토글 칩 컴포넌트 (상승/하락 전환)
+ *
+ * @param {Object} props
+ * @param {boolean} props.isUpTrend - 상승 트렌드 여부 (true: 상승, false: 하락)
+ * @param {function} props.onToggle - 토글 핸들러 (새로운 상태를 인자로 받음)
+ * @param {boolean} props.disabled - 비활성화 여부
+ * @param {string} props.title - 칩 텍스트 (기본값: '꾸준 인기')
+ */
+export const TrendChip = ({
+  isUpTrend = true,
+  onToggle,
+  disabled = false,
+  title = '꾸준 인기'
+}) => {
+  const [trend, setTrend] = useState(isUpTrend);
+
+  const handleClick = () => {
+    if (disabled) return;
+    const newTrend = !trend;
+    setTrend(newTrend);
+    if (onToggle) {
+      onToggle(newTrend);
+    }
+  };
+
+  const styles = trend ? {
+    backgroundColor: '#EFFAEC',
+    color: '#43A329',
+    iconFill: '#43A329',
+    iconRotation: 0
+  } : {
+    backgroundColor: '#FEF6F1',
+    color: '#DA6816',
+    iconFill: '#DA6816',
+    iconRotation: 180
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={disabled}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: '12px',
+        paddingRight: '4px',
+        paddingTop: '4px',
+        paddingBottom: '4px',
+        height: '32px',
+        backgroundColor: styles.backgroundColor,
+        border: 'none',
+        borderRadius: '12px',
+        fontFamily: 'Pretendard, sans-serif',
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: '21px',
+        color: styles.color,
+        whiteSpace: 'nowrap',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        transition: 'background-color 0.3s ease, color 0.3s ease',
+        outline: 'none'
+      }}
+    >
+      {title}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginLeft: '4px',
+          transform: `rotate(${styles.iconRotation}deg)`,
+          transition: 'transform 0.3s ease'
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M10 8L6 12L14 12L10 8Z"
+            fill={styles.iconFill}
+            style={{ transition: 'fill 0.3s ease' }}
+          />
+        </svg>
+      </div>
     </button>
   );
 };
