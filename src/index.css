@@ -46,8 +46,8 @@ html, body {
 }
 
 body {
-  /* iPhone 14 Pro: 393px × 852px */
-  max-width: 393px;
+  /* iPhone 14 Pro Max: 430px × 932px */
+  max-width: 430px;
   margin: 0 auto;
   min-height: 100vh;
   min-height: -webkit-fill-available; /* iOS Safari fix */
@@ -56,7 +56,7 @@ body {
 
 #root {
   width: 100%;
-  max-width: 393px;
+  max-width: 430px;
   min-height: 100vh;
   min-height: -webkit-fill-available;
   background-color: #ffffff;
