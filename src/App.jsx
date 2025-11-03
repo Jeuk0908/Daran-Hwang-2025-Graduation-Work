@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/common/BottomNav'
 import IconShowcase from './pages/Dev/IconShowcase'
+import Vocabulary from './Pages/Vocabulary'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
@@ -12,6 +13,8 @@ const MyPage = () => <div style={{ padding: '20px' }}><h1>마이 페이지</h1><
 function AppContent() {
   const location = useLocation();
   const isDevPage = location.pathname.startsWith('/dev');
+  const isVocabularyPage = location.pathname === '/vocabulary';
+  const hideBottomNav = isDevPage || isVocabularyPage;
 
   return (
     <div style={{
@@ -27,7 +30,7 @@ function AppContent() {
     }}>
       <main style={{
         flex: 1,
-        paddingBottom: isDevPage ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
+        paddingBottom: hideBottomNav ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
         overflowY: 'auto',
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',
@@ -39,11 +42,12 @@ function AppContent() {
           <Route path="/exhibition" element={<ExhibitionPage />} />
           <Route path="/artist" element={<ArtistPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/vocabulary" element={<Vocabulary />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>
       </main>
-      {!isDevPage && <BottomNav />}
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }

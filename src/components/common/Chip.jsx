@@ -16,6 +16,7 @@ import { useState } from 'react';
  * @param {boolean} props.showIcon - 아이콘 표시 여부 (상승/하락 화살표)
  * @param {'select' | 'nonSelect'} props.state - 선택 상태
  * @param {'primary' | 'grey' | 'default' | 'primary2' | 'tab' | 'upTrend' | 'downTrend'} props.color - 색상 테마
+ * @param {number} props.iconRotation - 아이콘 회전 각도 (0: 위쪽, 180: 아래쪽)
  */
 export const Chip = ({
   title = '꾸준 인기',
@@ -23,7 +24,8 @@ export const Chip = ({
   disabled = false,
   showIcon = false,
   state = 'select',
-  color = 'primary'
+  color = 'primary',
+  iconRotation
 }) => {
   // 색상 및 상태별 스타일 정의
   const getStyles = () => {
@@ -141,6 +143,9 @@ export const Chip = ({
   const renderIcon = () => {
     if (!showIcon) return null;
 
+    // iconRotation prop이 제공되면 그것을 사용, 아니면 styles의 값 사용
+    const rotation = iconRotation !== undefined ? iconRotation : styles.iconRotation;
+
     return (
       <div
         style={{
@@ -148,7 +153,7 @@ export const Chip = ({
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: '4px',
-          transform: `rotate(${styles.iconRotation}deg)`,
+          transform: `rotate(${rotation}deg)`,
           transition: 'transform 0.2s ease'
         }}
       >
