@@ -53,9 +53,19 @@ Critical viewport and mobile settings in `index.html`:
 - `Button.jsx` - Button with variants: `primary`, `grey`, `skeleton`, `skeleton2`
 - `PhoneNumFild.jsx` - Phone number input field with states: `default`, `error`, `pass`
 - `SubNav.jsx` - Tab navigation with 4 tabs: `returns`, `info`, `composition`, `dividend`
-- `TopNav.jsx` - Top navigation bar with multiple configurations based on `depth` and `state` props
+- `TopNav.jsx` - Top navigation bar with multiple configurations:
+  - `depth='2'` + `state='number'`: Back button + title + chip + number indicator
+  - `depth='2'` + `state='icon'`: Back button + title + two action icons
+  - `depth='1'` + `state='icon'`: Title + two action icons (no back button)
+  - `depth='2'` + `state='2 title'`: Back button + title + subtitle + two action icons
 - `SearchBar.jsx` - Search input with states: `검색 전`, `state2`
 - `TipCard.jsx` - Expandable card component with bookmark functionality
+- `VocabularyCard.jsx` - ETF terminology learning flashcard component with locked/unlocked states
+- `TextField.jsx` - Text input field component
+- `ToggleButton.jsx` - Toggle switch component
+- `Label.jsx`, `Chip.jsx` - Text label and chip components
+- `PortfolioCard.jsx`, `RebalanceETFCard.jsx`, `StockChangeCard.jsx` - Various card components for portfolio/ETF display
+- `CaptionButton.jsx`, `RebalanceButton.jsx` - Specialized button components
 
 **Icon System** (`src/components/common/icons/`):
 - SVG icons exported as React components
@@ -65,6 +75,15 @@ Critical viewport and mobile settings in `index.html`:
 **Layout Components** (`src/components/layout/`):
 - `MainLayout.jsx` - Main app layout wrapper
 - `AuthLayout.jsx` - Authentication layout wrapper
+
+**Page Structure** (`src/Pages/`):
+Note: Directory is capitalized as `Pages/`, not `pages/`
+- `Home/` - Main landing page
+- `Login/` - Authentication pages
+- `Exhibition/` - Portfolio and exhibition listings
+- `Artist/` - Artist discovery and profiles
+- `MyPage/` - User profile and settings
+- `Dev/` - Development showcase pages (IconShowcase, etc.)
 
 ### Bottom Navigation Design
 
@@ -113,7 +132,7 @@ Label Primary:   #000000  (Black)
 
 - Keep components in appropriate directories (`common/`, `layout/`, `features/`)
 - Store all icon assets in `src/assets/`
-- Page components go in `src/pages/`
+- **Page components go in `src/Pages/`** (note the capital P)
 - Mock data services in `src/services/`
 - Utilities in `src/utils/`
 - Custom hooks in `src/hooks/`
@@ -125,3 +144,6 @@ Label Primary:   #000000  (Black)
 - Bottom navigation automatically hides on `/dev/*` routes
 - Use inline styles to match existing code style (no CSS modules)
 - Viewport meta tags are critical - do not modify without testing on mobile devices
+- **Check Figma Design First**: When requested to create a new page or component, always review the user-provided Figma URL first to understand the design.
+- **Reuse Existing Resources**: After checking the design, verify if usable icons or components already exist in the `src/components/common` and `src/assets` directories and prioritize using them.
+- **Confirm Before Creating New Assets**: If appropriate resources are not available, ask the user if a new icon or component should be created and follow their instructions.

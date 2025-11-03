@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import iconBackUpT50 from '../../assets/icon_back(S)_U_t50.svg';
+import iconBackDownT50 from '../../assets/icon_back(S)_D_t50.svg';
 
 /**
  * Chip Components
@@ -146,6 +148,9 @@ export const Chip = ({
     // iconRotation prop이 제공되면 그것을 사용, 아니면 styles의 값 사용
     const rotation = iconRotation !== undefined ? iconRotation : styles.iconRotation;
 
+    // rotation이 180이면 아래쪽 화살표, 아니면 위쪽 화살표
+    const iconSrc = rotation === 180 ? iconBackDownT50 : iconBackUpT50;
+
     return (
       <div
         style={{
@@ -153,17 +158,20 @@ export const Chip = ({
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: '4px',
-          transform: `rotate(${rotation}deg)`,
-          transition: 'transform 0.2s ease'
+          width: '24px',
+          height: '24px',
+          transition: 'opacity 0.2s ease'
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M10 8L6 12L14 12L10 8Z"
-            fill={styles.iconFill}
-            style={{ transition: 'fill 0.2s ease' }}
-          />
-        </svg>
+        <img
+          src={iconSrc}
+          alt=""
+          style={{
+            width: '24px',
+            height: '24px',
+            display: 'block'
+          }}
+        />
       </div>
     );
   };
@@ -172,6 +180,15 @@ export const Chip = ({
     <button
       onClick={onClick}
       disabled={disabled}
+      onMouseDown={(e) => {
+        e.currentTarget.style.transform = 'scale(0.95)';
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -192,7 +209,7 @@ export const Chip = ({
         whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.5 : 1,
-        transition: 'background-color 0.2s ease, color 0.2s ease, border 0.2s ease',
+        transition: 'background-color 0.2s ease, color 0.2s ease, border 0.2s ease, transform 0.1s ease',
         outline: 'none'
       }}
     >
@@ -244,6 +261,15 @@ export const TrendChip = ({
     <button
       onClick={handleClick}
       disabled={disabled}
+      onMouseDown={(e) => {
+        e.currentTarget.style.transform = 'scale(0.95)';
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -264,7 +290,7 @@ export const TrendChip = ({
         whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.5 : 1,
-        transition: 'background-color 0.3s ease, color 0.3s ease',
+        transition: 'background-color 0.3s ease, color 0.3s ease, transform 0.1s ease',
         outline: 'none'
       }}
     >
