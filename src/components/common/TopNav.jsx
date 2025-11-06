@@ -31,7 +31,8 @@ export const TopNav = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '12px 0',
+          height: '50px',
+          padding: '0',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -149,7 +150,8 @@ export const TopNav = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '12px 0',
+          height: '50px',
+          padding: '0',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -256,7 +258,8 @@ export const TopNav = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '12px 0',
+          height: '50px',
+          padding: '0',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -343,7 +346,8 @@ export const TopNav = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '12px 0',
+          height: '50px',
+          padding: '0',
           backgroundColor: '#FFFFFF',
           ...style,
         }}

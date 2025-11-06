@@ -132,7 +132,7 @@ export const BottomNav = () => {
     <div
       style={{
         width: '100%',
-        maxWidth: '393px',
+        maxWidth: '430px',
         height: 88,
         paddingLeft: 16,
         paddingRight: 16,

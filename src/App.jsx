@@ -4,10 +4,10 @@ import IconShowcase from './pages/Dev/IconShowcase'
 import Vocabulary from './Pages/Vocabulary'
 import MyPage from './Pages/MyPage'
 import Bookmark from './pages/Bookmark'
+import HomePage from './Pages/Home'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
-const HomePage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>홈 페이지</h1></div>
 const ExhibitionPage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>전시 페이지</h1></div>
 const ArtistPage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>작가 페이지</h1></div>
 
@@ -16,6 +16,7 @@ function AppContent() {
   const isDevPage = location.pathname.startsWith('/dev');
   const isVocabularyPage = location.pathname === '/vocabulary';
   const isBookmarkPage = location.pathname === '/bookmark';
+  const isHomePage = location.pathname === '/home';
   const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage;
 
   return (
@@ -32,7 +33,7 @@ function AppContent() {
     }}>
       <main style={{
         flex: 1,
-        paddingBottom: hideBottomNav ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
+        paddingBottom: (hideBottomNav || isHomePage) ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
         overflowY: 'auto',
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',

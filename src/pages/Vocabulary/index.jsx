@@ -3,6 +3,7 @@ import { TopNav } from '../../components/common/TopNav';
 import { SearchBar } from '../../components/common/SearchBar';
 import { Chip } from '../../components/common/Chip';
 import VocabularyCard from '../../components/common/VocabularyCard';
+import { LAYOUT } from '../../constants/layout';
 
 // ETF 용어 아이콘 import
 import etfIcon from '../../assets/ETF_24.svg';
@@ -294,10 +295,11 @@ const Vocabulary = () => {
       width: '100%',
       minHeight: '100vh',
       backgroundColor: '#FFFFFF',
+      paddingTop: LAYOUT.SAFE_AREA_TOP,
       paddingBottom: '88px'
     }}>
       {/* 상단 네비게이션 */}
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
         <TopNav
           title="용어 백과"
           number={obtainedCount.toString()}
@@ -312,7 +314,7 @@ const Vocabulary = () => {
 
       {/* 필터 칩들 */}
       <div style={{
-        padding: '16px 20px 24px',
+        padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px 24px`,
         display: 'flex',
         gap: '8px',
         overflowX: 'auto'
@@ -335,10 +337,10 @@ const Vocabulary = () => {
 
       {/* 용어 카드 그리드 */}
       <div style={{
-        padding: '0 16px',
+        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '12px',
+        gap: `${LAYOUT.GRID_GAP.ROW}px`,
         justifyItems: 'center'
       }}>
         {vocabularyData.map((item) => (

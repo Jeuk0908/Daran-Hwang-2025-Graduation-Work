@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Chip } from './Chip';
 import iconBookmarkActive from '../../assets/icon_bookmark(L)_o.svg';
 import iconBookmarkInactive from '../../assets/icon_bookmark(L)_o2.svg';
+import { LAYOUT } from '../../constants/layout';
 
 /**
  * NewsCard - 뉴스 썸네일 카드 컴포넌트
@@ -52,8 +53,8 @@ export const NewsCard = ({
         onClick={handleCardClick}
         style={{
           position: 'relative',
-          width: '176px',
-          height: '176px',
+          width: `${LAYOUT.getTwoColumnWidth()}px`,
+          height: `${LAYOUT.getTwoColumnWidth()}px`,
           borderRadius: '12px',
           overflow: 'hidden',
           cursor: onCardClick ? 'pointer' : 'default'
@@ -136,7 +137,7 @@ export const NewsCard = ({
             lineHeight: 1.5,
             color: '#000000',
             margin: 0,
-            width: '174px',
+            width: `${LAYOUT.getTwoColumnWidth() - 2}px`,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             display: '-webkit-box',

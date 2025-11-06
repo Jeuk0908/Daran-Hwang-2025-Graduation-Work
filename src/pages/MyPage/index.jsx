@@ -5,6 +5,7 @@ import { MenuCard } from '../../components/common/MenuCard';
 import { SettingSection } from '../../components/common/SettingSection';
 import { SettingItem } from '../../components/common/SettingItem';
 import vocabularyIcon from '../../assets/단어장.svg';
+import { LAYOUT } from '../../constants/layout';
 
 const MyPage = () => {
   const navigate = useNavigate();
@@ -25,12 +26,12 @@ const MyPage = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: 'max(env(safe-area-inset-top), 12px)',
-        paddingBottom: '69px'
+        paddingTop: LAYOUT.SAFE_AREA_TOP,
+        paddingBottom: '35px'
       }}
     >
       {/* 상단 네비게이션 */}
-      <div style={{ padding: '0 16px' }}>
+      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
         <TopNav
           title="투자 일지"
           depth="1"
@@ -45,11 +46,11 @@ const MyPage = () => {
       {/* 메인 콘텐츠 */}
       <div
         style={{
-          padding: '0 16px',
+          padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`,
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
-          marginTop: '26px'
+          gap: `${LAYOUT.CARD_GAP}px`,
+          marginTop: `${LAYOUT.TOP_NAV_MARGIN}px`
         }}
       >
         {/* 순자산 카드 */}
@@ -90,11 +91,11 @@ const MyPage = () => {
       {/* 설정 섹션들 */}
       <div
         style={{
-          padding: '0 16px',
+          padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`,
           display: 'flex',
           flexDirection: 'column',
           gap: '24px',
-          marginTop: '36px'
+          marginTop: '40px'
         }}
       >
         {/* 개인 맞춤 설정 */}

@@ -47,7 +47,8 @@ export const CenterTabNav = ({ tabs = [], activeTab, onTabChange }) => {
           display: 'flex',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          position: 'relative'
+          position: 'relative',
+          paddingLeft: '10px'
         }}
       >
         {tabs.map((tab, index) => {
@@ -97,8 +98,8 @@ export const CenterTabNav = ({ tabs = [], activeTab, onTabChange }) => {
         style={{
           position: 'absolute',
           bottom: 0,
-          left: indicatorStyle.left,
-          width: indicatorStyle.width,
+          left: activeTab === '전체' ? indicatorStyle.left + 5 : indicatorStyle.left,
+          width: activeTab === '전체' ? indicatorStyle.width - 10 : indicatorStyle.width,
           height: '3px',
           backgroundColor: '#3490FF',
           borderRadius: '1.5px',

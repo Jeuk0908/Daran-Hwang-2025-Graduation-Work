@@ -64,7 +64,7 @@ export const TipCard = ({
       style={{
         backgroundColor: '#FFFFFF',
         borderRadius: isOpen ? '12px' : '8px',
-        boxShadow: isOpen ? '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)' : 'none',
+        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
         width: '100%',
         boxSizing: 'border-box',
         overflow: 'hidden',

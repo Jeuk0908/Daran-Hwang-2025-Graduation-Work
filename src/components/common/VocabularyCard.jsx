@@ -1,4 +1,5 @@
 import React from 'react';
+import { LAYOUT } from '../../constants/layout';
 
 /**
  * ETF 용어 학습용 단어장 카드 컴포넌트
@@ -10,7 +11,7 @@ import React from 'react';
  */
 const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' }) => {
   const containerStyle = {
-    width: '176px',
+    width: `${LAYOUT.getTwoColumnWidth()}px`,
     height: '293px',
     backgroundColor: '#FFFFFF',
     borderRadius: '12px',
@@ -24,10 +25,10 @@ const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' })
   };
 
   const iconWrapperStyle = {
-    width: '144px',
-    height: '144px',
+    width: '156px',
+    height: '156px',
     backgroundColor: '#F7F7F8',
-    borderRadius: '72px',
+    borderRadius: '78px',
     padding: '12px',
     display: 'flex',
     alignItems: 'center',
@@ -38,8 +39,8 @@ const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' })
   };
 
   const iconImageStyle = {
-    width: '120px',
-    height: '120px',
+    width: '132px',
+    height: '132px',
     objectFit: 'contain'
   };
 

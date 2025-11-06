@@ -17,6 +17,9 @@ import TextField from '../../components/common/TextField.jsx';
 import RebalanceETFCard from '../../components/common/RebalanceETFCard.jsx';
 import { PortfolioCard } from '../../components/common/PortfolioCard.jsx';
 import VocabularyCard from '../../components/common/VocabularyCard.jsx';
+import { SimpleChartViewer } from '../../components/common/SimpleChartViewer.jsx';
+import { TotalProfitCard } from '../../components/common/TotalProfitCard.jsx';
+import { CenterTabNav } from '../../components/common/CenterTabNav.jsx';
 
 // 아이콘 SVG 파일 imports
 import iconSearch from '../../assets/icon_search.svg';
@@ -182,6 +185,8 @@ const IconShowcase = () => {
   const [isRebalanceExpanded, setIsRebalanceExpanded] = useState(false);
   const [isProfitMode, setIsProfitMode] = useState(true);
   const [textFieldValue, setTextFieldValue] = useState('');
+  const [isTotalProfitBookmarked, setIsTotalProfitBookmarked] = useState(false);
+  const [centerTab, setCenterTab] = useState('전체');
 
   useEffect(() => {
     // 컴포넌트 마운트 시 body와 #root의 maxWidth 제거
@@ -3116,6 +3121,354 @@ const IconShowcase = () => {
               alert('체크포인트 페이지로 이동합니다');
               console.log('체크포인트 클릭');
             }}
+          />
+        </div>
+      </div>
+
+      {/* TotalProfitCard 컴포넌트 섹션 */}
+      <div style={{
+        marginTop: 'clamp(40px, 5vw, 60px)',
+        padding: 'clamp(20px, 3vw, 40px)',
+        backgroundColor: '#F8F9FA',
+        borderRadius: '16px'
+      }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(20px, 2.5vw, 28px)',
+          fontWeight: 700,
+          marginBottom: 'clamp(20px, 3vw, 30px)',
+          color: '#000000'
+        }}>
+          TotalProfitCard 컴포넌트
+        </h2>
+
+        <p style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: '14px',
+          color: '#757E8F',
+          marginBottom: '20px'
+        }}>
+          사용자의 총 수익 정보를 표시하는 카드 컴포넌트 (북마크, 리벨런싱, 체크포인트 기능 포함)
+        </p>
+
+        {/* 기본 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            기본 예제
+          </h3>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(358px, 100%), 1fr))',
+            gap: 'clamp(12px, 2vw, 20px)',
+            maxWidth: '100%',
+            marginBottom: '30px'
+          }}>
+            {/* 상승 예제 (칩 있음, 북마크 없음) */}
+            <TotalProfitCard
+              userName="민수"
+              profitAmount="999,999,999"
+              profitDirection="up"
+              profitPercent="27.3"
+              hasRebalancing={true}
+              hasCheckpoint={true}
+              isBookmarked={false}
+            />
+
+            {/* 하락 예제 (칩 있음, 북마크 없음) */}
+            <TotalProfitCard
+              userName="민수"
+              profitAmount="999,999,998"
+              profitDirection="down"
+              profitPercent="27.3"
+              hasRebalancing={true}
+              hasCheckpoint={true}
+              isBookmarked={false}
+            />
+
+            {/* 상승 예제 (리벨런싱만, 북마크 있음) */}
+            <TotalProfitCard
+              userName="지수"
+              profitAmount="50,000,000"
+              profitDirection="up"
+              profitPercent="15.8"
+              hasRebalancing={true}
+              hasCheckpoint={false}
+              isBookmarked={true}
+            />
+
+            {/* 하락 예제 (리벨런싱만, 북마크 있음) */}
+            <TotalProfitCard
+              userName="영희"
+              profitAmount="30,000,000"
+              profitDirection="down"
+              profitPercent="8.5"
+              hasRebalancing={true}
+              hasCheckpoint={false}
+              isBookmarked={true}
+            />
+          </div>
+        </div>
+
+        {/* 인터랙티브 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            인터랙티브 예제 (모든 기능 활성화)
+          </h3>
+
+          <p style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '13px',
+            color: '#757E8F',
+            marginBottom: '12px'
+          }}>
+            북마크, 칩, 확인하기 버튼을 클릭해보세요!
+          </p>
+
+          <TotalProfitCard
+            userName="철수"
+            profitAmount="125,000,000"
+            profitDirection="up"
+            profitPercent="42.7"
+            hasRebalancing={true}
+            hasCheckpoint={true}
+            isBookmarked={isTotalProfitBookmarked}
+            onBookmarkToggle={(bookmarked) => {
+              setIsTotalProfitBookmarked(bookmarked);
+              alert(`북마크 ${bookmarked ? '추가' : '제거'}됨!`);
+              console.log('북마크 상태:', bookmarked);
+            }}
+            onRebalanceClick={() => {
+              alert('리벨런싱 확인 페이지로 이동합니다');
+              console.log('리벨런싱 확인 클릭');
+            }}
+            onCheckpointClick={() => {
+              alert('체크포인트 페이지로 이동합니다');
+              console.log('체크포인트 클릭');
+            }}
+            onViewClick={() => {
+              alert('상세 보기 페이지로 이동합니다');
+              console.log('확인하기 클릭');
+            }}
+          />
+        </div>
+      </div>
+
+      {/* SimpleChartViewer 컴포넌트 섹션 */}
+      <div style={{
+        marginTop: 'clamp(40px, 5vw, 60px)',
+        padding: 'clamp(20px, 3vw, 40px)',
+        backgroundColor: '#F8F9FA',
+        borderRadius: '16px'
+      }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(20px, 2.5vw, 28px)',
+          fontWeight: 700,
+          marginBottom: 'clamp(20px, 3vw, 30px)',
+          color: '#000000'
+        }}>
+          SimpleChartViewer 컴포넌트
+        </h2>
+
+        <p style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: '14px',
+          color: '#757E8F',
+          marginBottom: '20px'
+        }}>
+          ETF 간이 차트 뷰어 컴포넌트 (순위, 가격 비교, 차트, 변동률 표시)
+        </p>
+
+        {/* 기본 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            기본 예제
+          </h3>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(358px, 100%), 1fr))',
+            gap: 'clamp(12px, 2vw, 20px)',
+            maxWidth: '100%',
+            marginBottom: '30px'
+          }}>
+            <SimpleChartViewer
+              rank={1}
+              name="TIGER 미국S&P500"
+              priceComparisonText="실시간 가치보다"
+              priceComparisonValue="0.3"
+              priceComparisonDirection="up"
+              priceComparisonLabel="저렴해요"
+              currentPrice="21,970"
+              changePercent="2.59"
+              changeDirection="up"
+            />
+
+            <SimpleChartViewer
+              rank={2}
+              name="KODEX 200"
+              priceComparisonText="실시간 가치보다"
+              priceComparisonValue="0.5"
+              priceComparisonDirection="down"
+              priceComparisonLabel="비싸요"
+              currentPrice="35,420"
+              changePercent="1.23"
+              changeDirection="down"
+            />
+
+            <SimpleChartViewer
+              rank={3}
+              name="TIGER 차이나전기차SOLACTIVE"
+              priceComparisonText="실시간 가치보다"
+              priceComparisonValue="1.2"
+              priceComparisonDirection="up"
+              priceComparisonLabel="저렴해요"
+              currentPrice="8,540"
+              changePercent="5.67"
+              changeDirection="up"
+            />
+          </div>
+        </div>
+
+        {/* 인터랙티브 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            인터랙티브 예제 (클릭 가능)
+          </h3>
+
+          <p style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '13px',
+            color: '#757E8F',
+            marginBottom: '12px'
+          }}>
+            차트 카드를 클릭해보세요!
+          </p>
+
+          <SimpleChartViewer
+            rank={1}
+            name="TIGER 미국배당다우존스"
+            priceComparisonText="실시간 가치보다"
+            priceComparisonValue="0.8"
+            priceComparisonDirection="up"
+            priceComparisonLabel="저렴해요"
+            currentPrice="42,150"
+            changePercent="3.24"
+            changeDirection="up"
+            onClick={() => {
+              alert('TIGER 미국배당다우존스 상세 페이지로 이동합니다');
+              console.log('차트 뷰어 클릭됨');
+            }}
+          />
+        </div>
+      </div>
+
+      {/* CenterTabNav 컴포넌트 섹션 */}
+      <div style={{
+        marginTop: 'clamp(40px, 5vw, 60px)',
+        padding: 'clamp(20px, 3vw, 40px)',
+        backgroundColor: '#F8F9FA',
+        borderRadius: '16px'
+      }}>
+        <h2 style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: 'clamp(20px, 2.5vw, 28px)',
+          fontWeight: 700,
+          marginBottom: 'clamp(20px, 3vw, 30px)',
+          color: '#000000'
+        }}>
+          CenterTabNav 컴포넌트
+        </h2>
+
+        <p style={{
+          fontFamily: 'Pretendard, sans-serif',
+          fontSize: '14px',
+          color: '#757E8F',
+          marginBottom: '20px'
+        }}>
+          중앙 정렬 탭 네비게이션 바 컴포넌트 (글자만 바꿔서 재활용 가능)
+        </p>
+
+        {/* 기본 예제 */}
+        <div style={{ marginBottom: '30px' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            기본 예제 (4개 탭)
+          </h3>
+
+          <CenterTabNav
+            tabs={['전체', 'Q&A', '영상 TIP', '뉴스']}
+            activeTab={centerTab}
+            onTabChange={(tab) => {
+              setCenterTab(tab);
+              console.log('탭 변경:', tab);
+            }}
+          />
+        </div>
+
+        {/* 3개 탭 예제 */}
+        <div style={{ marginBottom: '30px' }}>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            3개 탭 예제
+          </h3>
+
+          <CenterTabNav
+            tabs={['전체', '관심목록', '최근본']}
+            activeTab="관심목록"
+          />
+        </div>
+
+        {/* 5개 탭 예제 */}
+        <div>
+          <h3 style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: '#000000'
+          }}>
+            5개 탭 예제
+          </h3>
+
+          <CenterTabNav
+            tabs={['홈', '탐색', '포트폴리오', '뉴스', '마이']}
+            activeTab="포트폴리오"
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import iconBookmarkActive from '../../assets/icon_bookmark(L)_o.svg';
 import iconBookmarkInactive from '../../assets/icon_bookmark(L)_o2.svg';
+import { LAYOUT } from '../../constants/layout';
 
 /**
  * VideoThumbnail - 영상 썸네일 컴포넌트
@@ -42,10 +43,12 @@ export const VideoThumbnail = ({
     }
   };
 
+  const columnWidth = LAYOUT.getTwoColumnWidth();
+
   return (
     <div
       style={{
-        width: '176px',
+        width: `${columnWidth}px`,
         display: 'flex',
         flexDirection: 'column',
         gap: '8px'
@@ -178,7 +181,8 @@ export const VideoThumbnail = ({
             xmlns="http://www.w3.org/2000/svg"
             style={{
               position: 'relative',
-              zIndex: 1
+              zIndex: 1,
+              transform: 'translateY(1px)'
             }}
           >
             <path

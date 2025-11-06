@@ -6,6 +6,7 @@ import { TipCard } from '../../components/common/TipCard';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
 import { shuffleArray } from '../../utils/shuffle';
+import { LAYOUT } from '../../constants/layout';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
 import iconETF from '../../assets/ETF_24.svg';
@@ -328,12 +329,12 @@ const Bookmark = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: 'max(env(safe-area-inset-top), 12px)',
+        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: '88px'
       }}
     >
       {/* 상단 네비게이션 */}
-      <div style={{ padding: '0 16px' }}>
+      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
         <TopNav
           title="북마크"
           depth="2"
@@ -347,7 +348,7 @@ const Bookmark = () => {
       </div>
 
       {/* 탭 네비게이션 */}
-      <div style={{ marginTop: '26px' }}>
+      <div>
         <CenterTabNav
           tabs={['전체', 'Q&A', '영상 TIP', '뉴스']}
           activeTab={activeTab}
@@ -367,12 +368,12 @@ const Bookmark = () => {
         <div style={getTabContentStyle('전체')}>
           <div
             style={{
-              padding: '0 16px',
-              marginTop: '31px',
+              padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
+              marginTop: `${LAYOUT.SECTION_GAP}px`,
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '12px',
-              columnGap: '11px',
+              gap: `${LAYOUT.GRID_GAP.ROW}px`,
+              columnGap: `${LAYOUT.GRID_GAP.COLUMN}px`,
               gridAutoFlow: 'dense',
               alignItems: 'start'
             }}
@@ -462,11 +463,11 @@ const Bookmark = () => {
         <div style={getTabContentStyle('Q&A')}>
           <div
             style={{
-              padding: '0 16px',
+              padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
-              marginTop: '31px'
+              gap: `${LAYOUT.CARD_GAP}px`,
+              marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
             {qaData.map((qa) => (
@@ -500,12 +501,12 @@ const Bookmark = () => {
         <div style={getTabContentStyle('영상 TIP')}>
           <div
             style={{
-              padding: '0 16px',
-              marginTop: '31px',
+              padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
+              marginTop: `${LAYOUT.SECTION_GAP}px`,
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '12px',
-              columnGap: '11px',
+              gap: `${LAYOUT.GRID_GAP.ROW}px`,
+              columnGap: `${LAYOUT.GRID_GAP.COLUMN}px`,
               justifyItems: 'center',
               alignItems: 'center'
             }}
@@ -536,12 +537,12 @@ const Bookmark = () => {
         <div style={getTabContentStyle('뉴스')}>
           <div
             style={{
-              padding: '0 16px',
-              marginTop: '31px',
+              padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
+              marginTop: `${LAYOUT.SECTION_GAP}px`,
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '12px',
-              columnGap: '11px',
+              gap: `${LAYOUT.GRID_GAP.ROW}px`,
+              columnGap: `${LAYOUT.GRID_GAP.COLUMN}px`,
               justifyItems: 'center',
               alignItems: 'start'
             }}
