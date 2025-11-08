@@ -1,0 +1,39 @@
+<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="4.33301" y="22.75" width="17.3333" height="1.08333" rx="0.541667" fill="#E6E7EA" style="fill:#E6E7EA;fill:color(display-p3 0.9007 0.9069 0.9193);fill-opacity:1;"/>
+<rect x="8.03613" y="3.08398" width="0.925955" height="5.50248" rx="0.462978" fill="url(#paint0_linear_4066_17375)" style=""/>
+<mask id="path-3-inside-1_4066_17375" fill="white">
+<rect x="4.33301" y="15.2051" width="8.3336" height="3.76992" rx="0.76128"/>
+</mask>
+<rect x="4.33301" y="15.2051" width="8.3336" height="3.76992" rx="0.76128" fill="#005CCC" stroke="#0073FF" style="fill:#005CCC;fill:color(display-p3 0.0000 0.3600 0.8000);fill-opacity:1;stroke:#0073FF;stroke:color(display-p3 0.0000 0.4500 1.0000);stroke-opacity:1;" stroke-width="3.76992" mask="url(#path-3-inside-1_4066_17375)"/>
+<path d="M6.03125 16.4629V18.9762" stroke="#3490FF" style="stroke:#3490FF;stroke:color(display-p3 0.2057 0.5631 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<path d="M8.11621 16.4629V18.9762" stroke="#3490FF" style="stroke:#3490FF;stroke:color(display-p3 0.2057 0.5631 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<rect x="4.33301" y="7.66797" width="8.3336" height="3.76992" rx="0.76128" fill="#3490FF" style="fill:#3490FF;fill:color(display-p3 0.2057 0.5631 1.0000);fill-opacity:1;"/>
+<path d="M6.03125 8.92383V11.4371" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<path d="M8.11621 8.92383V11.4371" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<rect x="5.70215" y="11.4375" width="8.3336" height="3.76992" rx="0.76128" fill="#99C7FF" style="fill:#99C7FF;fill:color(display-p3 0.6000 0.7800 1.0000);fill-opacity:1;"/>
+<path d="M10.3423 12.6934V15.2066" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<path d="M12.4253 12.6934V15.2066" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<rect x="5.70508" y="18.9785" width="8.3336" height="3.76992" rx="0.76128" fill="#99C7FF" style="fill:#99C7FF;fill:color(display-p3 0.6000 0.7800 1.0000);fill-opacity:1;"/>
+<path d="M12.5464 20.2363V22.7496" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.76128"/>
+<path d="M12.014 4.25843L8.41623 5.68375C8.23389 5.75599 8.03613 5.62163 8.03613 5.4255V2.57486C8.03613 2.37872 8.23389 2.24436 8.41623 2.3166L12.014 3.74192C12.248 3.83461 12.248 4.16575 12.014 4.25843Z" fill="#3490FF" style="fill:#3490FF;fill:color(display-p3 0.2057 0.5631 1.0000);fill-opacity:1;"/>
+<path d="M8.96289 20.9526C8.96289 20.4254 9.39028 19.998 9.91748 19.998C10.4131 19.998 10.8148 20.3998 10.8148 20.8954V22.7493H8.96289V20.9526Z" fill="#005CCC" style="fill:#005CCC;fill:color(display-p3 0.0000 0.3600 0.8000);fill-opacity:1;"/>
+<mask id="path-16-inside-2_4066_17375" fill="white">
+<rect width="5.77634" height="2.61261" rx="0.545547" transform="matrix(0.837183 0.546923 -0.566767 0.823878 16.6499 12.459)"/>
+</mask>
+<rect width="5.77634" height="2.61261" rx="0.545547" transform="matrix(0.837183 0.546923 -0.566767 0.823878 16.6499 12.459)" fill="#005CCC" stroke="#0073FF" style="fill:#005CCC;fill:color(display-p3 0.0000 0.3600 0.8000);fill-opacity:1;stroke:#0073FF;stroke:color(display-p3 0.0000 0.4500 1.0000);stroke-opacity:1;" stroke-width="2.61261" mask="url(#path-16-inside-2_4066_17375)"/>
+<path d="M17.1421 13.8223L16.1549 15.2572" stroke="#3490FF" style="stroke:#3490FF;stroke:color(display-p3 0.2057 0.5631 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<path d="M18.3511 14.6113L17.3639 16.0463" stroke="#3490FF" style="stroke:#3490FF;stroke:color(display-p3 0.2057 0.5631 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<rect width="5.82196" height="2.59139" rx="0.545547" transform="matrix(-1 0 0 1 20.9907 17.5859)" fill="#3490FF" style="fill:#3490FF;fill:color(display-p3 0.2057 0.5631 1.0000);fill-opacity:1;"/>
+<path d="M19.8047 18.4492V20.1768" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<path d="M18.3491 18.4492V20.1768" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<rect x="15.8462" y="20.1562" width="5.82196" height="2.59139" rx="0.545547" fill="#99C7FF" style="fill:#99C7FF;fill:color(display-p3 0.6000 0.7800 1.0000);fill-opacity:1;"/>
+<path d="M19.1714 21.0215V22.7491" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<path d="M20.627 21.0215V22.7491" stroke="#66ABFF" style="stroke:#66ABFF;stroke:color(display-p3 0.4000 0.6700 1.0000);stroke-opacity:1;" stroke-width="0.545547"/>
+<path d="M18.1099 21.5243C18.1099 21.156 18.4084 20.8574 18.7768 20.8574C19.123 20.8574 19.4036 21.1381 19.4036 21.4843V22.7486H18.1099V21.5243Z" fill="#005CCC" style="fill:#005CCC;fill:color(display-p3 0.0000 0.3600 0.8000);fill-opacity:1;"/>
+<defs>
+<linearGradient id="paint0_linear_4066_17375" x1="8.49911" y1="3.08398" x2="8.49911" y2="8.58647" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3490FF" style="stop-color:#3490FF;stop-color:color(display-p3 0.2057 0.5631 1.0000);stop-opacity:1;"/>
+<stop offset="1" stop-color="#99C7FF" style="stop-color:#99C7FF;stop-color:color(display-p3 0.6000 0.7804 1.0000);stop-opacity:1;"/>
+</linearGradient>
+</defs>
+</svg>
