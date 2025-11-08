@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import iconBackUpT50 from '../../assets/icon_back(S)_U_t50.svg';
-import iconBackDownT50 from '../../assets/icon_back(S)_D_t50.svg';
 
 /**
  * Chip Components
@@ -130,13 +128,23 @@ export const Chip = ({
     }
 
     // default 색상
-    return {
-      backgroundColor: '#F7F7F8',
-      color: '#1A1C20',
-      border: 'none',
-      iconFill: '#1A1C20',
-      iconRotation: 0
-    };
+    if (state === 'select') {
+      return {
+        backgroundColor: '#1A1C20',
+        color: '#FFFFFF',
+        border: 'none',
+        iconFill: '#FFFFFF',
+        iconRotation: 0
+      };
+    } else {
+      return {
+        backgroundColor: '#F7F7F8',
+        color: '#1A1C20',
+        border: 'none',
+        iconFill: '#1A1C20',
+        iconRotation: 0
+      };
+    }
   };
 
   const styles = getStyles();
@@ -148,9 +156,6 @@ export const Chip = ({
     // iconRotation prop이 제공되면 그것을 사용, 아니면 styles의 값 사용
     const rotation = iconRotation !== undefined ? iconRotation : styles.iconRotation;
 
-    // rotation이 180이면 아래쪽 화살표, 아니면 위쪽 화살표
-    const iconSrc = rotation === 180 ? iconBackDownT50 : iconBackUpT50;
-
     return (
       <div
         style={{
@@ -158,20 +163,17 @@ export const Chip = ({
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: '4px',
-          width: '24px',
-          height: '24px',
-          transition: 'opacity 0.2s ease'
+          transform: `rotate(${rotation}deg)`,
+          transition: 'transform 0.3s ease'
         }}
       >
-        <img
-          src={iconSrc}
-          alt=""
-          style={{
-            width: '24px',
-            height: '24px',
-            display: 'block'
-          }}
-        />
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M10 8L6 12L14 12L10 8Z"
+            fill={styles.iconFill}
+            style={{ transition: 'fill 0.3s ease' }}
+          />
+        </svg>
       </div>
     );
   };

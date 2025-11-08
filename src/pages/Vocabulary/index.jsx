@@ -299,7 +299,13 @@ const Vocabulary = () => {
       paddingBottom: '88px'
     }}>
       {/* 상단 네비게이션 */}
-      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+      }}>
         <TopNav
           title="용어 백과"
           number={obtainedCount.toString()}

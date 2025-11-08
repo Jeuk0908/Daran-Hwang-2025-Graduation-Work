@@ -31,7 +31,13 @@ const MyPage = () => {
       }}
     >
       {/* 상단 네비게이션 */}
-      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+      }}>
         <TopNav
           title="투자 일지"
           depth="1"

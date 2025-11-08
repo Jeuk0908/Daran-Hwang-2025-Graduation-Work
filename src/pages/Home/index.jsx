@@ -15,9 +15,11 @@ import iconWhy from '../../assets/icon_why(12_12).svg';
 const HomePage = () => {
   const navigate = useNavigate();
   const [trendFilter, setTrendFilter] = useState('up');
-  const [activeChip, setActiveChip] = useState('꾸준 인기');
+  const [activeChip, setActiveChip] = useState('오늘 인기');
   const [selectedPeriod, setSelectedPeriod] = useState('당일');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [popularTrend, setPopularTrend] = useState('up'); // 오늘 인기 트렌드 상태
+  const [volumeTrend, setVolumeTrend] = useState('up'); // 거래량 트렌드 상태
 
   const periodOptions = ['당일', '1주', 'YTD'];
 
@@ -30,7 +32,8 @@ const HomePage = () => {
     { name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up', showChart: true }
   ];
 
-  const themes = [
+  // 상승 테마 더미 데이터
+  const upThemes = [
     { rank: 1, theme: '양자 컴퓨터', changePercent: '24.5', changeDirection: 'up' },
     { rank: 2, theme: '소셜 미디어', changePercent: '20.65', changeDirection: 'up' },
     { rank: 3, theme: 'US', changePercent: '16.44', changeDirection: 'up' },
@@ -38,7 +41,20 @@ const HomePage = () => {
     { rank: 5, theme: '구리', changePercent: '10.99', changeDirection: 'up' }
   ];
 
-  const etfList = [
+  // 하락 테마 더미 데이터
+  const downThemes = [
+    { rank: 1, theme: '반도체', changePercent: '18.3', changeDirection: 'down' },
+    { rank: 2, theme: '금융', changePercent: '15.7', changeDirection: 'down' },
+    { rank: 3, theme: '헬스케어', changePercent: '12.4', changeDirection: 'down' },
+    { rank: 4, theme: '에너지', changePercent: '9.8', changeDirection: 'down' },
+    { rank: 5, theme: '자동차', changePercent: '7.2', changeDirection: 'down' }
+  ];
+
+  // trendFilter에 따라 표시할 테마 선택
+  const themes = trendFilter === 'up' ? upThemes : downThemes;
+
+  // 꾸준 인기 상승 ETF 더미 데이터
+  const popularUpEtfList = [
     {
       rank: 1,
       name: 'TIGER 미국S&P500',
@@ -52,27 +68,143 @@ const HomePage = () => {
     },
     {
       rank: 2,
-      name: 'TIGER 미국S&P500',
+      name: 'KODEX 미국나스닥100',
       priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.3',
+      priceComparisonValue: '0.5',
+      priceComparisonDirection: 'up',
+      priceComparisonLabel: '저렴해요',
+      currentPrice: '18,450',
+      changePercent: '3.21',
+      changeDirection: 'up'
+    },
+    {
+      rank: 3,
+      name: 'TIGER 차이나전기차SOLACTIVE',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.2',
+      priceComparisonDirection: 'up',
+      priceComparisonLabel: '저렴해요',
+      currentPrice: '15,320',
+      changePercent: '1.85',
+      changeDirection: 'up'
+    }
+  ];
+
+  // 꾸준 인기 하락 ETF 더미 데이터
+  const popularDownEtfList = [
+    {
+      rank: 1,
+      name: 'KODEX 인버스',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.4',
       priceComparisonDirection: 'down',
       priceComparisonLabel: '비싸요',
-      currentPrice: '21,970',
-      changePercent: '2.59',
+      currentPrice: '14,650',
+      changePercent: '2.93',
+      changeDirection: 'down'
+    },
+    {
+      rank: 2,
+      name: 'TIGER 코스닥150 인버스',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.6',
+      priceComparisonDirection: 'down',
+      priceComparisonLabel: '비싸요',
+      currentPrice: '12,340',
+      changePercent: '3.15',
       changeDirection: 'down'
     },
     {
       rank: 3,
-      name: 'TIGER 미국S&P500',
+      name: 'KODEX 골드선물',
       priceComparisonText: '실시간 가치보다',
       priceComparisonValue: '0.3',
+      priceComparisonDirection: 'down',
+      priceComparisonLabel: '비싸요',
+      currentPrice: '16,780',
+      changePercent: '1.67',
+      changeDirection: 'down'
+    }
+  ];
+
+  // 거래량 상승 ETF 더미 데이터
+  const volumeUpEtfList = [
+    {
+      rank: 1,
+      name: 'KODEX 레버리지',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.8',
       priceComparisonDirection: 'up',
       priceComparisonLabel: '저렴해요',
-      currentPrice: '21,970',
-      changePercent: '2.59',
+      currentPrice: '24,180',
+      changePercent: '4.12',
+      changeDirection: 'up'
+    },
+    {
+      rank: 2,
+      name: 'TIGER 2차전지테마',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.6',
+      priceComparisonDirection: 'up',
+      priceComparisonLabel: '저렴해요',
+      currentPrice: '19,880',
+      changePercent: '3.47',
+      changeDirection: 'up'
+    },
+    {
+      rank: 3,
+      name: 'KODEX 반도체',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.5',
+      priceComparisonDirection: 'up',
+      priceComparisonLabel: '저렴해요',
+      currentPrice: '22,560',
+      changePercent: '2.88',
       changeDirection: 'up'
     }
   ];
+
+  // 거래량 하락 ETF 더미 데이터
+  const volumeDownEtfList = [
+    {
+      rank: 1,
+      name: 'TIGER 미국채10년선물',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.7',
+      priceComparisonDirection: 'down',
+      priceComparisonLabel: '비싸요',
+      currentPrice: '13,920',
+      changePercent: '3.56',
+      changeDirection: 'down'
+    },
+    {
+      rank: 2,
+      name: 'KODEX 은행',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.4',
+      priceComparisonDirection: 'down',
+      priceComparisonLabel: '비싸요',
+      currentPrice: '17,480',
+      changePercent: '2.74',
+      changeDirection: 'down'
+    },
+    {
+      rank: 3,
+      name: 'TIGER 중국항셍테크',
+      priceComparisonText: '실시간 가치보다',
+      priceComparisonValue: '0.5',
+      priceComparisonDirection: 'down',
+      priceComparisonLabel: '비싸요',
+      currentPrice: '11,230',
+      changePercent: '2.12',
+      changeDirection: 'down'
+    }
+  ];
+
+  // activeChip과 트렌드 상태에 따라 표시할 ETF 목록 선택
+  const etfList = activeChip === '오늘 인기'
+    ? (popularTrend === 'up' ? popularUpEtfList : popularDownEtfList)
+    : (volumeTrend === 'up' ? volumeUpEtfList : volumeDownEtfList);
 
   return (
     <div
@@ -86,17 +218,25 @@ const HomePage = () => {
       }}
     >
       {/* TopNav */}
-      <TopNav
-        title="내 투자"
-        depth="1"
-        state="icon"
-        showBackButton={false}
-        showTitle={true}
-        showIconL={false}
-        showIconR={true}
-        iconR={iconBellOutline}
-        onIconRClick={() => console.log('Bell icon clicked')}
-      />
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+      }}>
+        <TopNav
+          title="내 투자"
+          depth="1"
+          state="icon"
+          showBackButton={false}
+          showTitle={true}
+          showIconL={false}
+          showIconR={true}
+          iconR={iconBellOutline}
+          onIconRClick={() => console.log('Bell icon clicked')}
+        />
+      </div>
 
       {/* Main Portfolio Card */}
       <div
@@ -491,17 +631,36 @@ const HomePage = () => {
             }}
           >
             <Chip
-              title="꾸준 인기"
-              color="upTrend"
-              state={activeChip === '꾸준 인기' ? 'select' : 'nonSelect'}
-              showIcon={true}
-              onClick={() => setActiveChip('꾸준 인기')}
+              title="오늘 인기"
+              color={activeChip === '오늘 인기' ? (popularTrend === 'up' ? 'upTrend' : 'downTrend') : 'default'}
+              state={activeChip === '오늘 인기' ? 'select' : 'nonSelect'}
+              showIcon={activeChip === '오늘 인기'}
+              onClick={() => {
+                if (activeChip === '오늘 인기') {
+                  // 이미 선택된 상태면 트렌드 토글
+                  setPopularTrend(popularTrend === 'up' ? 'down' : 'up');
+                } else {
+                  // 선택되지 않은 상태면 upTrend로 리셋하고 선택
+                  setPopularTrend('up');
+                  setActiveChip('오늘 인기');
+                }
+              }}
             />
             <Chip
               title="거래량"
-              color="default"
+              color={activeChip === '거래량' ? (volumeTrend === 'up' ? 'upTrend' : 'downTrend') : 'default'}
               state={activeChip === '거래량' ? 'select' : 'nonSelect'}
-              onClick={() => setActiveChip('거래량')}
+              showIcon={activeChip === '거래량'}
+              onClick={() => {
+                if (activeChip === '거래량') {
+                  // 이미 선택된 상태면 트렌드 토글
+                  setVolumeTrend(volumeTrend === 'up' ? 'down' : 'up');
+                } else {
+                  // 선택되지 않은 상태면 upTrend로 리셋하고 선택
+                  setVolumeTrend('up');
+                  setActiveChip('거래량');
+                }
+              }}
             />
           </div>
 
@@ -537,7 +696,8 @@ const HomePage = () => {
         <div
           style={{
             padding: `12px ${LAYOUT.HORIZONTAL_PADDING}px 0`,
-            width: '100%'
+            width: '100%',
+            marginBottom: '45px'
           }}
         >
           <Button
