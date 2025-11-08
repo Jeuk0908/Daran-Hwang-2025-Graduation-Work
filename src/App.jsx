@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/common/BottomNav'
 import IconShowcase from './pages/Dev/IconShowcase'
-import Vocabulary from './Pages/Vocabulary'
-import MyPage from './Pages/MyPage'
+import Vocabulary from './pages/Vocabulary'
+import MyPage from './pages/MyPage'
 import Bookmark from './pages/Bookmark'
-import HomePage from './Pages/Home'
+import HomePage from './pages/Home'
+import Exhibition from './pages/Exhibition'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
-const ExhibitionPage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>전시 페이지</h1></div>
 const ArtistPage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>작가 페이지</h1></div>
 
 function AppContent() {
@@ -23,7 +23,6 @@ function AppContent() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
       minHeight: '-webkit-fill-available',
       width: '100%',
       maxWidth: isDevPage ? 'none' : '430px',
@@ -42,7 +41,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/exhibition" element={<ExhibitionPage />} />
+          <Route path="/exhibition" element={<Exhibition />} />
           <Route path="/artist" element={<ArtistPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/vocabulary" element={<Vocabulary />} />
