@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { PortfolioMainCard } from '../../components/common/PortfolioMainCard';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconSetting from '../../assets/icon_setting2.svg';
 
-const Exhibition = () => {
+const Portfolio = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -17,18 +19,20 @@ const Exhibition = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: `${LAYOUT.BOTTOM_NAV_HEIGHT}px`,
         position: 'relative'
       }}
     >
-      {/* TopNav */}
+      {/* TopNav with Safe Area */}
       <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+        paddingTop: LAYOUT.SAFE_AREA_TOP,
+        padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
       }}>
         <div
           style={{
@@ -89,7 +93,7 @@ const Exhibition = () => {
                   justifyContent: 'center',
                   cursor: 'pointer'
                 }}
-                onClick={() => console.log('포트폴리오 제작 클릭')}
+                onClick={() => navigate('/portfolio/create')}
               >
                 <p
                   style={{
@@ -188,7 +192,7 @@ const Exhibition = () => {
             justifyContent: 'center',
             cursor: 'pointer'
           }}
-          onClick={() => console.log('포트폴리오 추가하기 클릭')}
+          onClick={() => navigate('/portfolio/create')}
         >
           <p
             style={{
@@ -209,4 +213,4 @@ const Exhibition = () => {
   );
 };
 
-export default Exhibition;
+export default Portfolio;

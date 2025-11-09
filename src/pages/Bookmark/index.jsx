@@ -7,6 +7,7 @@ import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
 import { shuffleArray } from '../../utils/shuffle';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
 import iconETF from '../../assets/ETF_24.svg';
@@ -26,6 +27,7 @@ import thumbnail10 from '../../assets/images/pexels-vlasceanu-1400249.jpg';
 
 const Bookmark = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
   const [activeTab, setActiveTab] = useState('전체');
 
   // Q&A 데이터
@@ -329,17 +331,18 @@ const Bookmark = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: '88px'
       }}
     >
-      {/* 상단 네비게이션 */}
+      {/* TopNav with Safe Area */}
       <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+        padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
       }}>
         <TopNav
           title="북마크"

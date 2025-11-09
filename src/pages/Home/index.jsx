@@ -9,11 +9,13 @@ import { StockFilterToggle } from '../../components/common/ToggleButton';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconBellOutline from '../../assets/icon_bell_outline_1.svg';
 import iconWhy from '../../assets/icon_why(12_12).svg';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
   const [trendFilter, setTrendFilter] = useState('up');
   const [activeChip, setActiveChip] = useState('오늘 인기');
   const [selectedPeriod, setSelectedPeriod] = useState('당일');
@@ -212,18 +214,19 @@ const HomePage = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: `${LAYOUT.BOTTOM_NAV_HEIGHT}px`,
         position: 'relative'
       }}
     >
-      {/* TopNav */}
+      {/* TopNav with Safe Area */}
       <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+        padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
       }}>
         <TopNav
           title="내 투자"

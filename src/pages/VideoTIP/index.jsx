@@ -4,6 +4,7 @@ import { TopNav } from '../../components/common/TopNav';
 import { CenterTabNav } from '../../components/common/CenterTabNav';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 import thumbnail1 from '../../assets/images/pexels-anna-nekrashevich-6801650.jpg';
 import thumbnail2 from '../../assets/images/pexels-artempodrez-5716034.jpg';
 import thumbnail3 from '../../assets/images/pexels-energepic-com-27411-159888.jpg';
@@ -15,6 +16,7 @@ import thumbnail8 from '../../assets/images/pexels-pixabay-259200.jpg';
 
 const VideoTIP = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
   const [activeTab, setActiveTab] = useState('영상 TIP');
 
   // Mock video data
@@ -104,17 +106,18 @@ const VideoTIP = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: '88px'
       }}
     >
-      {/* 상단 네비게이션 */}
+      {/* TopNav with Safe Area */}
       <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`
+        padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
       }}>
         <TopNav
           title="북마크"
