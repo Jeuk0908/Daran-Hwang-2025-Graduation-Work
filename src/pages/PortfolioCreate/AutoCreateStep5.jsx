@@ -93,8 +93,8 @@ const AutoCreateStep5 = () => {
       // 관성 애니메이션 시작 (속도가 충분히 빠를 때만)
       const minVelocity = 0.5; // px/ms
       if (Math.abs(velocity.current) > minVelocity) {
-        const friction = 0.92; // 감속 계수
-        const minSpeed = 0.1; // 최소 속도 임계값
+        const friction = 0.80; // 감속 계수
+        const minSpeed = 0.3; // 최소 속도 임계값
 
         const animate = () => {
           // 속도가 임계값 이하로 떨어지면 애니메이션 종료
@@ -381,7 +381,8 @@ const AutoCreateStep5 = () => {
                     gap: '4px',
                     position: 'relative',
                     zIndex: 1,
-                    flexShrink: 0
+                    flexShrink: 0,
+                    transition: 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
               {getVisibleNumbers().map((percentage, index) => {
@@ -394,7 +395,8 @@ const AutoCreateStep5 = () => {
                         backgroundColor: 'transparent',
                         minWidth: '108px',
                         padding: '8px 16px',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                     >
                       <div style={{ height: '36px' }} />
@@ -408,7 +410,7 @@ const AutoCreateStep5 = () => {
 
                 return (
                   <div
-                    key={percentage}
+                    key={`item-${index}`}
                     style={{
                       backgroundColor: isCenter ? '#E0EEFF' : '#F7F7F8',
                       borderRadius: '4px',
@@ -418,11 +420,11 @@ const AutoCreateStep5 = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
                       opacity: opacity,
                       boxSizing: 'border-box'
                     }}
-                    onClick={() => setSelectedPercentage(percentage)}
+                    onClick={() => percentage && setSelectedPercentage(percentage)}
                   >
                     <p
                       style={{
@@ -431,7 +433,8 @@ const AutoCreateStep5 = () => {
                         fontWeight: 700,
                         lineHeight: 1.5,
                         color: isCenter ? '#3490FF' : '#99C7FF',
-                        margin: 0
+                        margin: 0,
+                        transition: 'color 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                     >
                       {percentage}
