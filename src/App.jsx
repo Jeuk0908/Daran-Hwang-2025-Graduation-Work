@@ -8,6 +8,11 @@ import HomePage from './pages/Home'
 import Portfolio from './pages/Portfolio'
 import PortfolioCreate from './pages/PortfolioCreate'
 import MethodSelection from './pages/PortfolioCreate/MethodSelection'
+import AutoCreate from './pages/PortfolioCreate/AutoCreate'
+import AutoCreateStep2 from './pages/PortfolioCreate/AutoCreateStep2'
+import AutoCreateStep3 from './pages/PortfolioCreate/AutoCreateStep3'
+import AutoCreateStep4 from './pages/PortfolioCreate/AutoCreateStep4'
+import AutoCreateStep5 from './pages/PortfolioCreate/AutoCreateStep5'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
@@ -50,6 +55,11 @@ function AppContent() {
           <Route path="/bookmark" element={<Bookmark />} />
           <Route path="/portfolio/create" element={<PortfolioCreate />} />
           <Route path="/portfolio/create/method" element={<MethodSelection />} />
+          <Route path="/portfolio/create/auto" element={<AutoCreate />} />
+          <Route path="/portfolio/create/auto/step2" element={<AutoCreateStep2 />} />
+          <Route path="/portfolio/create/auto/step3" element={<AutoCreateStep3 />} />
+          <Route path="/portfolio/create/auto/step4" element={<AutoCreateStep4 />} />
+          <Route path="/portfolio/create/auto/step5" element={<AutoCreateStep5 />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>
