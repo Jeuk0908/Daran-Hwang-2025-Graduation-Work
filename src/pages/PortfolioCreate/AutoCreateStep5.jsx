@@ -13,6 +13,9 @@ const AutoCreateStep5 = () => {
   const wheelContainerRef = useRef(null);
   const touchStartY = useRef(0);
   const touchMoveY = useRef(0);
+  const lastTouchTime = useRef(0);
+  const velocity = useRef(0);
+  const momentumAnimation = useRef(null);
 
   // 이전 페이지에서 전달받은 데이터
   const previousData = location.state || {};
@@ -44,17 +47,27 @@ const AutoCreateStep5 = () => {
       }
     };
 
-    // 터치 이벤트 핸들러 (모바일)
+    // 터치 이벤트 핸들러 (모바일) - 관성 효과 포함
     const touchStartHandler = (e) => {
+      // 진행 중인 관성 애니메이션 취소
+      if (momentumAnimation.current) {
+        cancelAnimationFrame(momentumAnimation.current);
+        momentumAnimation.current = null;
+      }
+
       touchStartY.current = e.touches[0].clientY;
       touchMoveY.current = e.touches[0].clientY;
+      lastTouchTime.current = Date.now();
+      velocity.current = 0;
     };
 
     const touchMoveHandler = (e) => {
       e.preventDefault(); // 페이지 스크롤 방지
 
       const currentY = e.touches[0].clientY;
+      const currentTime = Date.now();
       const deltaY = touchMoveY.current - currentY;
+      const deltaTime = currentTime - lastTouchTime.current;
 
       // 20px 이상 움직였을 때만 반응 (감도 조절)
       if (Math.abs(deltaY) > 20) {
@@ -65,11 +78,48 @@ const AutoCreateStep5 = () => {
           // 아래로 스와이프: 퍼센트 감소
           setSelectedPercentage(prev => Math.max(1, prev - 1));
         }
+
+        // 속도 계산 (px/ms)
+        if (deltaTime > 0) {
+          velocity.current = deltaY / deltaTime;
+        }
+
         touchMoveY.current = currentY;
+        lastTouchTime.current = currentTime;
       }
     };
 
     const touchEndHandler = (e) => {
+      // 관성 애니메이션 시작 (속도가 충분히 빠를 때만)
+      const minVelocity = 0.5; // px/ms
+      if (Math.abs(velocity.current) > minVelocity) {
+        const friction = 0.92; // 감속 계수
+        const minSpeed = 0.1; // 최소 속도 임계값
+
+        const animate = () => {
+          // 속도가 임계값 이하로 떨어지면 애니메이션 종료
+          if (Math.abs(velocity.current) < minSpeed) {
+            momentumAnimation.current = null;
+            return;
+          }
+
+          // 속도에 따라 percentage 변경
+          if (velocity.current > 0) {
+            setSelectedPercentage(prev => Math.min(100, prev + 1));
+          } else if (velocity.current < 0) {
+            setSelectedPercentage(prev => Math.max(1, prev - 1));
+          }
+
+          // 속도 감소 (마찰 적용)
+          velocity.current *= friction;
+
+          // 다음 프레임 예약
+          momentumAnimation.current = requestAnimationFrame(animate);
+        };
+
+        momentumAnimation.current = requestAnimationFrame(animate);
+      }
+
       touchStartY.current = 0;
       touchMoveY.current = 0;
     };
@@ -81,6 +131,12 @@ const AutoCreateStep5 = () => {
     container.addEventListener('touchend', touchEndHandler, { passive: true });
 
     return () => {
+      // 진행 중인 관성 애니메이션 정리
+      if (momentumAnimation.current) {
+        cancelAnimationFrame(momentumAnimation.current);
+        momentumAnimation.current = null;
+      }
+
       container.removeEventListener('wheel', wheelHandler);
       container.removeEventListener('touchstart', touchStartHandler);
       container.removeEventListener('touchmove', touchMoveHandler);
