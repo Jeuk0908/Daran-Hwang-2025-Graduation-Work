@@ -93,8 +93,8 @@ const AutoCreateStep5 = () => {
       // 관성 애니메이션 시작 (속도가 충분히 빠를 때만)
       const minVelocity = 0.5; // px/ms
       if (Math.abs(velocity.current) > minVelocity) {
-        const friction = 0.92; // 감속 계수
-        const minSpeed = 0.1; // 최소 속도 임계값
+        const friction = 0.80; // 감속 계수
+        const minSpeed = 0.3; // 최소 속도 임계값
 
         const animate = () => {
           // 속도가 임계값 이하로 떨어지면 애니메이션 종료
