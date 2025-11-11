@@ -16,6 +16,7 @@ const AutoCreateStep5 = () => {
   const lastTouchTime = useRef(0);
   const velocity = useRef(0);
   const momentumAnimation = useRef(null);
+  const accumulatedDelta = useRef(0); // 소수점 누적용
 
   // 이전 페이지에서 전달받은 데이터
   const previousData = location.state || {};
@@ -47,7 +48,7 @@ const AutoCreateStep5 = () => {
       }
     };
 
-    // 터치 이벤트 핸들러 (모바일) - 관성 효과 포함
+    // 터치 이벤트 핸들러 (모바일) - iOS wheel picker 스타일 관성 효과
     const touchStartHandler = (e) => {
       // 진행 중인 관성 애니메이션 취소
       if (momentumAnimation.current) {
@@ -59,6 +60,7 @@ const AutoCreateStep5 = () => {
       touchMoveY.current = e.touches[0].clientY;
       lastTouchTime.current = Date.now();
       velocity.current = 0;
+      accumulatedDelta.current = 0;
     };
 
     const touchMoveHandler = (e) => {
@@ -79,7 +81,7 @@ const AutoCreateStep5 = () => {
           setSelectedPercentage(prev => Math.max(1, prev - 1));
         }
 
-        // 속도 계산 (px/ms)
+        // 속도 계산 (px/ms) - 최근 이동 속도만 사용
         if (deltaTime > 0) {
           velocity.current = deltaY / deltaTime;
         }
@@ -90,24 +92,38 @@ const AutoCreateStep5 = () => {
     };
 
     const touchEndHandler = (e) => {
-      // 관성 애니메이션 시작 (속도가 충분히 빠를 때만)
-      const minVelocity = 0.5; // px/ms
+      // iOS wheel picker 스타일 관성 애니메이션
+      const minVelocity = 0.3; // px/ms - 더 낮은 임계값으로 부드러운 시작
       if (Math.abs(velocity.current) > minVelocity) {
-        const friction = 0.80; // 감속 계수
-        const minSpeed = 0.3; // 최소 속도 임계값
+        const friction = 0.93; // 더 높은 감속 계수로 부드러운 감속
+        const minSpeed = 0.05; // 더 낮은 최소 속도로 자연스러운 정지
+        const velocityToPercentage = 0.08; // 속도를 퍼센트 변화량으로 변환하는 계수
+
+        accumulatedDelta.current = 0;
 
         const animate = () => {
           // 속도가 임계값 이하로 떨어지면 애니메이션 종료
           if (Math.abs(velocity.current) < minSpeed) {
             momentumAnimation.current = null;
+            accumulatedDelta.current = 0;
             return;
           }
 
-          // 속도에 따라 percentage 변경
-          if (velocity.current > 0) {
-            setSelectedPercentage(prev => Math.min(100, prev + 1));
-          } else if (velocity.current < 0) {
-            setSelectedPercentage(prev => Math.max(1, prev - 1));
+          // velocity를 percentage 변화량으로 변환 (소수점 포함)
+          const delta = velocity.current * velocityToPercentage;
+          accumulatedDelta.current += delta;
+
+          // 누적된 delta가 1 이상이면 percentage 변경
+          if (Math.abs(accumulatedDelta.current) >= 1) {
+            const change = Math.floor(Math.abs(accumulatedDelta.current)) * Math.sign(accumulatedDelta.current);
+
+            setSelectedPercentage(prev => {
+              const newValue = prev + change;
+              return Math.max(1, Math.min(100, newValue));
+            });
+
+            // 사용한 만큼 차감
+            accumulatedDelta.current -= change;
           }
 
           // 속도 감소 (마찰 적용)
@@ -136,6 +152,7 @@ const AutoCreateStep5 = () => {
         cancelAnimationFrame(momentumAnimation.current);
         momentumAnimation.current = null;
       }
+      accumulatedDelta.current = 0;
 
       container.removeEventListener('wheel', wheelHandler);
       container.removeEventListener('touchstart', touchStartHandler);
@@ -381,8 +398,7 @@ const AutoCreateStep5 = () => {
                     gap: '4px',
                     position: 'relative',
                     zIndex: 1,
-                    flexShrink: 0,
-                    transition: 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
+                    flexShrink: 0
                   }}
                 >
               {getVisibleNumbers().map((percentage, index) => {
@@ -395,8 +411,7 @@ const AutoCreateStep5 = () => {
                         backgroundColor: 'transparent',
                         minWidth: '108px',
                         padding: '8px 16px',
-                        boxSizing: 'border-box',
-                        transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
+                        boxSizing: 'border-box'
                       }}
                     >
                       <div style={{ height: '36px' }} />
@@ -410,7 +425,7 @@ const AutoCreateStep5 = () => {
 
                 return (
                   <div
-                    key={`item-${index}`}
+                    key={percentage}
                     style={{
                       backgroundColor: isCenter ? '#E0EEFF' : '#F7F7F8',
                       borderRadius: '4px',
@@ -420,11 +435,11 @@ const AutoCreateStep5 = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transition: 'all 0.2s ease',
                       opacity: opacity,
                       boxSizing: 'border-box'
                     }}
-                    onClick={() => percentage && setSelectedPercentage(percentage)}
+                    onClick={() => setSelectedPercentage(percentage)}
                   >
                     <p
                       style={{
@@ -433,8 +448,7 @@ const AutoCreateStep5 = () => {
                         fontWeight: 700,
                         lineHeight: 1.5,
                         color: isCenter ? '#3490FF' : '#99C7FF',
-                        margin: 0,
-                        transition: 'color 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
+                        margin: 0
                       }}
                     >
                       {percentage}
