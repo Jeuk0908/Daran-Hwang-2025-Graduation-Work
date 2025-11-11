@@ -87,26 +87,18 @@ const AutoCreateStep3 = () => {
   const handleWeightChange = (itemId, newWeight) => {
     const weight = parseInt(newWeight) || 0;
 
-    // 다른 항목들의 비중 합계 계산
-    const otherItemsTotal = portfolioItems
-      .filter(item => item.id !== itemId)
-      .reduce((sum, item) => sum + item.targetWeight, 0);
-
-    // 최대 설정 가능한 비중 계산 (100 - 다른 항목들의 합)
-    const maxAllowedWeight = 100 - otherItemsTotal;
-
-    // 입력값이 0 이상이고 최대 허용 비중 이하일 때만 업데이트
-    if (weight >= 0 && weight <= maxAllowedWeight) {
+    // 0-100% 범위 내에서만 입력 가능
+    if (weight >= 0 && weight <= 100) {
       setPortfolioItems(prevItems =>
         prevItems.map(item =>
           item.id === itemId ? { ...item, targetWeight: weight } : item
         )
       );
-    } else if (weight > maxAllowedWeight) {
-      // 최대값을 초과하면 최대값으로 설정
+    } else if (weight > 100) {
+      // 100%를 초과하면 100%로 설정
       setPortfolioItems(prevItems =>
         prevItems.map(item =>
-          item.id === itemId ? { ...item, targetWeight: maxAllowedWeight } : item
+          item.id === itemId ? { ...item, targetWeight: 100 } : item
         )
       );
     }
@@ -244,7 +236,7 @@ const AutoCreateStep3 = () => {
             <p style={{ margin: 0 }}>
               총 비중이 100%가 되도록 입력해 주세요.
             </p>
-            <p style={{ margin: 0, color: totalWeight === 100 ? '#0073FF' : '#DA6816' }}>
+            <p style={{ margin: 0, color: totalWeight === 100 ? '#00A600' : '#DA6816' }}>
               현재 비중 : {totalWeight}%
             </p>
           </div>
