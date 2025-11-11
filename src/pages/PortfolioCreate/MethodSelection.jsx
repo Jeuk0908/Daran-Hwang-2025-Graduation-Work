@@ -22,8 +22,13 @@ const MethodSelection = () => {
 
   const handleStartClick = () => {
     if (!selectedMethod) return;
-    // TODO: 선택된 방법에 따라 다음 단계로 이동
-    console.log('선택된 방법:', selectedMethod);
+
+    if (selectedMethod === 'auto') {
+      navigate('/portfolio/create/auto');
+    } else if (selectedMethod === 'manual') {
+      // TODO: 수동 제작 페이지로 이동
+      console.log('수동 제작 페이지 준비 중');
+    }
   };
 
   return (
@@ -141,7 +146,7 @@ const MethodSelection = () => {
           <div
             onClick={() => handleMethodSelect('auto')}
             style={{
-              backgroundColor: selectedMethod === 'auto' ? '#FFFFFF' : '#F5F5F5',
+              backgroundColor: selectedMethod === null || selectedMethod === 'auto' ? '#FFFFFF' : '#F5F5F5',
               borderRadius: '12px',
               padding: '40px 16px 24px',
               width: '176px',
@@ -152,7 +157,11 @@ const MethodSelection = () => {
               cursor: 'pointer',
               boxShadow: selectedMethod === 'auto' ? '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)' : 'none',
               position: 'relative',
-              border: selectedMethod === 'auto' ? '2px solid rgba(52, 144, 255, 0.25)' : '2px solid transparent',
+              border: selectedMethod === 'auto'
+                ? '1px solid rgba(52, 144, 255, 0.25)'
+                : selectedMethod === null
+                  ? '1px solid #F6F7F8'
+                  : '1px solid transparent',
               transition: 'all 0.2s ease'
             }}
           >
@@ -160,13 +169,14 @@ const MethodSelection = () => {
             <div
               style={{
                 position: 'absolute',
-                top: '-11px',
+                top: '18px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #3490FF',
                 borderRadius: '8px',
-                padding: '4px 8px'
+                padding: '4px 8px',
+                whiteSpace: 'nowrap'
               }}
             >
               <p
@@ -176,8 +186,7 @@ const MethodSelection = () => {
                   fontWeight: 500,
                   lineHeight: 1.5,
                   color: '#3490FF',
-                  margin: 0,
-                  whiteSpace: 'nowrap'
+                  margin: 0
                 }}
               >
                 처음이라 어렵다면
@@ -192,7 +201,7 @@ const MethodSelection = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: selectedMethod === 'auto' ? 1 : 0.4,
+                opacity: selectedMethod === null || selectedMethod === 'auto' ? 1 : 0.4,
                 transition: 'opacity 0.2s ease'
               }}
             >
@@ -223,7 +232,7 @@ const MethodSelection = () => {
                   fontSize: '16px',
                   fontWeight: 600,
                   lineHeight: 1.35,
-                  color: selectedMethod === 'auto' ? '#1A1C20' : '#9198A6',
+                  color: selectedMethod === null || selectedMethod === 'auto' ? '#1A1C20' : '#9198A6',
                   margin: 0,
                   transition: 'color 0.2s ease'
                 }}
@@ -236,7 +245,7 @@ const MethodSelection = () => {
                   fontSize: '12px',
                   fontWeight: 400,
                   lineHeight: 1.5,
-                  color: selectedMethod === 'auto' ? '#5E6573' : '#9198A6',
+                  color: selectedMethod === null || selectedMethod === 'auto' ? '#5E6573' : '#9198A6',
                   margin: 0,
                   whiteSpace: 'pre-line',
                   transition: 'color 0.2s ease'
@@ -251,7 +260,7 @@ const MethodSelection = () => {
           <div
             onClick={() => handleMethodSelect('manual')}
             style={{
-              backgroundColor: selectedMethod === 'manual' ? '#FFFFFF' : '#F5F5F5',
+              backgroundColor: selectedMethod === null || selectedMethod === 'manual' ? '#FFFFFF' : '#F5F5F5',
               borderRadius: '12px',
               padding: '40px 16px 24px',
               width: '176px',
@@ -262,7 +271,11 @@ const MethodSelection = () => {
               cursor: 'pointer',
               boxShadow: selectedMethod === 'manual' ? '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)' : 'none',
               position: 'relative',
-              border: selectedMethod === 'manual' ? '2px solid rgba(52, 144, 255, 0.25)' : '2px solid transparent',
+              border: selectedMethod === 'manual'
+                ? '1px solid rgba(52, 144, 255, 0.25)'
+                : selectedMethod === null
+                  ? '1px solid #F6F7F8'
+                  : '1px solid transparent',
               transition: 'all 0.2s ease'
             }}
           >
@@ -270,13 +283,14 @@ const MethodSelection = () => {
             <div
               style={{
                 position: 'absolute',
-                top: '-11px',
+                top: '18px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #DA6816',
                 borderRadius: '8px',
-                padding: '4px 8px'
+                padding: '4px 8px',
+                whiteSpace: 'nowrap'
               }}
             >
               <p
@@ -286,8 +300,7 @@ const MethodSelection = () => {
                   fontWeight: 500,
                   lineHeight: 1.5,
                   color: '#DA6816',
-                  margin: 0,
-                  whiteSpace: 'nowrap'
+                  margin: 0
                 }}
               >
                 도전적인 당신에게
@@ -302,7 +315,7 @@ const MethodSelection = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: selectedMethod === 'manual' ? 1 : 0.4,
+                opacity: selectedMethod === null || selectedMethod === 'manual' ? 1 : 0.4,
                 transition: 'opacity 0.2s ease'
               }}
             >
@@ -333,7 +346,7 @@ const MethodSelection = () => {
                   fontSize: '16px',
                   fontWeight: 600,
                   lineHeight: 1.35,
-                  color: selectedMethod === 'manual' ? '#1A1C20' : '#9198A6',
+                  color: selectedMethod === null || selectedMethod === 'manual' ? '#1A1C20' : '#9198A6',
                   margin: 0,
                   transition: 'color 0.2s ease'
                 }}
@@ -346,7 +359,7 @@ const MethodSelection = () => {
                   fontSize: '12px',
                   fontWeight: 400,
                   lineHeight: 1.5,
-                  color: selectedMethod === 'manual' ? '#5E6573' : '#9198A6',
+                  color: selectedMethod === null || selectedMethod === 'manual' ? '#5E6573' : '#9198A6',
                   margin: 0,
                   whiteSpace: 'pre-line',
                   transition: 'color 0.2s ease'

@@ -178,7 +178,7 @@ export const PortfolioMainCard = ({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0px'
+              gap: '6px'
             }}
           >
             <p

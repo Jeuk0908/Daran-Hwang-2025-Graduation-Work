@@ -1,4 +1,5 @@
 import iconHeartOutline from '../../assets/icon_heart_outline.svg';
+import iconHeartFill from '../../assets/icon_heart_fill.svg';
 import iconUpupS from '../../assets/자산 card ui/icon_upup_s.svg';
 import iconDowndownS from '../../assets/자산 card ui/icon_downdown_s.svg';
 
@@ -47,7 +48,8 @@ export const PortfolioListCard = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        width: '100%'
+        width: '100%',
+        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)'
       }}
     >
       {/* 상단: 제목 + 태그 + 하트 + 가격/변동률 */}
@@ -145,13 +147,12 @@ export const PortfolioListCard = ({
             }}
           >
             <img
-              src={iconHeartOutline}
+              src={isFavorite ? iconHeartFill : iconHeartOutline}
               alt="즐겨찾기"
               style={{
                 width: '100%',
                 height: '100%',
-                display: 'block',
-                opacity: isFavorite ? 1 : 0.3
+                display: 'block'
               }}
             />
           </div>
@@ -167,19 +168,40 @@ export const PortfolioListCard = ({
           }}
         >
           {/* 가격 */}
-          <p
+          <div
             style={{
-              fontFamily: 'Pretendard, sans-serif',
-              fontSize: '20px',
-              fontWeight: 700,
-              lineHeight: 1.5,
-              color: '#000000',
-              margin: 0,
-              whiteSpace: 'nowrap'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
             }}
           >
-            {price}
-          </p>
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '20px',
+                fontWeight: 700,
+                lineHeight: 1.5,
+                color: changeColor,
+                margin: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {sign}
+            </p>
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '20px',
+                fontWeight: 700,
+                lineHeight: 1.5,
+                color: '#000000',
+                margin: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {price}
+            </p>
+          </div>
 
           {/* 변동률 */}
           <div
