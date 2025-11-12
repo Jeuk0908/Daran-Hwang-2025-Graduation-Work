@@ -26,8 +26,7 @@ const MethodSelection = () => {
     if (selectedMethod === 'auto') {
       navigate('/portfolio/create/auto');
     } else if (selectedMethod === 'manual') {
-      // TODO: 수동 제작 페이지로 이동
-      console.log('수동 제작 페이지 준비 중');
+      navigate('/portfolio/create/step4');
     }
   };
 
@@ -49,7 +48,7 @@ const MethodSelection = () => {
           top: 0,
           zIndex: 100,
           backgroundColor: '#FFFFFF',
-          padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+          padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
           boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
           transition: 'box-shadow 0.2s ease'
         }}

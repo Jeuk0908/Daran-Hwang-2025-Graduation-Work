@@ -92,16 +92,29 @@ const AutoCreateStep5 = () => {
     };
 
     const touchEndHandler = (e) => {
-      // iOS wheel picker 스타일 관성 애니메이션
+      // iOS wheel picker 스타일 관성 애니메이션 - 얼음 위 미끄러지듯 부드러운 효과
       const minVelocity = 0.3; // px/ms - 더 낮은 임계값으로 부드러운 시작
       if (Math.abs(velocity.current) > minVelocity) {
-        const friction = 0.93; // 더 높은 감속 계수로 부드러운 감속
-        const minSpeed = 0.05; // 더 낮은 최소 속도로 자연스러운 정지
-        const velocityToPercentage = 0.08; // 속도를 퍼센트 변화량으로 변환하는 계수
+        const friction = 0.97; // 더 높은 감속 계수로 아주 천천히 감속
+        const minSpeed = 0.01; // 매우 낮은 최소 속도로 부드러운 정지
+        const velocityToPercentage = 0.04; // 낮은 민감도 - 속도를 퍼센트 변화량으로 변환
+        const frameDelay = 80; // 프레임 간 지연(ms)으로 더 부드러운 변화
 
         accumulatedDelta.current = 0;
+        let lastFrameTime = Date.now();
 
         const animate = () => {
+          const currentTime = Date.now();
+          const elapsed = currentTime - lastFrameTime;
+
+          // 프레임 지연을 두어 더 부드럽게
+          if (elapsed < frameDelay) {
+            momentumAnimation.current = requestAnimationFrame(animate);
+            return;
+          }
+
+          lastFrameTime = currentTime;
+
           // 속도가 임계값 이하로 떨어지면 애니메이션 종료
           if (Math.abs(velocity.current) < minSpeed) {
             momentumAnimation.current = null;
@@ -230,7 +243,7 @@ const AutoCreateStep5 = () => {
           top: 0,
           zIndex: 100,
           backgroundColor: '#FFFFFF',
-          padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+          padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
           boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
           transition: 'box-shadow 0.2s ease'
         }}
@@ -435,7 +448,7 @@ const AutoCreateStep5 = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                       opacity: opacity,
                       boxSizing: 'border-box'
                     }}
@@ -448,7 +461,8 @@ const AutoCreateStep5 = () => {
                         fontWeight: 700,
                         lineHeight: 1.5,
                         color: isCenter ? '#3490FF' : '#99C7FF',
-                        margin: 0
+                        margin: 0,
+                        transition: 'color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                       }}
                     >
                       {percentage}

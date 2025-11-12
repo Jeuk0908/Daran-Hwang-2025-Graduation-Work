@@ -60,6 +60,7 @@ function AppContent() {
           <Route path="/portfolio/create/auto/step3" element={<AutoCreateStep3 />} />
           <Route path="/portfolio/create/auto/step4" element={<AutoCreateStep4 />} />
           <Route path="/portfolio/create/auto/step5" element={<AutoCreateStep5 />} />
+          <Route path="/portfolio/create/step4" element={<AutoCreateStep4 />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>

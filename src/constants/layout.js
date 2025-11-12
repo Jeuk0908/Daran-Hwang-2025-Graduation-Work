@@ -32,9 +32,8 @@ export const LAYOUT = {
   // 하단 네비게이션 높이
   BOTTOM_NAV_HEIGHT: 88,
 
-  // Safe Area - 다이나믹 아일랜드와 상태바를 위한 상단 여백
-  // 총 상단 여백: 50px (다이나믹 아일랜드 포함)
-  SAFE_AREA_TOP: '50px',
+  // Safe Area - 제거됨
+  SAFE_AREA_TOP: '0px',
 
   // 컨텐츠 영역 계산
   getContentWidth() {

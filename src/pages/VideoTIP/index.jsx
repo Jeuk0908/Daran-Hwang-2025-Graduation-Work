@@ -115,7 +115,7 @@ const VideoTIP = () => {
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `${LAYOUT.SAFE_AREA_TOP} ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
         boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}>
