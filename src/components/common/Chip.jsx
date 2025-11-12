@@ -97,9 +97,9 @@ export const Chip = ({
         };
       } else {
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: '#E6E7EA',
           color: '#1A1C20',
-          border: '1px solid #E6E7EA',
+          border: 'none',
           iconFill: '#1A1C20',
           iconRotation: 0
         };

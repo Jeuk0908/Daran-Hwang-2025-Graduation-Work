@@ -12,6 +12,9 @@ const AutoCreateStep4 = () => {
   const location = useLocation();
   const hasScrolled = useScrollShadow(0);
 
+  // 직접제작 플로우인지 확인
+  const isManualFlow = location.pathname === '/portfolio/create/step1';
+
   // 이전 페이지에서 전달받은 데이터
   const previousData = location.state || {};
 
@@ -26,9 +29,12 @@ const AutoCreateStep4 = () => {
   };
 
   const handleNextClick = () => {
-    if (!portfolioName.trim()) return;
-    // 다음 단계로 이동 (5/5) - 포트폴리오 이름을 포함하여 state로 전달
-    navigate('/portfolio/create/auto/step5', {
+    if (portfolioName.trim().length < 3) return;
+
+    // 직접제작 플로우일 경우 step2(ETF 선택)로, 자동제작일 경우 step5로 이동
+    const nextPath = isManualFlow ? '/portfolio/create/step2' : '/portfolio/create/auto/step5';
+
+    navigate(nextPath, {
       state: {
         ...previousData,
         portfolioName: portfolioName.trim()
@@ -37,7 +43,6 @@ const AutoCreateStep4 = () => {
   };
 
   const handleSelectedETFClick = () => {
-    // TODO: 선택된 ETF 목록 모달 또는 페이지로 이동
     console.log('선택 ETF 확인 클릭');
   };
 
@@ -142,7 +147,7 @@ const AutoCreateStep4 = () => {
                 margin: 0
               }}
             >
-              4/5
+              {isManualFlow ? '1/4' : '4/5'}
             </p>
           </div>
         </div>
@@ -209,7 +214,7 @@ const AutoCreateStep4 = () => {
             onChange={handleNameChange}
             placeholder="이름을 작성해 주세요."
             style={{
-              backgroundColor: portfolioName.trim() ? '#EFFAEC' : '#E6E7EA',
+              backgroundColor: portfolioName.trim().length >= 3 ? '#EFFAEC' : '#E6E7EA',
               borderRadius: '8px',
               padding: '12px',
               border: 'none',
@@ -233,7 +238,7 @@ const AutoCreateStep4 = () => {
             }}
           >
             <img
-              src={portfolioName.trim() ? iconCheckXsGreen : iconCheckXs}
+              src={portfolioName.trim().length >= 3 ? iconCheckXsGreen : iconCheckXs}
               alt=""
               style={{
                 width: '12px',
@@ -247,11 +252,11 @@ const AutoCreateStep4 = () => {
                 fontSize: '12px',
                 fontWeight: 400,
                 lineHeight: 1.5,
-                color: portfolioName.trim() ? '#43A329' : '#1A1C20',
+                color: portfolioName.trim().length >= 3 ? '#43A329' : '#1A1C20',
                 margin: 0
               }}
             >
-              {portfolioName.trim() ? '좋은 이름이예요' : '내 마음에 와닿도록 지어봐요.'}
+              {portfolioName.trim().length >= 3 ? '좋은 이름이예요' : '최소 3자 이상 입력해주세요'}
             </p>
           </div>
         </div>
@@ -324,9 +329,9 @@ const AutoCreateStep4 = () => {
         }}
       >
         <Button
-          variant={portfolioName.trim() ? 'primary' : 'grey'}
+          variant={portfolioName.trim().length >= 3 ? 'primary' : 'grey'}
           onClick={handleNextClick}
-          disabled={!portfolioName.trim()}
+          disabled={portfolioName.trim().length < 3}
         >
           ETF 선택하기
         </Button>

@@ -13,6 +13,8 @@ import AutoCreateStep2 from './pages/PortfolioCreate/AutoCreateStep2'
 import AutoCreateStep3 from './pages/PortfolioCreate/AutoCreateStep3'
 import AutoCreateStep4 from './pages/PortfolioCreate/AutoCreateStep4'
 import AutoCreateStep5 from './pages/PortfolioCreate/AutoCreateStep5'
+import ManualCreateStep2 from './pages/PortfolioCreate/ManualCreateStep2'
+import ManualCreateStep3 from './pages/PortfolioCreate/ManualCreateStep3'
 import './App.css'
 
 // 임시 페이지 컴포넌트들
@@ -60,7 +62,10 @@ function AppContent() {
           <Route path="/portfolio/create/auto/step3" element={<AutoCreateStep3 />} />
           <Route path="/portfolio/create/auto/step4" element={<AutoCreateStep4 />} />
           <Route path="/portfolio/create/auto/step5" element={<AutoCreateStep5 />} />
-          <Route path="/portfolio/create/step4" element={<AutoCreateStep4 />} />
+          <Route path="/portfolio/create/step1" element={<AutoCreateStep4 />} />
+          <Route path="/portfolio/create/step2" element={<ManualCreateStep2 />} />
+          <Route path="/portfolio/create/step3" element={<ManualCreateStep3 />} />
+          <Route path="/portfolio/create/step4" element={<AutoCreateStep5 />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>

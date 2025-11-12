@@ -26,7 +26,7 @@ const MethodSelection = () => {
     if (selectedMethod === 'auto') {
       navigate('/portfolio/create/auto');
     } else if (selectedMethod === 'manual') {
-      navigate('/portfolio/create/step4');
+      navigate('/portfolio/create/step1');
     }
   };
 
