@@ -7,6 +7,7 @@ import iconDowndownS from '../../assets/자산 card ui/icon_downdown_s.svg';
  * @param {Object} props
  * @param {number} props.rank - TOP 순위 (예: 1)
  * @param {string} props.name - ETF 이름 (예: "TIGER 미국S&P500")
+ * @param {string} props.code - 종목 코드 (예: "12341") - showPriceComparison이 false일 때 표시
  * @param {string} props.priceComparisonText - 가격 비교 텍스트 (예: "실시간 가치보다")
  * @param {string} props.priceComparisonValue - 비교 값 (예: "0.3")
  * @param {'up' | 'down'} props.priceComparisonDirection - 가격 비교 방향 (up: 저렴, down: 비쌈)
@@ -15,11 +16,15 @@ import iconDowndownS from '../../assets/자산 card ui/icon_downdown_s.svg';
  * @param {string} props.currentPrice - 현재 가격 (예: "21,970")
  * @param {string} props.changePercent - 변동률 (예: "2.59")
  * @param {'up' | 'down'} props.changeDirection - 변동 방향
+ * @param {boolean} props.showTopLabel - TOP 라벨 표시 여부 (기본: true)
+ * @param {boolean} props.showPriceComparison - 가격 비교 정보 표시 여부 (기본: true, false면 code 표시)
+ * @param {boolean} props.isSelected - 선택 여부 (포트폴리오 제작 시 사용)
  * @param {function} props.onClick - 클릭 핸들러
  */
 export const SimpleChartViewer = ({
   rank = 1,
   name = 'TIGER 미국S&P500',
+  code,
   priceComparisonText = '실시간 가치보다',
   priceComparisonValue = '0.3',
   priceComparisonDirection = 'up',
@@ -28,63 +33,71 @@ export const SimpleChartViewer = ({
   currentPrice = '21,970',
   changePercent = '2.59',
   changeDirection = 'up',
+  showTopLabel = true,
+  showPriceComparison = true,
+  isSelected = false,
   onClick
 }) => {
   const isUp = changeDirection === 'up';
   const isPriceUp = priceComparisonDirection === 'up';
-  const changeColor = isUp ? '#43A329' : '#FF4545';
-  const priceComparisonColor = isPriceUp ? '#43A329' : '#FF4545';
+  const changeColor = isUp ? '#43A329' : '#DA6816';
+  const priceComparisonColor = isPriceUp ? '#43A329' : '#DA6816';
 
   return (
     <div
       onClick={onClick}
       style={{
-        backgroundColor: '#FFFFFF',
-        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
+        backgroundColor: isSelected ? '#FAFCFF' : '#FFFFFF',
+        boxShadow: isSelected
+          ? '1px 2px 13.6px 0px rgba(52, 144, 255, 0.5)'
+          : '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
         borderRadius: '12px',
         padding: '20px 12px',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
         cursor: onClick ? 'pointer' : 'default',
-        width: '100%'
+        width: '100%',
+        transition: 'all 0.2s ease'
       }}
     >
       {/* TOP 라벨 */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '2px'
-        }}
-      >
-        <p
+      {showTopLabel && (
+        <div
           style={{
-            fontFamily: 'Pretendard, sans-serif',
-            fontSize: '10px',
-            fontWeight: 500,
-            lineHeight: 1.25,
-            color: '#757E8F',
-            margin: 0,
-            whiteSpace: 'nowrap'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2px'
           }}
         >
-          TOP
-        </p>
-        <p
-          style={{
-            fontFamily: 'Pretendard, sans-serif',
-            fontSize: '10px',
-            fontWeight: 500,
-            lineHeight: 1.25,
-            color: '#757E8F',
-            margin: 0,
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {rank}
-        </p>
-      </div>
+          <p
+            style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '10px',
+              fontWeight: 500,
+              lineHeight: 1.25,
+              color: '#757E8F',
+              margin: 0,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            TOP
+          </p>
+          <p
+            style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '10px',
+              fontWeight: 500,
+              lineHeight: 1.25,
+              color: '#757E8F',
+              margin: 0,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {rank}
+          </p>
+        </div>
+      )}
 
       {/* 메인 콘텐츠 */}
       <div
@@ -130,48 +143,63 @@ export const SimpleChartViewer = ({
             </p>
           </div>
 
-          {/* 가격 비교 정보 */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '2px',
-              alignItems: 'center',
-              width: '151px'
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '12px',
-                fontWeight: 400,
-                lineHeight: 1.5,
-                color: '#757E8F',
-                margin: 0,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {priceComparisonText}
-            </p>
+          {/* 가격 비교 정보 또는 종목 코드 */}
+          {showPriceComparison ? (
             <div
               style={{
                 display: 'flex',
+                gap: '2px',
                 alignItems: 'center',
-                gap: 0
+                width: '151px'
               }}
             >
               <p
                 style={{
                   fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
-                  fontWeight: 500,
+                  fontWeight: 400,
                   lineHeight: 1.5,
-                  color: priceComparisonColor,
+                  color: '#757E8F',
                   margin: 0,
                   whiteSpace: 'nowrap'
                 }}
               >
-                {priceComparisonValue}
+                {priceComparisonText}
               </p>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: priceComparisonColor,
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {priceComparisonValue}
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: priceComparisonColor,
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  %
+                </p>
+              </div>
               <p
                 style={{
                   fontFamily: 'Pretendard, sans-serif',
@@ -183,23 +211,32 @@ export const SimpleChartViewer = ({
                   whiteSpace: 'nowrap'
                 }}
               >
-                %
+                {priceComparisonLabel}
               </p>
             </div>
-            <p
+          ) : (
+            <div
               style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '12px',
-                fontWeight: 500,
-                lineHeight: 1.5,
-                color: priceComparisonColor,
-                margin: 0,
-                whiteSpace: 'nowrap'
+                display: 'flex',
+                gap: '2px',
+                alignItems: 'center'
               }}
             >
-              {priceComparisonLabel}
-            </p>
-          </div>
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  lineHeight: 1.5,
+                  color: '#757E8F',
+                  margin: 0,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {code}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 중앙: 차트 */}

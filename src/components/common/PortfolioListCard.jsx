@@ -117,19 +117,21 @@ export const PortfolioListCard = ({
               >
                 # {investmentStyle}
               </p>
-              <p
-                style={{
-                  fontFamily: 'Pretendard, sans-serif',
-                  fontSize: '10px',
-                  fontWeight: 500,
-                  lineHeight: 1.25,
-                  color: '#757E8F',
-                  margin: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                # {investmentKeyword}
-              </p>
+              {investmentKeyword && (
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '10px',
+                    fontWeight: 500,
+                    lineHeight: 1.25,
+                    color: '#757E8F',
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  # {investmentKeyword}
+                </p>
+              )}
             </div>
           </div>
 

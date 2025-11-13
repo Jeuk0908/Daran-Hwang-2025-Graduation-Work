@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
-import { ETFCard } from '../../components/common/ETFCard';
+import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { TrendChip, Chip } from '../../components/common/Chip';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
@@ -531,13 +531,15 @@ const ManualCreateStep2 = () => {
               }}
             >
               {getFilteredETFs().map((etf) => (
-                <ETFCard
+                <SimpleChartViewer
                   key={etf.id}
                   name={etf.name}
                   code={etf.code}
                   currentPrice={etf.price}
                   changePercent={etf.change}
                   changeDirection={etf.direction}
+                  showTopLabel={false}
+                  showPriceComparison={false}
                   isSelected={selectedETFs.includes(etf.id)}
                   onClick={() => handleETFClick(etf.id)}
                 />

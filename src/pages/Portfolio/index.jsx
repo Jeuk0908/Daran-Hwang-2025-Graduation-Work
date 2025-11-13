@@ -343,8 +343,8 @@ const Portfolio = () => {
               >
                 <PortfolioListCard
                   title={portfolio.portfolioName || '포트폴리오'}
-                  investmentStyle={portfolio.riskType || '투자 성향'}
-                  investmentKeyword={portfolio.investmentStyle || '투자 키워드'}
+                  investmentStyle={portfolio.isManualCreated ? '직접제작' : (portfolio.riskType || '투자 성향')}
+                  investmentKeyword={portfolio.isManualCreated ? '' : (portfolio.investmentStyle || '투자 키워드')}
                   price={portfolio.amount?.toLocaleString('ko-KR') || '0'}
                   changePercent={Math.abs(portfolio.returnRate || 0).toString()}
                   changeDirection={portfolio.returnRate >= 0 ? 'up' : 'down'}

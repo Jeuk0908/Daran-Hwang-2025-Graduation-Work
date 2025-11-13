@@ -37,7 +37,8 @@ const AutoCreateStep4 = () => {
     navigate(nextPath, {
       state: {
         ...previousData,
-        portfolioName: portfolioName.trim()
+        portfolioName: portfolioName.trim(),
+        isManualCreated: isManualFlow // 직접 제작 플래그 추가
       }
     });
   };

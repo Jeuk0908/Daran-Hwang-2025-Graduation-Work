@@ -271,6 +271,37 @@ const Bookmark = () => {
     return shuffleArray(combined);
   }, []);
 
+  // 전체 탭용 Masonry 레이아웃 섹션 생성
+  const contentSections = useMemo(() => {
+    const sections = [];
+    let currentTwoColumnItems = [];
+    let columnIndex = 0;
+
+    allContent.forEach((content) => {
+      if (content.type === 'qa') {
+        // 현재까지 모인 2열 아이템들을 섹션에 추가
+        if (currentTwoColumnItems.length > 0) {
+          sections.push({ type: 'twoColumn', items: [...currentTwoColumnItems] });
+          currentTwoColumnItems = [];
+          columnIndex = 0;
+        }
+        // Q&A를 전체 너비 섹션으로 추가
+        sections.push({ type: 'fullWidth', content });
+      } else {
+        // 2열 아이템에 추가 (왼쪽: 0, 오른쪽: 1)
+        currentTwoColumnItems.push({ content, column: columnIndex % 2 });
+        columnIndex++;
+      }
+    });
+
+    // 남은 2열 아이템들 추가
+    if (currentTwoColumnItems.length > 0) {
+      sections.push({ type: 'twoColumn', items: currentTwoColumnItems });
+    }
+
+    return sections;
+  }, [allContent]);
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -373,92 +404,129 @@ const Bookmark = () => {
           overflow: 'hidden'
         }}
       >
-        {/* 전체 탭 컨텐츠 - Masonry Grid Layout */}
+        {/* 전체 탭 컨텐츠 - Masonry Layout */}
         <div style={getTabContentStyle('전체')}>
           <div
             style={{
               padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
-              marginTop: `${LAYOUT.SECTION_GAP}px`,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: `${LAYOUT.GRID_GAP.ROW}px`,
-              columnGap: `${LAYOUT.GRID_GAP.COLUMN}px`,
-              gridAutoFlow: 'dense',
-              alignItems: 'start'
+              marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
-            {allContent.map((item) => {
-              // Q&A 타입 - 전체 너비
-              if (item.type === 'qa') {
+            {contentSections.map((section, sectionIndex) => {
+              // Q&A 전체 너비 섹션
+              if (section.type === 'fullWidth') {
                 return (
                   <div
-                    key={`qa-${item.id}`}
+                    key={`qa-${section.content.id}`}
                     style={{
-                      gridColumn: 'span 2',
-                      marginBottom: '4px'
+                      marginBottom: sectionIndex < contentSections.length - 1 ? '16px' : '0'
                     }}
                   >
                     <TipCard
-                      icon={item.icon}
-                      title={item.title}
-                      tips={item.tips}
-                      linkText={item.linkText}
-                      linkIcon={item.linkIcon}
+                      icon={section.content.icon}
+                      title={section.content.title}
+                      tips={section.content.tips}
+                      linkText={section.content.linkText}
+                      linkIcon={section.content.linkIcon}
                       showLink={true}
-                      defaultOpen={item.defaultOpen}
-                      initialBookmarked={item.initialBookmarked}
+                      defaultOpen={section.content.defaultOpen}
+                      initialBookmarked={section.content.initialBookmarked}
                       onToggle={(isOpen) => {
-                        console.log(`${item.title} ${isOpen ? '열림' : '닫힘'}`);
+                        console.log(`${section.content.title} ${isOpen ? '열림' : '닫힘'}`);
                       }}
                       onBookmarkChange={(isBookmarked) => {
-                        console.log(
-                          `${item.title} 북마크 ${isBookmarked ? '추가' : '제거'}`
-                        );
+                        console.log(`${section.content.title} 북마크 ${isBookmarked ? '추가' : '제거'}`);
                       }}
                       onLinkClick={() => {
-                        console.log(`${item.linkText} 클릭`);
+                        console.log(`${section.content.linkText} 클릭`);
                       }}
                     />
                   </div>
                 );
               }
 
-              // 영상 타입
-              if (item.type === 'video') {
+              // 2열 Masonry 섹션
+              if (section.type === 'twoColumn') {
+                const leftItems = section.items.filter(item => item.column === 0);
+                const rightItems = section.items.filter(item => item.column === 1);
+
+                const renderItem = (content) => {
+                  const key = `${content.type}-${content.id}`;
+
+                  // 영상 타입
+                  if (content.type === 'video') {
+                    return (
+                      <VideoThumbnail
+                        key={key}
+                        thumbnail={content.thumbnail}
+                        title={content.title}
+                        variant={content.variant}
+                        isBookmarked={content.isBookmarked}
+                        onPlayClick={() => handleVideoPlay(content.id)}
+                        onBookmarkClick={(newState) =>
+                          handleBookmarkToggle(content.id, newState)
+                        }
+                      />
+                    );
+                  }
+
+                  // 뉴스 타입
+                  if (content.type === 'news') {
+                    return (
+                      <NewsCard
+                        key={key}
+                        thumbnail={content.thumbnail}
+                        title={content.title}
+                        isBookmarked={content.isBookmarked}
+                        onCardClick={() => handleNewsClick(content.id)}
+                        onBookmarkClick={(newState) =>
+                          handleNewsBookmarkToggle(content.id, newState)
+                        }
+                      />
+                    );
+                  }
+
+                  return null;
+                };
+
                 return (
                   <div
-                    key={`video-${item.id}`}
+                    key={`section-${sectionIndex}`}
                     style={{
-                      gridRowEnd: item.variant === 'shorts' ? 'span 3' : 'span 1'
+                      marginBottom: sectionIndex < contentSections.length - 1 ? '16px' : '0'
                     }}
                   >
-                    <VideoThumbnail
-                      thumbnail={item.thumbnail}
-                      title={item.title}
-                      variant={item.variant}
-                      isBookmarked={item.isBookmarked}
-                      onPlayClick={() => handleVideoPlay(item.id)}
-                      onBookmarkClick={(newState) =>
-                        handleBookmarkToggle(item.id, newState)
-                      }
-                    />
-                  </div>
-                );
-              }
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: `${LAYOUT.GRID_GAP.COLUMN}px`,
+                        alignItems: 'flex-start'
+                      }}
+                    >
+                      {/* 왼쪽 열 */}
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: `${LAYOUT.GRID_GAP.ROW}px`
+                        }}
+                      >
+                        {leftItems.map(item => renderItem(item.content))}
+                      </div>
 
-              // 뉴스 타입
-              if (item.type === 'news') {
-                return (
-                  <div key={`news-${item.id}`}>
-                    <NewsCard
-                      thumbnail={item.thumbnail}
-                      title={item.title}
-                      isBookmarked={item.isBookmarked}
-                      onCardClick={() => handleNewsClick(item.id)}
-                      onBookmarkClick={(newState) =>
-                        handleNewsBookmarkToggle(item.id, newState)
-                      }
-                    />
+                      {/* 오른쪽 열 */}
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: `${LAYOUT.GRID_GAP.ROW}px`
+                        }}
+                      >
+                        {rightItems.map(item => renderItem(item.content))}
+                      </div>
+                    </div>
                   </div>
                 );
               }

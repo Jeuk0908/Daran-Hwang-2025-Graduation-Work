@@ -6,6 +6,7 @@ import MyPage from './pages/MyPage'
 import Bookmark from './pages/Bookmark'
 import HomePage from './pages/Home'
 import Portfolio from './pages/Portfolio'
+import Search from './pages/Search'
 import PortfolioCreate from './pages/PortfolioCreate'
 import MethodSelection from './pages/PortfolioCreate/MethodSelection'
 import AutoCreate from './pages/PortfolioCreate/AutoCreate'
@@ -16,9 +17,6 @@ import AutoCreateStep5 from './pages/PortfolioCreate/AutoCreateStep5'
 import ManualCreateStep2 from './pages/PortfolioCreate/ManualCreateStep2'
 import ManualCreateStep3 from './pages/PortfolioCreate/ManualCreateStep3'
 import './App.css'
-
-// 임시 페이지 컴포넌트들
-const ArtistPage = () => <div style={{ padding: '20px', paddingTop: 'max(env(safe-area-inset-top), 12px)' }}><h1>작가 페이지</h1></div>
 
 function AppContent() {
   const location = useLocation();
@@ -51,7 +49,7 @@ function AppContent() {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/artist" element={<ArtistPage />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/vocabulary" element={<Vocabulary />} />
           <Route path="/bookmark" element={<Bookmark />} />
