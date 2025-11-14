@@ -5,6 +5,8 @@ import { NewsCard } from '../../components/common/NewsCard';
 import { TipCard } from '../../components/common/TipCard';
 import VocabularyCard from '../../components/common/VocabularyCard';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
+import { Chip } from '../../components/common/Chip';
+import { StockFilterToggle } from '../../components/common/ToggleButton';
 import iconSearch from '../../assets/icon_search.svg';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
@@ -243,93 +245,284 @@ const MOCK_CONTENTS = [
 
 // ETF 리스트 데이터
 const ETF_LIST_DATA = [
+  // 국내주식
   {
     id: 1,
-    name: 'TIGER 미국S&P500',
-    code: '12341',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up'
+    name: 'KODEX 200',
+    code: '069500',
+    currentPrice: '38,450',
+    changePercent: '1.25',
+    changeDirection: 'up',
+    category: '국내주식',
+    popularity: 95,
+    volume: 1500000,
+    isFavorite: true
   },
   {
     id: 2,
-    name: 'TIGER 미국S&P500',
-    code: '2452345',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'down'
+    name: 'TIGER 코스피',
+    code: '102110',
+    currentPrice: '15,230',
+    changePercent: '0.85',
+    changeDirection: 'up',
+    category: '국내주식',
+    popularity: 88,
+    volume: 980000,
+    isFavorite: false
   },
   {
     id: 3,
-    name: 'TIGER 미국S&P500',
-    code: '3456345',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up'
+    name: 'ARIRANG 고배당주',
+    code: '161510',
+    currentPrice: '12,340',
+    changePercent: '0.52',
+    changeDirection: 'down',
+    category: '국내주식',
+    popularity: 75,
+    volume: 450000,
+    isFavorite: true
   },
+
+  // 해외주식
   {
     id: 4,
     name: 'TIGER 미국S&P500',
-    code: '235234',
+    code: '360750',
     currentPrice: '21,970',
     changePercent: '2.59',
-    changeDirection: 'up'
+    changeDirection: 'up',
+    category: '해외 주식',
+    popularity: 98,
+    volume: 2100000,
+    isFavorite: true
   },
   {
     id: 5,
-    name: 'TIGER 미국S&P500',
-    code: '546785678',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'down'
+    name: 'KODEX 미국나스닥100',
+    code: '133690',
+    currentPrice: '28,450',
+    changePercent: '3.15',
+    changeDirection: 'up',
+    category: '해외 주식',
+    popularity: 92,
+    volume: 1850000,
+    isFavorite: true
   },
   {
     id: 6,
-    name: 'TIGER 미국S&P500',
-    code: '2345234',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up'
+    name: 'ARIRANG 선진국MSCI',
+    code: '195980',
+    currentPrice: '17,820',
+    changePercent: '1.42',
+    changeDirection: 'down',
+    category: '해외 주식',
+    popularity: 70,
+    volume: 620000,
+    isFavorite: false
   },
   {
     id: 7,
-    name: 'TIGER 미국S&P500',
-    code: '4567456',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'down'
+    name: 'TIGER 차이나전기차SOLACTIVE',
+    code: '371460',
+    currentPrice: '8,450',
+    changePercent: '4.25',
+    changeDirection: 'down',
+    category: '해외 주식',
+    popularity: 65,
+    volume: 890000,
+    isFavorite: false
   },
+
+  // 채권
   {
     id: 8,
-    name: 'TIGER 미국S&P500',
-    code: '2345234',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up'
+    name: 'KODEX 국고채3년',
+    code: '114260',
+    currentPrice: '104,520',
+    changePercent: '0.15',
+    changeDirection: 'up',
+    category: '채권',
+    popularity: 78,
+    volume: 320000,
+    isFavorite: false
   },
   {
     id: 9,
-    name: 'TIGER 미국S&P500',
-    code: '4567456',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'down'
+    name: 'TIGER 미국채10년선물',
+    code: '305080',
+    currentPrice: '9,850',
+    changePercent: '0.32',
+    changeDirection: 'down',
+    category: '채권',
+    popularity: 82,
+    volume: 550000,
+    isFavorite: true
   },
   {
     id: 10,
-    name: 'TIGER 미국S&P500',
-    code: '2345234',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up'
+    name: 'ARIRANG 단기회사채',
+    code: '182490',
+    currentPrice: '101,250',
+    changePercent: '0.08',
+    changeDirection: 'up',
+    category: '채권',
+    popularity: 68,
+    volume: 280000,
+    isFavorite: false
+  },
+
+  // 원자재/통화
+  {
+    id: 11,
+    name: 'KODEX 골드선물(H)',
+    code: '132030',
+    currentPrice: '13,240',
+    changePercent: '1.85',
+    changeDirection: 'up',
+    category: '원자재/통화',
+    popularity: 85,
+    volume: 720000,
+    isFavorite: true
+  },
+  {
+    id: 12,
+    name: 'TIGER 원유선물Enhanced(H)',
+    code: '217770',
+    currentPrice: '7,620',
+    changePercent: '2.45',
+    changeDirection: 'down',
+    category: '원자재/통화',
+    popularity: 72,
+    volume: 480000,
+    isFavorite: false
+  },
+  {
+    id: 13,
+    name: 'KODEX 미국달러선물',
+    code: '261240',
+    currentPrice: '12,850',
+    changePercent: '0.65',
+    changeDirection: 'up',
+    category: '원자재/통화',
+    popularity: 76,
+    volume: 390000,
+    isFavorite: false
+  },
+
+  // 레버리지/인버스
+  {
+    id: 14,
+    name: 'TIGER 200레버리지',
+    code: '122630',
+    currentPrice: '15,420',
+    changePercent: '5.82',
+    changeDirection: 'up',
+    category: '레버리지/인버스',
+    popularity: 90,
+    volume: 2500000,
+    isFavorite: true
+  },
+  {
+    id: 15,
+    name: 'KODEX 인버스',
+    code: '114800',
+    currentPrice: '4,125',
+    changePercent: '2.15',
+    changeDirection: 'down',
+    category: '레버리지/인버스',
+    popularity: 84,
+    volume: 1950000,
+    isFavorite: false
+  },
+  {
+    id: 16,
+    name: 'TIGER 미국나스닥100레버리지(합성)',
+    code: '315270',
+    currentPrice: '18,650',
+    changePercent: '6.45',
+    changeDirection: 'up',
+    category: '레버리지/인버스',
+    popularity: 88,
+    volume: 1780000,
+    isFavorite: true
+  },
+
+  // 금리
+  {
+    id: 17,
+    name: 'KODEX 단기채권',
+    code: '153130',
+    currentPrice: '102,340',
+    changePercent: '0.12',
+    changeDirection: 'up',
+    category: '금리',
+    popularity: 70,
+    volume: 250000,
+    isFavorite: false
+  },
+  {
+    id: 18,
+    name: 'TIGER 통안채',
+    code: '276650',
+    currentPrice: '100,850',
+    changePercent: '0.05',
+    changeDirection: 'down',
+    category: '금리',
+    popularity: 65,
+    volume: 180000,
+    isFavorite: false
+  },
+
+  // 부동산
+  {
+    id: 19,
+    name: 'KODEX 리츠부동산',
+    code: '114100',
+    currentPrice: '9,240',
+    changePercent: '0.95',
+    changeDirection: 'up',
+    category: '부동산',
+    popularity: 73,
+    volume: 420000,
+    isFavorite: false
+  },
+  {
+    id: 20,
+    name: 'TIGER 미국MSCI리츠(합성)',
+    code: '329200',
+    currentPrice: '11,520',
+    changePercent: '1.28',
+    changeDirection: 'down',
+    category: '부동산',
+    popularity: 68,
+    volume: 340000,
+    isFavorite: true
   }
 ];
 
 const TABS = ['탐색', '리스트', '지수'];
 
+const SUB_TABS = [
+  '전체보기',
+  '관심ETF',
+  '국내주식',
+  '해외 주식',
+  '채권',
+  '원자재/통화',
+  '레버리지/인버스',
+  '금리',
+  '부동산'
+];
+
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('탐색');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedSubTab, setSelectedSubTab] = useState('전체보기');
+  const [selectedFilter, setSelectedFilter] = useState('꾸준 인기');
+  const [popularityTrend, setPopularityTrend] = useState(true);
+  const [volumeTrend, setVolumeTrend] = useState(true);
+  const [chartTrend, setChartTrend] = useState('up');
 
   // 모든 컨텐츠를 골고루 섞어서 배치
   const allContent = useMemo(() => {
@@ -417,13 +610,51 @@ const Search = () => {
       filtered = allContent;
     } else if (selectedTab === '리스트') {
       // ETF 리스트 표시
-      return ETF_LIST_DATA.filter(item => {
-        if (searchQuery.trim()) {
-          return item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                 item.code.includes(searchQuery);
+      let etfList = [...ETF_LIST_DATA];
+
+      // 1. 서브탭에 따른 카테고리 필터링
+      if (selectedSubTab === '전체보기') {
+        // 모든 ETF 표시
+      } else if (selectedSubTab === '관심ETF') {
+        etfList = etfList.filter(item => item.isFavorite);
+      } else {
+        // 서브탭 이름과 카테고리가 일치하는 ETF만 필터링
+        etfList = etfList.filter(item => item.category === selectedSubTab);
+      }
+
+      // 2. 차트 토글에 따른 상승/하락 필터링
+      etfList = etfList.filter(item => item.changeDirection === chartTrend);
+
+      // 3. 필터와 트렌드에 따른 정렬
+      if (selectedFilter === '꾸준 인기') {
+        // 인기도 기준 정렬
+        if (popularityTrend) {
+          // 상승: 인기도 높은 순
+          etfList.sort((a, b) => b.popularity - a.popularity);
+        } else {
+          // 하락: 인기도 낮은 순
+          etfList.sort((a, b) => a.popularity - b.popularity);
         }
-        return true;
-      });
+      } else if (selectedFilter === '거래량') {
+        // 거래량 기준 정렬
+        if (volumeTrend) {
+          // 상승: 거래량 많은 순
+          etfList.sort((a, b) => b.volume - a.volume);
+        } else {
+          // 하락: 거래량 적은 순
+          etfList.sort((a, b) => a.volume - b.volume);
+        }
+      }
+
+      // 4. 검색어 필터링
+      if (searchQuery.trim()) {
+        etfList = etfList.filter(item =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.code.includes(searchQuery)
+        );
+      }
+
+      return etfList;
     } else if (selectedTab === '지수') {
       // 나중에 구현
       filtered = [];
@@ -471,7 +702,7 @@ const Search = () => {
     }
 
     return sections;
-  }, [searchQuery, selectedTab]);
+  }, [searchQuery, selectedTab, selectedSubTab, selectedFilter, popularityTrend, volumeTrend, chartTrend]);
 
   return (
     <div
@@ -483,6 +714,7 @@ const Search = () => {
         position: 'relative'
       }}
     >
+
       {/* 검색바 */}
       <div
         style={{
@@ -546,7 +778,10 @@ const Search = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 0 0',
-            borderBottom: '1px solid #F7F7F8'
+            borderBottom: '1px solid #F7F7F8',
+            width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
+            marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+            marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`
           }}
         >
           <div
@@ -565,7 +800,8 @@ const Search = () => {
                   backgroundColor: 'transparent',
                   cursor: 'pointer',
                   position: 'relative',
-                  opacity: 0.8
+                  opacity: 0.8,
+                  transition: 'opacity 0.2s ease'
                 }}
               >
                 <p
@@ -576,7 +812,8 @@ const Search = () => {
                     lineHeight: 1.35,
                     color: selectedTab === tab ? '#005CCC' : '#757E8F',
                     margin: 0,
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    transition: 'color 0.2s ease'
                   }}
                 >
                   {tab}
@@ -597,7 +834,7 @@ const Search = () => {
             ))}
           </div>
 
-          {/* 펼치기 버튼 (리스트 탭에서만 표시) */}
+          {/* 펼치기/접기 버튼 (리스트 탭에서만 표시) */}
           {selectedTab === '리스트' && (
             <div
               style={{
@@ -617,9 +854,20 @@ const Search = () => {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'transform 0.15s ease',
+                  transform: 'scale(1)'
                 }}
-                onClick={() => console.log('펼치기 클릭')}
+                onClick={() => setIsExpanded(!isExpanded)}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.95)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
                 <p
                   style={{
@@ -632,12 +880,189 @@ const Search = () => {
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  펼치기
+                  {isExpanded ? '접기' : '펼치기'}
                 </p>
               </button>
             </div>
           )}
         </div>
+
+        {/* 서브 탭 네비게이션 및 필터 (리스트 탭에서 표시) */}
+        {selectedTab === '리스트' && (
+          <div
+            style={{
+              width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
+              marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+              marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+              maxHeight: isExpanded ? '400px' : '0',
+              overflow: 'hidden',
+              transition: isExpanded
+                ? 'max-height 0.8s cubic-bezier(0.2, 0.8, 0.3, 1)'
+                : 'max-height 0.3s cubic-bezier(0.4, 0, 0.6, 1)'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                paddingTop: '16px'
+              }}
+            >
+            {/* 서브 탭 네비게이션 */}
+            <div
+              style={{
+                overflowX: 'auto',
+                width: '100%',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+              }}
+            >
+              <style>
+                {`
+                  .sub-tab-container::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}
+              </style>
+              <div
+                className="sub-tab-container"
+                style={{
+                  display: 'flex',
+                  minWidth: 'max-content',
+                }}
+              >
+                {SUB_TABS.map((tab, index) => (
+                  <button
+                    key={tab}
+                    onClick={() => setSelectedSubTab(tab)}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      padding: '12px 16px 10px',
+                      border: 'none',
+                      borderBottom: selectedSubTab === tab ? '1px solid #005CCC' : '1px solid #F7F7F8',
+                      borderRadius: 0,
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      position: 'relative',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: 'Pretendard, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        lineHeight: 1.35,
+                        color: selectedSubTab === tab ? '#30343B' : '#ADB2BD',
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                        transition: 'color 0.2s ease'
+                      }}
+                    >
+                      {tab}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 필터 영역 */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingLeft: `${LAYOUT.HORIZONTAL_PADDING}px`,
+                paddingRight: `${LAYOUT.HORIZONTAL_PADDING}px`
+              }}
+            >
+              {/* 좌측: 꾸준 인기/거래량 칩 */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  alignItems: 'center'
+                }}
+              >
+                {selectedFilter === '꾸준 인기' ? (
+                  <Chip
+                    title="꾸준 인기"
+                    color="primary"
+                    state="select"
+                    showIcon={true}
+                    iconRotation={popularityTrend ? 0 : 180}
+                    onClick={() => {
+                      setPopularityTrend(!popularityTrend);
+                    }}
+                  />
+                ) : (
+                  <Chip
+                    title="꾸준 인기"
+                    color="grey"
+                    state="nonSelect"
+                    showIcon={false}
+                    onClick={() => {
+                      setSelectedFilter('꾸준 인기');
+                      setPopularityTrend(true);
+                    }}
+                  />
+                )}
+                {selectedFilter === '거래량' ? (
+                  <Chip
+                    title="거래량"
+                    color="primary"
+                    state="select"
+                    showIcon={true}
+                    iconRotation={volumeTrend ? 0 : 180}
+                    onClick={() => {
+                      setVolumeTrend(!volumeTrend);
+                    }}
+                  />
+                ) : (
+                  <Chip
+                    title="거래량"
+                    color="grey"
+                    state="nonSelect"
+                    showIcon={false}
+                    onClick={() => {
+                      setSelectedFilter('거래량');
+                      setVolumeTrend(true);
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* 우측: 차트 토글 */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '8px',
+                  alignItems: 'center'
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: '#1A1C20',
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  차트
+                </p>
+                <StockFilterToggle
+                  value={chartTrend}
+                  onChange={(newValue) => setChartTrend(newValue)}
+                />
+              </div>
+            </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 콘텐츠 리스트 */}
@@ -648,27 +1073,125 @@ const Search = () => {
       >
         {/* 리스트 탭: ETF 리스트 */}
         {selectedTab === '리스트' ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px'
-            }}
-          >
-            {getFilteredContents().map((etf) => (
-              <SimpleChartViewer
-                key={etf.id}
-                name={etf.name}
-                code={etf.code}
-                currentPrice={etf.currentPrice}
-                changePercent={etf.changePercent}
-                changeDirection={etf.changeDirection}
-                showTopLabel={false}
-                showPriceComparison={false}
-                onClick={() => console.log(`ETF ${etf.id} 클릭`)}
-              />
-            ))}
-          </div>
+          <>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}
+            >
+              {getFilteredContents().map((etf) => (
+                <SimpleChartViewer
+                  key={etf.id}
+                  name={etf.name}
+                  code={etf.code}
+                  currentPrice={etf.currentPrice}
+                  changePercent={etf.changePercent}
+                  changeDirection={etf.changeDirection}
+                  showTopLabel={false}
+                  showPriceComparison={false}
+                  onClick={() => console.log(`ETF ${etf.id} 클릭`)}
+                />
+              ))}
+            </div>
+
+            {/* 하단 헤더 (리스트 탭에서 표시) */}
+            <div
+              style={{
+                width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
+                marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+                marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+                maxHeight: isExpanded ? '60px' : '0',
+                overflow: 'hidden',
+                transition: isExpanded
+                  ? 'max-height 1s cubic-bezier(0.2, 0.8, 0.3, 1)'
+                  : 'max-height 0.3s cubic-bezier(0.4, 0, 0.6, 1)'
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: '#F7F7F8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: 0,
+                  marginTop: '16px'
+                }}
+              >
+                <div
+                  style={{
+                    padding: '10px',
+                    display: 'flex',
+                    gap: '10px',
+                    alignItems: 'center',
+                    width: '196px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 400,
+                      lineHeight: 1.5,
+                      color: '#5E6573',
+                      margin: 0,
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    종목
+                  </p>
+                </div>
+                <div
+                  style={{
+                    padding: '10px',
+                    display: 'flex',
+                    gap: '10px',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 400,
+                      lineHeight: 1.5,
+                      color: '#5E6573',
+                      margin: 0,
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    차트
+                  </p>
+                </div>
+                <div
+                  style={{
+                    padding: '10px',
+                    display: 'flex',
+                    gap: '10px',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    width: '102px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 400,
+                      lineHeight: 1.5,
+                      color: '#5E6573',
+                      margin: 0,
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    현재가
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           /* 탐색 탭: Masonry 레이아웃 */
           contentSections.map((section, sectionIndex) => {
