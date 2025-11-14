@@ -10,8 +10,6 @@ import { StockFilterToggle } from '../../components/common/ToggleButton';
 import iconSearch from '../../assets/icon_search.svg';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
-import iconETF from '../../assets/ETF_24.svg';
-import iconUnderlying from '../../assets/기초지수_24.svg';
 import iconDividenReinvest from '../../assets/분배금 재투자_24.svg';
 import iconFee from '../../assets/총보수_24.svg';
 import iconETFLocked from '../../assets/비활성화 아이콘/ETF_비활성화.svg';
@@ -44,7 +42,6 @@ import thumbnail4 from '../../assets/images/pexels-inspiredimages-157520.jpg';
 import thumbnail5 from '../../assets/images/pexels-jakubzerdzicki-34518920.jpg';
 import thumbnail6 from '../../assets/images/pexels-mikhail-nilov-8296992.jpg';
 import thumbnail7 from '../../assets/images/pexels-nicola-barts-7927389.jpg';
-import thumbnail8 from '../../assets/images/pexels-pixabay-259200.jpg';
 import thumbnail9 from '../../assets/images/pexels-pixabay-534216.jpg';
 import thumbnail10 from '../../assets/images/pexels-vlasceanu-1400249.jpg';
 
@@ -710,7 +707,6 @@ const Search = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingBottom: `${LAYOUT.BOTTOM_NAV_HEIGHT}px`,
         position: 'relative'
       }}
     >
@@ -974,7 +970,8 @@ const Search = () => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 paddingLeft: `${LAYOUT.HORIZONTAL_PADDING}px`,
-                paddingRight: `${LAYOUT.HORIZONTAL_PADDING}px`
+                paddingRight: `${LAYOUT.HORIZONTAL_PADDING}px`,
+                paddingBottom: '12px'
               }}
             >
               {/* 좌측: 꾸준 인기/거래량 칩 */}
@@ -1068,130 +1065,33 @@ const Search = () => {
       {/* 콘텐츠 리스트 */}
       <div
         style={{
-          padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`
+          padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`,
+          paddingBottom: selectedTab === '리스트' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 60}px` : `16px`
         }}
       >
         {/* 리스트 탭: ETF 리스트 */}
         {selectedTab === '리스트' ? (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px'
-              }}
-            >
-              {getFilteredContents().map((etf) => (
-                <SimpleChartViewer
-                  key={etf.id}
-                  name={etf.name}
-                  code={etf.code}
-                  currentPrice={etf.currentPrice}
-                  changePercent={etf.changePercent}
-                  changeDirection={etf.changeDirection}
-                  showTopLabel={false}
-                  showPriceComparison={false}
-                  onClick={() => console.log(`ETF ${etf.id} 클릭`)}
-                />
-              ))}
-            </div>
-
-            {/* 하단 헤더 (리스트 탭에서 표시) */}
-            <div
-              style={{
-                width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
-                marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
-                marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`,
-                maxHeight: isExpanded ? '60px' : '0',
-                overflow: 'hidden',
-                transition: isExpanded
-                  ? 'max-height 1s cubic-bezier(0.2, 0.8, 0.3, 1)'
-                  : 'max-height 0.3s cubic-bezier(0.4, 0, 0.6, 1)'
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: '#F7F7F8',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: 0,
-                  marginTop: '16px'
-                }}
-              >
-                <div
-                  style={{
-                    padding: '10px',
-                    display: 'flex',
-                    gap: '10px',
-                    alignItems: 'center',
-                    width: '196px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Pretendard, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      lineHeight: 1.5,
-                      color: '#5E6573',
-                      margin: 0,
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    종목
-                  </p>
-                </div>
-                <div
-                  style={{
-                    padding: '10px',
-                    display: 'flex',
-                    gap: '10px',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Pretendard, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      lineHeight: 1.5,
-                      color: '#5E6573',
-                      margin: 0,
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    차트
-                  </p>
-                </div>
-                <div
-                  style={{
-                    padding: '10px',
-                    display: 'flex',
-                    gap: '10px',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    width: '102px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Pretendard, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      lineHeight: 1.5,
-                      color: '#5E6573',
-                      margin: 0,
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    현재가
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}
+          >
+            {getFilteredContents().map((etf) => (
+              <SimpleChartViewer
+                key={etf.id}
+                name={etf.name}
+                code={etf.code}
+                currentPrice={etf.currentPrice}
+                changePercent={etf.changePercent}
+                changeDirection={etf.changeDirection}
+                showTopLabel={false}
+                showPriceComparison={false}
+                onClick={() => console.log(`ETF ${etf.id} 클릭`)}
+              />
+            ))}
+          </div>
         ) : (
           /* 탐색 탭: Masonry 레이아웃 */
           contentSections.map((section, sectionIndex) => {
@@ -1361,6 +1261,106 @@ const Search = () => {
         })
         )}
       </div>
+
+      {/* 하단 헤더 (리스트 탭에서만 표시) */}
+      {selectedTab === '리스트' && (
+        <div
+          style={{
+            position: 'sticky',
+            bottom: `${LAYOUT.BOTTOM_NAV_HEIGHT}px`,
+            left: 0,
+            right: 0,
+            backgroundColor: '#F7F7F8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingLeft: `${LAYOUT.HORIZONTAL_PADDING}px`,
+            paddingRight: `${LAYOUT.HORIZONTAL_PADDING}px`,
+            paddingTop: 0,
+            paddingBottom: 0,
+            zIndex: 10
+          }}
+        >
+          {/* 종목 */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+              padding: '10px',
+              width: '196px',
+              flexShrink: 0
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: '#5E6573',
+                margin: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              종목
+            </p>
+          </div>
+
+          {/* 차트 */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10px',
+              flexShrink: 0
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: '#5E6573',
+                margin: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              차트
+            </p>
+          </div>
+
+          {/* 현재가 */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: '10px',
+              width: '102px',
+              flexShrink: 0
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: '#5E6573',
+                margin: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              현재가
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
