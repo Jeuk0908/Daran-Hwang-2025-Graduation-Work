@@ -8,6 +8,7 @@ import HomePage from './pages/Home'
 import Portfolio from './pages/Portfolio'
 import Search from './pages/Search'
 import PortfolioCreate from './pages/PortfolioCreate'
+import Rebalance from './Pages/Rebalance'
 import MethodSelection from './pages/PortfolioCreate/MethodSelection'
 import AutoCreate from './pages/PortfolioCreate/AutoCreate'
 import AutoCreateStep2 from './pages/PortfolioCreate/AutoCreateStep2'
@@ -25,7 +26,8 @@ function AppContent() {
   const isBookmarkPage = location.pathname === '/bookmark';
   const isHomePage = location.pathname === '/home';
   const isPortfolioCreatePage = location.pathname.startsWith('/portfolio/create');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage;
+  const isRebalancePage = location.pathname.includes('/rebalance');
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage;
 
   return (
     <div style={{
@@ -64,6 +66,7 @@ function AppContent() {
           <Route path="/portfolio/create/step2" element={<ManualCreateStep2 />} />
           <Route path="/portfolio/create/step3" element={<ManualCreateStep3 />} />
           <Route path="/portfolio/create/step4" element={<AutoCreateStep5 />} />
+          <Route path="/portfolio/:id/rebalance" element={<Rebalance />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>

@@ -40,7 +40,6 @@ const RebalanceETFCard = ({
         onClick={onClick}
         style={{
           width: '100%',
-          maxWidth: '361px',
           padding: '20px 16px',
           background: '#FFFFFF',
           borderRadius: '12px',
@@ -328,7 +327,6 @@ const RebalanceETFCard = ({
       onClick={onClick}
       style={{
         width: '100%',
-        maxWidth: '361px',
         padding: '20px 16px',
         background: '#FFFFFF',
         borderRadius: '12px',
@@ -518,7 +516,10 @@ const RebalanceETFCard = ({
             <div
               style={{
                 padding: '4px 6px',
-                background: actionType === 'buy' ? '#EFFAEC' : '#FFE5E5',
+                background:
+                  actionType === 'buy' ? '#EFFAEC' :
+                  actionType === 'sell' ? '#FEF6F1' :
+                  '#E0EEFF',
                 borderRadius: '8px',
               }}
             >
@@ -528,7 +529,10 @@ const RebalanceETFCard = ({
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
-                  color: actionType === 'buy' ? '#43A329' : '#DA6816',
+                  color:
+                    actionType === 'buy' ? '#43A329' :
+                    actionType === 'sell' ? '#EB843A' :
+                    '#3490FF',
                   margin: 0,
                 }}
               >

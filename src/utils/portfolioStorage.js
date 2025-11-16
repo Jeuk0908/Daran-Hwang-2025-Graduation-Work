@@ -37,12 +37,17 @@ export const addPortfolio = (portfolio) => {
     // 랜덤 수익률: -15% ~ +15%
     const randomReturnRate = (Math.random() * 30 - 15).toFixed(2);
 
+    // 목표 수익: 현재 금액의 10% ~ 30%
+    const currentProfit = Math.floor(randomAmount * (parseFloat(randomReturnRate) / 100));
+    const targetProfit = Math.floor(randomAmount * (Math.random() * 0.2 + 0.1)); // 10% ~ 30%
+
     const newPortfolio = {
       ...portfolio,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       amount: randomAmount,
-      returnRate: parseFloat(randomReturnRate)
+      returnRate: parseFloat(randomReturnRate),
+      targetProfit: targetProfit
     };
     portfolios.push(newPortfolio);
     localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(portfolios));
@@ -167,24 +172,31 @@ export const setDefaultPortfolioBookmark = (isBookmarked) => {
 };
 
 /**
- * 기본 포트폴리오 데이터 가져오기 (금액, 수익률)
- * @returns {Object} { amount, returnRate }
+ * 기본 포트폴리오 데이터 가져오기 (금액, 수익률, 목표 수익)
+ * @returns {Object} { amount, returnRate, targetProfit }
  */
 export const getDefaultPortfolioData = () => {
   try {
     const data = localStorage.getItem(DEFAULT_PORTFOLIO_DATA_KEY);
     if (data) {
-      return JSON.parse(data);
+      const parsedData = JSON.parse(data);
+      // 기존 데이터에 targetProfit이 없으면 추가
+      if (!parsedData.targetProfit) {
+        parsedData.targetProfit = Math.floor(parsedData.amount * (Math.random() * 0.2 + 0.1));
+        localStorage.setItem(DEFAULT_PORTFOLIO_DATA_KEY, JSON.stringify(parsedData));
+      }
+      return parsedData;
     }
     // 저장된 데이터가 없으면 랜덤 생성
     const randomAmount = Math.floor(Math.random() * (100000000 - 1000000 + 1)) + 1000000;
     const randomReturnRate = parseFloat((Math.random() * 30 - 15).toFixed(2));
-    const newData = { amount: randomAmount, returnRate: randomReturnRate };
+    const targetProfit = Math.floor(randomAmount * (Math.random() * 0.2 + 0.1)); // 10% ~ 30%
+    const newData = { amount: randomAmount, returnRate: randomReturnRate, targetProfit: targetProfit };
     localStorage.setItem(DEFAULT_PORTFOLIO_DATA_KEY, JSON.stringify(newData));
     return newData;
   } catch (error) {
     console.error('기본 포트폴리오 데이터 불러오기 실패:', error);
-    return { amount: 10000000, returnRate: 5.0 };
+    return { amount: 10000000, returnRate: 5.0, targetProfit: 2000000 };
   }
 };
 

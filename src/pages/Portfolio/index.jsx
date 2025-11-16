@@ -353,7 +353,7 @@ const Portfolio = () => {
                   isFavorite={portfolio.isBookmarked || false}
                   onFavoriteClick={() => handleFavoriteClick(portfolio.id)}
                   onPrimaryButtonClick={() => {
-                    console.log('리밸런싱 확인 clicked:', portfolio.id);
+                    navigate(`/portfolio/${portfolio.id}/rebalance`);
                   }}
                   onSecondaryButtonClick={() => {
                     console.log('체크포인트 clicked:', portfolio.id);

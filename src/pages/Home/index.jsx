@@ -259,7 +259,7 @@ const HomePage = () => {
           primaryButtonText="리밸런싱 확인"
           secondaryButtonText="체크포인트"
           onFavoriteClick={() => console.log('Favorite clicked')}
-          onPrimaryButtonClick={() => console.log('Primary button clicked')}
+          onPrimaryButtonClick={() => navigate('/portfolio/1/rebalance')}
           onSecondaryButtonClick={() => console.log('Secondary button clicked')}
         />
       </div>
