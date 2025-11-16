@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LAYOUT } from '../../constants/layout';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
@@ -7,7 +7,12 @@ import VocabularyCard from '../../components/common/VocabularyCard';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { Chip } from '../../components/common/Chip';
 import { StockFilterToggle } from '../../components/common/ToggleButton';
+import { IndexCard } from '../../components/common/IndexCard';
+import { IndexCardSkeleton } from '../../components/common/IndexCardSkeleton';
+import { ListItemSkeleton } from '../../components/common/ListItemSkeleton';
+import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
 import iconSearch from '../../assets/icon_search.svg';
+import iconCancel from '../../assets/icon_cancel(S).svg';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
 import iconDividenReinvest from '../../assets/분배금 재투자_24.svg';
@@ -497,6 +502,25 @@ const ETF_LIST_DATA = [
   }
 ];
 
+// 지수 데이터
+const INDEX_DATA = [
+  { id: 1, name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up' },
+  { id: 2, name: '코스피', value: '2,547.38', changePercent: '1.85', changeDirection: 'down' },
+  { id: 3, name: '나스닥', value: '20,394.13', changePercent: '3.24', changeDirection: 'up' },
+  { id: 4, name: '다우존스', value: '43,275.91', changePercent: '1.47', changeDirection: 'up' },
+  { id: 5, name: '코스닥', value: '715.42', changePercent: '2.18', changeDirection: 'down' },
+  { id: 6, name: '니케이225', value: '38,283.85', changePercent: '0.92', changeDirection: 'up' },
+  { id: 7, name: '항셍지수', value: '19,435.67', changePercent: '1.63', changeDirection: 'down' },
+  { id: 8, name: '유로스톡스50', value: '4,892.34', changePercent: '0.78', changeDirection: 'up' },
+  { id: 9, name: 'FTSE 100', value: '8,247.15', changePercent: '0.54', changeDirection: 'down' },
+  { id: 10, name: '상하이종합', value: '3,241.76', changePercent: '1.29', changeDirection: 'up' },
+  { id: 11, name: '러셀2000', value: '2,198.37', changePercent: '2.03', changeDirection: 'down' },
+  { id: 12, name: '금 선물', value: '2,654.80', changePercent: '1.15', changeDirection: 'up' },
+  { id: 13, name: '원유 선물', value: '68.42', changePercent: '3.47', changeDirection: 'down' },
+  { id: 14, name: 'DAX 지수', value: '19,215.39', changePercent: '0.67', changeDirection: 'up' },
+  { id: 15, name: '비트코인 선물', value: '97,428.50', changePercent: '4.82', changeDirection: 'up' }
+];
+
 const TABS = ['탐색', '리스트', '지수'];
 
 const SUB_TABS = [
@@ -520,6 +544,61 @@ const Search = () => {
   const [popularityTrend, setPopularityTrend] = useState(true);
   const [volumeTrend, setVolumeTrend] = useState(true);
   const [chartTrend, setChartTrend] = useState('up');
+  const [showIndexGuide, setShowIndexGuide] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // 탐색 탭 초기 로딩
+  const [loadedTabs, setLoadedTabs] = useState(new Set()); // 처음 로드되는 탭 추적 (탐색 탭 제외)
+
+  // 지수 탭 처음 방문 시 가이드 모달 표시
+  useEffect(() => {
+    if (selectedTab === '지수') {
+      const hasSeenGuide = localStorage.getItem('hasSeenIndexGuide');
+      if (!hasSeenGuide) {
+        setShowIndexGuide(true);
+      }
+    }
+  }, [selectedTab]);
+
+  const handleCloseGuide = () => {
+    setShowIndexGuide(false);
+    localStorage.setItem('hasSeenIndexGuide', 'true');
+  };
+
+  // 탭 변경 핸들러
+  const handleTabChange = (newTab) => {
+    // 탐색 탭이거나 처음 방문하는 탭이면 먼저 로딩 상태 설정
+    if (newTab === '탐색' || !loadedTabs.has(newTab)) {
+      setIsLoading(true);
+    }
+    setSelectedTab(newTab);
+  };
+
+  // 탭 전환 시 로딩 상태 관리
+  useEffect(() => {
+    // 탐색 탭: 이미지가 많아서 항상 로딩 표시
+    if (selectedTab === '탐색') {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 300); // 300ms 로딩
+
+      return () => clearTimeout(timer);
+    }
+
+    // 다른 탭: 이미 로드된 탭이면 스켈레톤 표시 안 함
+    if (loadedTabs.has(selectedTab)) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 처음 방문하는 탭만 로딩 표시
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setLoadedTabs(prev => new Set([...prev, selectedTab]));
+    }, 300); // 300ms 로딩
+
+    return () => clearTimeout(timer);
+  }, [selectedTab, loadedTabs]);
 
   // 모든 컨텐츠를 골고루 섞어서 배치
   const allContent = useMemo(() => {
@@ -653,8 +732,8 @@ const Search = () => {
 
       return etfList;
     } else if (selectedTab === '지수') {
-      // 나중에 구현
-      filtered = [];
+      // 지수 데이터 반환
+      return INDEX_DATA;
     }
 
     // 검색어 필터링 (title이 있는 아이템만 검색)
@@ -789,7 +868,7 @@ const Search = () => {
             {TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setSelectedTab(tab)}
+                onClick={() => handleTabChange(tab)}
                 style={{
                   padding: '8px 16px 12px',
                   border: 'none',
@@ -1066,29 +1145,180 @@ const Search = () => {
       <div
         style={{
           padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`,
-          paddingBottom: selectedTab === '리스트' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 60}px` : `16px`
+          paddingBottom: selectedTab === '리스트' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 60}px` : selectedTab === '지수' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 20}px` : `16px`
         }}
       >
-        {/* 리스트 탭: ETF 리스트 */}
-        {selectedTab === '리스트' ? (
+        {/* 지수 탭: 지수 카드 그리드 */}
+        {selectedTab === '지수' ? (
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+              gap: '12px',
+              width: '100%'
             }}
           >
-            {getFilteredContents().map((etf) => (
-              <SimpleChartViewer
-                key={etf.id}
-                name={etf.name}
-                code={etf.code}
-                currentPrice={etf.currentPrice}
-                changePercent={etf.changePercent}
-                changeDirection={etf.changeDirection}
-                showTopLabel={false}
-                showPriceComparison={false}
-                onClick={() => console.log(`ETF ${etf.id} 클릭`)}
+            {isLoading ? (
+              // 로딩 중일 때 스켈레톤 표시 (9개)
+              Array.from({ length: 9 }).map((_, index) => (
+                <IndexCardSkeleton key={`skeleton-${index}`} />
+              ))
+            ) : (
+              // 실제 데이터 표시
+              getFilteredContents().map((index) => (
+                <IndexCard
+                  key={index.id}
+                  name={index.name}
+                  value={index.value}
+                  changePercent={index.changePercent}
+                  changeDirection={index.changeDirection}
+                  onClick={() => console.log(`지수 ${index.id} 클릭`)}
+                />
+              ))
+            )}
+          </div>
+        ) : selectedTab === '리스트' ? (
+          <>
+            {/* 빈 상태: 관심ETF가 없을 때 */}
+            {selectedSubTab === '관심ETF' && getFilteredContents().length === 0 ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  paddingTop: '200px',
+                  paddingBottom: '36px'
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: 1.5,
+                    color: '#474C57',
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  다양한 ETF들을 탐색하고, 첫 관심을 등록해 보세요!
+                </p>
+                <button
+                  onClick={() => setSelectedSubTab('전체보기')}
+                  style={{
+                    backgroundColor: '#3490FF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 8px 8px 16px',
+                    display: 'flex',
+                    gap: '4px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 0.15s ease',
+                    transform: 'scale(1)'
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.95)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      lineHeight: 1.5,
+                      color: '#FFFFFF',
+                      margin: 0,
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    전체 보기
+                  </p>
+                  <div
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transform: 'rotate(90deg)',
+                      opacity: 0.5
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 18L16 12L10 6"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+            ) : (
+              /* ETF 리스트 */
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}
+              >
+                {isLoading ? (
+                  // 로딩 중일 때 스켈레톤 표시 (6개)
+                  Array.from({ length: 6 }).map((_, index) => (
+                    <ListItemSkeleton key={`list-skeleton-${index}`} />
+                  ))
+                ) : (
+                  // 실제 데이터 표시
+                  getFilteredContents().map((etf) => (
+                    <SimpleChartViewer
+                      key={etf.id}
+                      name={etf.name}
+                      code={etf.code}
+                      currentPrice={etf.currentPrice}
+                      changePercent={etf.changePercent}
+                      changeDirection={etf.changeDirection}
+                      showTopLabel={false}
+                      showPriceComparison={false}
+                      onClick={() => console.log(`ETF ${etf.id} 클릭`)}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </>
+        ) : isLoading ? (
+          /* 탐색 탭 로딩 중: 스켈레톤 그리드 */
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+              width: '100%'
+            }}
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ContentCardSkeleton
+                key={`content-skeleton-${index}`}
+                size={index % 3 === 0 ? 'large' : index % 2 === 0 ? 'medium' : 'small'}
               />
             ))}
           </div>
@@ -1357,6 +1587,121 @@ const Search = () => {
               }}
             >
               현재가
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 지수 가이드 모달 (처음 방문 시에만 표시) */}
+      {selectedTab === '지수' && showIndexGuide && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: `${LAYOUT.BOTTOM_NAV_HEIGHT + 27}px`,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #F7F7F8',
+            borderRadius: '12px',
+            padding: '8px 10px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            width: '361px',
+            maxWidth: 'calc(100% - 32px)',
+            boxSizing: 'border-box',
+            zIndex: 1000,
+            boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)'
+          }}
+        >
+          {/* 헤더: 제목 + X 버튼 */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'flex-start'
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: '#FAFCFF',
+                  padding: '4px 6px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  gap: '10px',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: '#474C57',
+                    margin: 0,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  지수를 왜 봐야하나요?
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleCloseGuide}
+              style={{
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                padding: 0,
+                flexShrink: 0
+              }}
+            >
+              <img
+                src={iconCancel}
+                alt="닫기"
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  display: 'block'
+                }}
+              />
+            </button>
+          </div>
+
+          {/* 설명 텍스트 */}
+          <div
+            style={{
+              width: '100%'
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '12px',
+                fontWeight: 500,
+                lineHeight: 1.5,
+                color: '#474C57',
+                margin: 0
+              }}
+            >
+              인덱스 ETF는 지수의 움직임을 따라가도록 만들어졌기 때문에
+              <br />
+              지수를 보면 ETF의 상승과 하락을 예측할 수 있어요.
             </p>
           </div>
         </div>
