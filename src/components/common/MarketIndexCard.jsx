@@ -58,7 +58,8 @@ export const MarketIndexCard = ({
             display: 'flex',
             flexDirection: 'column',
             gap: '2px',
-            width: showChart ? '72px' : 'auto'
+            width: showChart ? '72px' : '100%',
+            minWidth: 0
           }}
         >
           {/* 지수 이름 */}

@@ -3,6 +3,8 @@
  * localStorage를 사용하여 포트폴리오 데이터 관리
  */
 
+import { getAllETFs, getETFData } from '../pages/ETFDetail/data/mockData';
+
 const PORTFOLIO_STORAGE_KEY = 'portfolios';
 const DEFAULT_PORTFOLIO_BOOKMARK_KEY = 'defaultPortfolioBookmarked';
 const DEFAULT_PORTFOLIO_DATA_KEY = 'defaultPortfolioData';
@@ -257,15 +259,38 @@ export const toggleBookmark = (id, currentOrder) => {
 };
 
 /**
- * 포트폴리오의 ETF 목록 가져오기
+ * 포트폴리오의 ETF 목록 가져오기 (mockData와 병합)
  * @param {string} portfolioId - 포트폴리오 ID
- * @returns {Array} ETF 목록
+ * @returns {Array} ETF 목록 (mockData 정보 + 포트폴리오 특정 필드)
  */
 export const getPortfolioETFs = (portfolioId) => {
   try {
     const key = `portfolio_etfs_${portfolioId}`;
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
+
+    if (!data) return null;
+
+    const storedETFs = JSON.parse(data);
+    const allMockETFs = getAllETFs();
+
+    // 저장된 ETF 데이터를 mockData와 병합
+    return storedETFs.map(storedETF => {
+      // etfId가 있으면 mockData에서 최신 정보 가져오기
+      if (storedETF.etfId) {
+        const mockETF = allMockETFs.find(e => e.id === storedETF.etfId);
+        if (mockETF) {
+          return {
+            ...storedETF,
+            title: mockETF.name,
+            pricePerShare: mockETF.currentPrice.toLocaleString('ko-KR'),
+            changePercent: Math.abs(mockETF.changePercent).toFixed(2),
+            changeDirection: mockETF.changeDirection
+          };
+        }
+      }
+      // mockData에서 못 찾으면 저장된 데이터 그대로 반환
+      return storedETF;
+    });
   } catch (error) {
     console.error('포트폴리오 ETF 목록 불러오기 실패:', error);
     return null;
@@ -274,14 +299,27 @@ export const getPortfolioETFs = (portfolioId) => {
 
 /**
  * 포트폴리오의 ETF 목록 저장하기
+ * ETF ID와 포트폴리오 특정 필드만 저장 (mockData 정보는 제외)
  * @param {string} portfolioId - 포트폴리오 ID
- * @param {Array} etfs - ETF 목록
+ * @param {Array} etfs - ETF 목록 (id, etfId, shares, targetWeight 등 포함)
  * @returns {boolean} 성공 여부
  */
 export const setPortfolioETFs = (portfolioId, etfs) => {
   try {
     const key = `portfolio_etfs_${portfolioId}`;
-    localStorage.setItem(key, JSON.stringify(etfs));
+
+    // ETF ID와 포트폴리오 특정 필드만 저장
+    const minimizedETFs = etfs.map(etf => ({
+      id: etf.id,
+      etfId: etf.etfId || etf.id, // mockData의 실제 ETF ID
+      shares: etf.shares,
+      targetWeight: etf.targetWeight,
+      // 포트폴리오 특정 필드만 저장 (가격, 이름 등 mockData 정보는 제외)
+      // 기존 호환성을 위해 title은 저장 (fallback용)
+      title: etf.title || etf.name
+    }));
+
+    localStorage.setItem(key, JSON.stringify(minimizedETFs));
     return true;
   } catch (error) {
     console.error('포트폴리오 ETF 목록 저장 실패:', error);

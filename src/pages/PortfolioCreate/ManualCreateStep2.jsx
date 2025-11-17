@@ -1,23 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { TrendChip, Chip } from '../../components/common/Chip';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { getAllETFs } from '../ETFDetail/data/mockData';
 import iconBackL from '../../assets/icon_back_L.svg';
 import iconSearch from '../../assets/icon_search.svg';
-
-// Mock ETF 데이터
-const MOCK_ETFS = [
-  { id: 1, name: 'TIGER 미국S&P500', code: '12341', price: '21,970', change: '2.59', direction: 'up', views: 95000, volume: 1200000 },
-  { id: 2, name: 'KODEX 200', code: '2452345', price: '21,970', change: '2.59', direction: 'down', views: 88000, volume: 980000 },
-  { id: 3, name: 'TIGER 차이나전기차', code: '3456345', price: '21,970', change: '2.59', direction: 'up', views: 72000, volume: 1500000 },
-  { id: 4, name: 'KODEX 반도체', code: '235234', price: '21,970', change: '2.59', direction: 'up', views: 91000, volume: 850000 },
-  { id: 5, name: 'TIGER 2차전지테마', code: '546785678', price: '21,970', change: '2.59', direction: 'down', views: 65000, volume: 720000 },
-  { id: 6, name: 'KODEX 미국S&P500선물', code: '2345234', price: '21,970', change: '2.59', direction: 'up', views: 83000, volume: 1100000 },
-  { id: 7, name: 'TIGER 나스닥100', code: '4567456', price: '21,970', change: '2.59', direction: 'down', views: 78000, volume: 950000 },
-];
 
 const TABS = [
   '전체보기',
@@ -71,9 +61,10 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
     // 1개 이상 선택되었을 때 다음 페이지로 이동
     if (selectedETFs.length === 0) return;
 
-    // 새로 선택한 ETF 목록
+    // 새로 선택한 ETF 목록 (mockData에서 가져오기)
+    const allMockETFs = getAllETFs();
     const newlySelectedETFs = selectedETFs.map(id =>
-      MOCK_ETFS.find(etf => etf.id === id)
+      allMockETFs.find(etf => etf.id === id)
     );
 
     // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
@@ -137,7 +128,42 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
 
   // 필터 및 정렬된 ETF 목록 가져오기
   const getFilteredETFs = () => {
-    let filteredList = [...MOCK_ETFS];
+    // mockData에서 전체 ETF 가져오기
+    const allETFs = getAllETFs();
+    let filteredList = allETFs.map(etf => ({
+      id: etf.id,
+      name: etf.name,
+      code: etf.code,
+      price: etf.currentPrice.toLocaleString('ko-KR'),
+      change: Math.abs(etf.changePercent).toFixed(2),
+      direction: etf.changeDirection,
+      views: etf.popularity * 1000,
+      volume: etf.basicInfo.volume,
+      category: etf.category,
+      isFavorite: etf.isFavorite
+    }));
+
+    // 탭별 카테고리 필터링
+    if (selectedTab !== '전체보기') {
+      if (selectedTab === '관심ETF') {
+        filteredList = filteredList.filter(etf => etf.isFavorite);
+      } else {
+        // 카테고리 매핑
+        const categoryMap = {
+          '국내주식': '국내주식',
+          '해외 주식': '해외주식',
+          '채권': '채권',
+          '원자재/통화': '원자재',
+          '레버리지/인버스': '레버리지',
+          '금리': '금리',
+          '부동산': '부동산'
+        };
+        const category = categoryMap[selectedTab];
+        if (category) {
+          filteredList = filteredList.filter(etf => etf.category === category);
+        }
+      }
+    }
 
     // 검색어 필터링
     if (searchQuery.trim()) {

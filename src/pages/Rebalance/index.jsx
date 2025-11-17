@@ -6,71 +6,60 @@ import RebalanceETFCard from '../../components/common/RebalanceETFCard';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { getPortfolioETFs } from '../../utils/portfolioStorage';
+import { getAllETFs } from '../ETFDetail/data/mockData';
 
-// Mock 데이터
-const REBALANCE_DATA = {
-  1: {
+// mockData에서 리밸런싱 데이터 생성하는 헬퍼 함수
+const createRebalanceData = () => {
+  const allMockETFs = getAllETFs();
+
+  // 첫 4개 ETF 사용
+  const selectedETFs = allMockETFs.slice(0, 4);
+
+  // 리밸런싱 시뮬레이션 데이터
+  const rebalancingScenarios = [
+    { targetWeight: 10, currentWeight: 15, actionType: 'buy', actionShares: 3, shares: 2 },
+    { targetWeight: 15, currentWeight: 20, actionType: 'sell', actionShares: 6, shares: 5 },
+    { targetWeight: 25, currentWeight: 25, actionType: 'none', actionShares: 0, shares: 10 },
+    { targetWeight: 50, currentWeight: 40, actionType: 'sell', actionShares: 8, shares: 20 }
+  ];
+
+  return {
     portfolioName: '미국 빅테크 배당금',
     totalValue: '123,345,677',
     netProfit: '123,345,677',
-    targetProfit: '150,000,000', // 목표 수익
+    targetProfit: '150,000,000',
     changeRate: '5',
     needsRebalance: true,
-    etfs: [
-      {
-        id: 1,
-        title: '2차 전지 TIGER x2',
-        targetWeight: '10',
-        currentWeight: '15',
-        adjustedWeight: '10',
-        shares: '2',
-        actionType: 'buy',
-        actionShares: '3',
-        actionText: '3주를 매수 할께요',
-        pricePerShare: '123,456,789',
-        totalAmount: '123,456,789'
-      },
-      {
-        id: 2,
-        title: '테슬라 ETF',
-        targetWeight: '15',
-        currentWeight: '20',
-        adjustedWeight: '15',
-        shares: '5',
-        actionType: 'sell',
-        actionShares: '6',
-        actionText: '6주를 매도할께요',
-        pricePerShare: '98,765,432',
-        totalAmount: '98,765,432'
-      },
-      {
-        id: 3,
-        title: 'NASDAQ 100',
-        targetWeight: '25',
-        currentWeight: '25',
-        adjustedWeight: '25',
-        shares: '10',
-        actionType: 'none',
-        actionShares: '0',
-        actionText: '조정하지 않아도 괜찮아요!',
-        pricePerShare: '87,654,321',
-        totalAmount: '87,654,321'
-      },
-      {
-        id: 4,
-        title: 'S&P 500',
-        targetWeight: '50',
-        currentWeight: '40',
-        adjustedWeight: '50',
-        shares: '20',
-        actionType: 'sell',
-        actionShares: '8',
-        actionText: '8주를 매도할께요',
-        pricePerShare: '76,543,210',
-        totalAmount: '76,543,210'
-      }
-    ]
-  }
+    etfs: selectedETFs.map((etf, index) => {
+      const scenario = rebalancingScenarios[index];
+      const price = etf.currentPrice;
+      const totalAmount = price * scenario.shares;
+
+      return {
+        id: index + 1,
+        etfId: etf.id,
+        title: etf.name,
+        targetWeight: scenario.targetWeight.toString(),
+        currentWeight: scenario.currentWeight.toString(),
+        adjustedWeight: scenario.targetWeight.toString(),
+        shares: scenario.shares.toString(),
+        actionType: scenario.actionType,
+        actionShares: scenario.actionShares.toString(),
+        actionText: scenario.actionType === 'buy'
+          ? `${scenario.actionShares}주를 매수 할께요`
+          : scenario.actionType === 'sell'
+          ? `${scenario.actionShares}주를 매도할께요`
+          : '조정하지 않아도 괜찮아요!',
+        pricePerShare: price.toLocaleString('ko-KR'),
+        totalAmount: totalAmount.toLocaleString('ko-KR')
+      };
+    })
+  };
+};
+
+// Mock 데이터
+const REBALANCE_DATA = {
+  1: createRebalanceData()
 };
 
 const Rebalance = () => {
@@ -103,20 +92,27 @@ const Rebalance = () => {
     // 이미 5개 이상이면 추가 불가
     if (isMaxETFs) return;
 
+    // mockData에서 전체 ETF 정보 가져오기
+    const allMockETFs = getAllETFs();
+
     // ETF 추가 페이지로 이동 (현재 ETF 개수 및 목록 전달)
     navigate(`/portfolio/${id}/rebalance/add-etf`, {
       state: {
         currentETFCount: rebalanceData.etfs.length,
         portfolioId: id,
-        existingETFs: rebalanceData.etfs.map(etf => ({
-          id: etf.id,
-          name: etf.title,
-          code: etf.id.toString(),
-          price: etf.pricePerShare,
-          change: '0',
-          direction: 'up',
-          targetWeight: parseInt(etf.targetWeight) // 기존 비중 정보 전달
-        }))
+        existingETFs: rebalanceData.etfs.map(etf => {
+          // etfId가 있으면 mockData에서 해당 ETF 찾기
+          const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
+          return mockETF || {
+            id: etf.etfId || `etf-${etf.id}`,
+            name: etf.title,
+            code: etf.code || etf.id.toString(),
+            currentPrice: parseInt(etf.pricePerShare.replace(/,/g, '')),
+            changePercent: 0,
+            changeDirection: 'up',
+            targetWeight: parseInt(etf.targetWeight)
+          };
+        })
       }
     });
   };

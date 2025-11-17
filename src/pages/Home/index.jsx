@@ -11,6 +11,7 @@ import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
 import { getPortfolios, getDefaultPortfolioBookmark, getDefaultPortfolioData, getPortfolioOrder } from '../../utils/portfolioStorage';
+import { getPopularETFs, INDEX_DATA, THEME_DATA, getETFsByPopularity, getETFsByVolume } from '../ETFDetail/data/mockData';
 import iconBellOutline from '../../assets/icon_bell_outline_1.svg';
 import iconWhy from '../../assets/icon_why(12_12).svg';
 
@@ -77,183 +78,73 @@ const HomePage = () => {
     return [`#${riskType}`, `#${investmentStyle}`];
   };
 
-  // Mock data
-  const marketIndices = [
-    { name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up' },
-    { name: '코스피', value: '6,410.75', changePercent: '2.59', changeDirection: 'down' },
-    { name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up' },
-    { name: '코스피', value: '6,410.75', changePercent: '2.59', changeDirection: 'down' },
-    { name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up', showChart: true }
-  ];
+  // 시장 지수 데이터 (INDEX_DATA에서 5개만 사용)
+  const marketIndices = INDEX_DATA.slice(0, 5).map((index, i) => ({
+    ...index,
+    showChart: i === 4 // 마지막 항목만 차트 표시
+  }));
 
-  // 상승 테마 더미 데이터
-  const upThemes = [
-    { rank: 1, theme: '양자 컴퓨터', changePercent: '24.5', changeDirection: 'up' },
-    { rank: 2, theme: '소셜 미디어', changePercent: '20.65', changeDirection: 'up' },
-    { rank: 3, theme: 'US', changePercent: '16.44', changeDirection: 'up' },
-    { rank: 4, theme: 'AI 전력', changePercent: '13.2', changeDirection: 'up' },
-    { rank: 5, theme: '구리', changePercent: '10.99', changeDirection: 'up' }
-  ];
+  // 테마 데이터 (THEME_DATA 기반 - 임의로 상승/하락 분배)
+  const upThemes = THEME_DATA.slice(0, 3).map((theme, index) => ({
+    rank: index + 1,
+    theme: theme.name,
+    changePercent: (24.5 - index * 4).toFixed(2),
+    changeDirection: 'up'
+  }));
 
-  // 하락 테마 더미 데이터
-  const downThemes = [
-    { rank: 1, theme: '반도체', changePercent: '18.3', changeDirection: 'down' },
-    { rank: 2, theme: '금융', changePercent: '15.7', changeDirection: 'down' },
-    { rank: 3, theme: '헬스케어', changePercent: '12.4', changeDirection: 'down' },
-    { rank: 4, theme: '에너지', changePercent: '9.8', changeDirection: 'down' },
-    { rank: 5, theme: '자동차', changePercent: '7.2', changeDirection: 'down' }
-  ];
+  const downThemes = THEME_DATA.slice(3, 6).map((theme, index) => ({
+    rank: index + 1,
+    theme: theme.name,
+    changePercent: (18.3 - index * 4).toFixed(1),
+    changeDirection: 'down'
+  }));
 
   // trendFilter에 따라 표시할 테마 선택
   const themes = trendFilter === 'up' ? upThemes : downThemes;
 
-  // 꾸준 인기 상승 ETF 더미 데이터
-  const popularUpEtfList = [
-    {
-      rank: 1,
-      name: 'TIGER 미국S&P500',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.3',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '21,970',
-      changePercent: '2.59',
-      changeDirection: 'up'
-    },
-    {
-      rank: 2,
-      name: 'KODEX 미국나스닥100',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.5',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '18,450',
-      changePercent: '3.21',
-      changeDirection: 'up'
-    },
-    {
-      rank: 3,
-      name: 'TIGER 차이나전기차SOLACTIVE',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.2',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '15,320',
-      changePercent: '1.85',
-      changeDirection: 'up'
-    }
-  ];
+  // ETF 데이터를 SimpleChartViewer 형식으로 변환하는 헬퍼 함수
+  const convertETFToViewerFormat = (etf, rank) => {
+    // NAV와 현재가 비교하여 priceComparison 계산
+    const navDiff = etf.nav - etf.currentPrice;
+    const navDiffPercent = Math.abs((navDiff / etf.currentPrice) * 100).toFixed(1);
+    const isExpensive = navDiff < 0;
 
-  // 꾸준 인기 하락 ETF 더미 데이터
-  const popularDownEtfList = [
-    {
-      rank: 1,
-      name: 'KODEX 인버스',
+    return {
+      id: etf.id, // ETF ID 추가
+      rank,
+      name: etf.name,
+      code: etf.code, // ETF 코드도 추가
       priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.4',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '14,650',
-      changePercent: '2.93',
-      changeDirection: 'down'
-    },
-    {
-      rank: 2,
-      name: 'TIGER 코스닥150 인버스',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.6',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '12,340',
-      changePercent: '3.15',
-      changeDirection: 'down'
-    },
-    {
-      rank: 3,
-      name: 'KODEX 골드선물',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.3',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '16,780',
-      changePercent: '1.67',
-      changeDirection: 'down'
-    }
-  ];
+      priceComparisonValue: navDiffPercent,
+      priceComparisonDirection: isExpensive ? 'down' : 'up',
+      priceComparisonLabel: isExpensive ? '비싸요' : '저렴해요',
+      currentPrice: etf.currentPrice.toLocaleString('ko-KR'),
+      changePercent: Math.abs(etf.changePercent).toFixed(2),
+      changeDirection: etf.changeDirection
+    };
+  };
 
-  // 거래량 상승 ETF 더미 데이터
-  const volumeUpEtfList = [
-    {
-      rank: 1,
-      name: 'KODEX 레버리지',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.8',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '24,180',
-      changePercent: '4.12',
-      changeDirection: 'up'
-    },
-    {
-      rank: 2,
-      name: 'TIGER 2차전지테마',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.6',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '19,880',
-      changePercent: '3.47',
-      changeDirection: 'up'
-    },
-    {
-      rank: 3,
-      name: 'KODEX 반도체',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.5',
-      priceComparisonDirection: 'up',
-      priceComparisonLabel: '저렴해요',
-      currentPrice: '22,560',
-      changePercent: '2.88',
-      changeDirection: 'up'
-    }
-  ];
+  // 꾸준 인기 상승 ETF (mockData 기반)
+  const popularUpEtfList = getPopularETFs('up', 3).map((etf, index) =>
+    convertETFToViewerFormat(etf, index + 1)
+  );
 
-  // 거래량 하락 ETF 더미 데이터
-  const volumeDownEtfList = [
-    {
-      rank: 1,
-      name: 'TIGER 미국채10년선물',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.7',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '13,920',
-      changePercent: '3.56',
-      changeDirection: 'down'
-    },
-    {
-      rank: 2,
-      name: 'KODEX 은행',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.4',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '17,480',
-      changePercent: '2.74',
-      changeDirection: 'down'
-    },
-    {
-      rank: 3,
-      name: 'TIGER 중국항셍테크',
-      priceComparisonText: '실시간 가치보다',
-      priceComparisonValue: '0.5',
-      priceComparisonDirection: 'down',
-      priceComparisonLabel: '비싸요',
-      currentPrice: '11,230',
-      changePercent: '2.12',
-      changeDirection: 'down'
-    }
-  ];
+  // 꾸준 인기 하락 ETF (mockData 기반)
+  const popularDownEtfList = getPopularETFs('down', 3).map((etf, index) =>
+    convertETFToViewerFormat(etf, index + 1)
+  );
+
+  // 거래량 상승 ETF (mockData 기반 - 상승 ETF 중 거래량 순)
+  const volumeUpEtfList = getETFsByVolume()
+    .filter(etf => etf.changeDirection === 'up')
+    .slice(0, 3)
+    .map((etf, index) => convertETFToViewerFormat(etf, index + 1));
+
+  // 거래량 하락 ETF (mockData 기반 - 하락 ETF 중 거래량 순)
+  const volumeDownEtfList = getETFsByVolume()
+    .filter(etf => etf.changeDirection === 'down')
+    .slice(0, 3)
+    .map((etf, index) => convertETFToViewerFormat(etf, index + 1));
 
   // activeChip과 트렌드 상태에 따라 표시할 ETF 목록 선택
   const etfList = activeChip === '오늘 인기'
@@ -788,7 +679,7 @@ const HomePage = () => {
           >
             {etfList.map((etf, idx) => (
               <SimpleChartViewer
-                key={idx}
+                key={etf.id || idx}
                 rank={etf.rank}
                 name={etf.name}
                 priceComparisonText={etf.priceComparisonText}
@@ -798,7 +689,7 @@ const HomePage = () => {
                 currentPrice={etf.currentPrice}
                 changePercent={etf.changePercent}
                 changeDirection={etf.changeDirection}
-                onClick={() => console.log(`ETF ${idx} clicked`)}
+                onClick={() => navigate(`/etf/${etf.id}/detail`)}
               />
             ))}
           </div>

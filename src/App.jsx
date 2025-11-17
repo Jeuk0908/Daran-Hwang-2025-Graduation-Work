@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { BottomNav } from './components/common/BottomNav'
 import IconShowcase from './pages/Dev/IconShowcase'
 import Vocabulary from './pages/Vocabulary'
@@ -8,6 +9,7 @@ import HomePage from './pages/Home'
 import Portfolio from './pages/Portfolio'
 import PortfolioDelete from './pages/Portfolio/PortfolioDelete'
 import PortfolioDetail from './pages/Portfolio/PortfolioDetail'
+import ETFDetail from './pages/ETFDetail'
 import Search from './pages/Search'
 import PortfolioCreate from './pages/PortfolioCreate'
 import Rebalance from './pages/Rebalance'
@@ -23,6 +25,30 @@ import './App.css'
 
 function AppContent() {
   const location = useLocation();
+
+  // 브라우저의 자동 스크롤 복원 비활성화
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  // 페이지 이동 시 스크롤을 맨 위로 초기화
+  useEffect(() => {
+    // 즉시 스크롤 초기화
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // 브라우저의 스크롤 복원보다 늦게 실행되도록 setTimeout 사용
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
   const isDevPage = location.pathname.startsWith('/dev');
   const isVocabularyPage = location.pathname === '/vocabulary';
   const isBookmarkPage = location.pathname === '/bookmark';
@@ -31,7 +57,8 @@ function AppContent() {
   const isRebalancePage = location.pathname.includes('/rebalance');
   const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
   const isPortfolioDetailPage = location.pathname.includes('/portfolio/') && location.pathname.includes('/detail');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage;
+  const isETFDetailPage = location.pathname.includes('/etf/') && location.pathname.includes('/detail');
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage;
 
   return (
     <div style={{
@@ -57,6 +84,7 @@ function AppContent() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/portfolio/delete" element={<PortfolioDelete />} />
           <Route path="/portfolio/:id/detail" element={<PortfolioDetail />} />
+          <Route path="/etf/:id/detail" element={<ETFDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/vocabulary" element={<Vocabulary />} />

@@ -1,9 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LAYOUT } from '../../constants/layout';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
 import { TipCard } from '../../components/common/TipCard';
 import VocabularyCard from '../../components/common/VocabularyCard';
+import { getAllETFs, INDEX_DATA } from '../ETFDetail/data/mockData';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { Chip } from '../../components/common/Chip';
 import { StockFilterToggle } from '../../components/common/ToggleButton';
@@ -245,281 +247,23 @@ const MOCK_CONTENTS = [
   }
 ];
 
-// ETF 리스트 데이터
-const ETF_LIST_DATA = [
-  // 국내주식
-  {
-    id: 1,
-    name: 'KODEX 200',
-    code: '069500',
-    currentPrice: '38,450',
-    changePercent: '1.25',
-    changeDirection: 'up',
-    category: '국내주식',
-    popularity: 95,
-    volume: 1500000,
-    isFavorite: true
-  },
-  {
-    id: 2,
-    name: 'TIGER 코스피',
-    code: '102110',
-    currentPrice: '15,230',
-    changePercent: '0.85',
-    changeDirection: 'up',
-    category: '국내주식',
-    popularity: 88,
-    volume: 980000,
-    isFavorite: false
-  },
-  {
-    id: 3,
-    name: 'ARIRANG 고배당주',
-    code: '161510',
-    currentPrice: '12,340',
-    changePercent: '0.52',
-    changeDirection: 'down',
-    category: '국내주식',
-    popularity: 75,
-    volume: 450000,
-    isFavorite: true
-  },
+// ETF 리스트 데이터 (mockData에서 가져오기)
+const convertMockDataToListFormat = () => {
+  return getAllETFs().map(etf => ({
+    id: etf.id,
+    name: etf.name,
+    code: etf.code,
+    currentPrice: etf.currentPrice.toLocaleString('ko-KR'),
+    changePercent: Math.abs(etf.changePercent).toFixed(2),
+    changeDirection: etf.changeDirection,
+    category: etf.category,
+    popularity: etf.popularity,
+    volume: etf.basicInfo.volume,
+    isFavorite: etf.isFavorite
+  }));
+};
 
-  // 해외주식
-  {
-    id: 4,
-    name: 'TIGER 미국S&P500',
-    code: '360750',
-    currentPrice: '21,970',
-    changePercent: '2.59',
-    changeDirection: 'up',
-    category: '해외 주식',
-    popularity: 98,
-    volume: 2100000,
-    isFavorite: true
-  },
-  {
-    id: 5,
-    name: 'KODEX 미국나스닥100',
-    code: '133690',
-    currentPrice: '28,450',
-    changePercent: '3.15',
-    changeDirection: 'up',
-    category: '해외 주식',
-    popularity: 92,
-    volume: 1850000,
-    isFavorite: true
-  },
-  {
-    id: 6,
-    name: 'ARIRANG 선진국MSCI',
-    code: '195980',
-    currentPrice: '17,820',
-    changePercent: '1.42',
-    changeDirection: 'down',
-    category: '해외 주식',
-    popularity: 70,
-    volume: 620000,
-    isFavorite: false
-  },
-  {
-    id: 7,
-    name: 'TIGER 차이나전기차SOLACTIVE',
-    code: '371460',
-    currentPrice: '8,450',
-    changePercent: '4.25',
-    changeDirection: 'down',
-    category: '해외 주식',
-    popularity: 65,
-    volume: 890000,
-    isFavorite: false
-  },
-
-  // 채권
-  {
-    id: 8,
-    name: 'KODEX 국고채3년',
-    code: '114260',
-    currentPrice: '104,520',
-    changePercent: '0.15',
-    changeDirection: 'up',
-    category: '채권',
-    popularity: 78,
-    volume: 320000,
-    isFavorite: false
-  },
-  {
-    id: 9,
-    name: 'TIGER 미국채10년선물',
-    code: '305080',
-    currentPrice: '9,850',
-    changePercent: '0.32',
-    changeDirection: 'down',
-    category: '채권',
-    popularity: 82,
-    volume: 550000,
-    isFavorite: true
-  },
-  {
-    id: 10,
-    name: 'ARIRANG 단기회사채',
-    code: '182490',
-    currentPrice: '101,250',
-    changePercent: '0.08',
-    changeDirection: 'up',
-    category: '채권',
-    popularity: 68,
-    volume: 280000,
-    isFavorite: false
-  },
-
-  // 원자재/통화
-  {
-    id: 11,
-    name: 'KODEX 골드선물(H)',
-    code: '132030',
-    currentPrice: '13,240',
-    changePercent: '1.85',
-    changeDirection: 'up',
-    category: '원자재/통화',
-    popularity: 85,
-    volume: 720000,
-    isFavorite: true
-  },
-  {
-    id: 12,
-    name: 'TIGER 원유선물Enhanced(H)',
-    code: '217770',
-    currentPrice: '7,620',
-    changePercent: '2.45',
-    changeDirection: 'down',
-    category: '원자재/통화',
-    popularity: 72,
-    volume: 480000,
-    isFavorite: false
-  },
-  {
-    id: 13,
-    name: 'KODEX 미국달러선물',
-    code: '261240',
-    currentPrice: '12,850',
-    changePercent: '0.65',
-    changeDirection: 'up',
-    category: '원자재/통화',
-    popularity: 76,
-    volume: 390000,
-    isFavorite: false
-  },
-
-  // 레버리지/인버스
-  {
-    id: 14,
-    name: 'TIGER 200레버리지',
-    code: '122630',
-    currentPrice: '15,420',
-    changePercent: '5.82',
-    changeDirection: 'up',
-    category: '레버리지/인버스',
-    popularity: 90,
-    volume: 2500000,
-    isFavorite: true
-  },
-  {
-    id: 15,
-    name: 'KODEX 인버스',
-    code: '114800',
-    currentPrice: '4,125',
-    changePercent: '2.15',
-    changeDirection: 'down',
-    category: '레버리지/인버스',
-    popularity: 84,
-    volume: 1950000,
-    isFavorite: false
-  },
-  {
-    id: 16,
-    name: 'TIGER 미국나스닥100레버리지(합성)',
-    code: '315270',
-    currentPrice: '18,650',
-    changePercent: '6.45',
-    changeDirection: 'up',
-    category: '레버리지/인버스',
-    popularity: 88,
-    volume: 1780000,
-    isFavorite: true
-  },
-
-  // 금리
-  {
-    id: 17,
-    name: 'KODEX 단기채권',
-    code: '153130',
-    currentPrice: '102,340',
-    changePercent: '0.12',
-    changeDirection: 'up',
-    category: '금리',
-    popularity: 70,
-    volume: 250000,
-    isFavorite: false
-  },
-  {
-    id: 18,
-    name: 'TIGER 통안채',
-    code: '276650',
-    currentPrice: '100,850',
-    changePercent: '0.05',
-    changeDirection: 'down',
-    category: '금리',
-    popularity: 65,
-    volume: 180000,
-    isFavorite: false
-  },
-
-  // 부동산
-  {
-    id: 19,
-    name: 'KODEX 리츠부동산',
-    code: '114100',
-    currentPrice: '9,240',
-    changePercent: '0.95',
-    changeDirection: 'up',
-    category: '부동산',
-    popularity: 73,
-    volume: 420000,
-    isFavorite: false
-  },
-  {
-    id: 20,
-    name: 'TIGER 미국MSCI리츠(합성)',
-    code: '329200',
-    currentPrice: '11,520',
-    changePercent: '1.28',
-    changeDirection: 'down',
-    category: '부동산',
-    popularity: 68,
-    volume: 340000,
-    isFavorite: true
-  }
-];
-
-// 지수 데이터
-const INDEX_DATA = [
-  { id: 1, name: 'S&P 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up' },
-  { id: 2, name: '코스피', value: '2,547.38', changePercent: '1.85', changeDirection: 'down' },
-  { id: 3, name: '나스닥', value: '20,394.13', changePercent: '3.24', changeDirection: 'up' },
-  { id: 4, name: '다우존스', value: '43,275.91', changePercent: '1.47', changeDirection: 'up' },
-  { id: 5, name: '코스닥', value: '715.42', changePercent: '2.18', changeDirection: 'down' },
-  { id: 6, name: '니케이225', value: '38,283.85', changePercent: '0.92', changeDirection: 'up' },
-  { id: 7, name: '항셍지수', value: '19,435.67', changePercent: '1.63', changeDirection: 'down' },
-  { id: 8, name: '유로스톡스50', value: '4,892.34', changePercent: '0.78', changeDirection: 'up' },
-  { id: 9, name: 'FTSE 100', value: '8,247.15', changePercent: '0.54', changeDirection: 'down' },
-  { id: 10, name: '상하이종합', value: '3,241.76', changePercent: '1.29', changeDirection: 'up' },
-  { id: 11, name: '러셀2000', value: '2,198.37', changePercent: '2.03', changeDirection: 'down' },
-  { id: 12, name: '금 선물', value: '2,654.80', changePercent: '1.15', changeDirection: 'up' },
-  { id: 13, name: '원유 선물', value: '68.42', changePercent: '3.47', changeDirection: 'down' },
-  { id: 14, name: 'DAX 지수', value: '19,215.39', changePercent: '0.67', changeDirection: 'up' },
-  { id: 15, name: '비트코인 선물', value: '97,428.50', changePercent: '4.82', changeDirection: 'up' }
-];
+const ETF_LIST_DATA = convertMockDataToListFormat();
 
 const TABS = ['탐색', '리스트', '지수'];
 
@@ -536,6 +280,7 @@ const SUB_TABS = [
 ];
 
 const Search = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('탐색');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -1298,7 +1043,7 @@ const Search = () => {
                       changeDirection={etf.changeDirection}
                       showTopLabel={false}
                       showPriceComparison={false}
-                      onClick={() => console.log(`ETF ${etf.id} 클릭`)}
+                      onClick={() => navigate(`/etf/${etf.id}/detail`)}
                     />
                   ))
                 )}

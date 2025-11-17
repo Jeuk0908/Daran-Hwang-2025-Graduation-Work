@@ -32,7 +32,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -151,7 +151,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -259,7 +259,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -347,7 +347,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}

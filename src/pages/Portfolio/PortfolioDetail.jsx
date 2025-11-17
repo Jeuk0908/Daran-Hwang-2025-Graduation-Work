@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { TopNav } from '../../components/common/TopNav';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { SmallToggle } from '../../components/common/ToggleButton';
 import { Chip } from '../../components/common/Chip';
 import { Button } from '../../components/common/Button';
 import { getPortfolios, toggleBookmark, getDefaultPortfolioBookmark, getDefaultPortfolioData } from '../../utils/portfolioStorage';
 import { getPortfolioETFs } from '../../utils/portfolioStorage';
+import { getAllETFs } from '../ETFDetail/data/mockData';
 import iconHeartFill from '../../assets/icon_heart_fill.svg';
 import iconHeartOutline from '../../assets/icon_heart_outline.svg';
 import iconBackSR from '../../assets/icon_back(S)_R.svg';
@@ -54,54 +56,23 @@ const PortfolioDetail = () => {
       if (savedETFs) {
         setEtfs(savedETFs);
       } else {
-        // Mock ETF 데이터 (정렬 테스트를 위해 다양한 값 사용)
-        setEtfs([
-          {
-            id: 1,
-            title: 'TIGER 미국S&P500',
-            shares: '5',
-            targetWeight: '35',
-            pricePerShare: '21,970',
-            changePercent: '2.59',
-            changeDirection: 'up'
-          },
-          {
-            id: 2,
-            title: 'KODEX 나스닥100',
-            shares: '3',
-            targetWeight: '25',
-            pricePerShare: '18,450',
-            changePercent: '1.82',
-            changeDirection: 'down'
-          },
-          {
-            id: 3,
-            title: 'TIGER 미국배당다우존스',
-            shares: '7',
-            targetWeight: '20',
-            pricePerShare: '15,320',
-            changePercent: '3.45',
-            changeDirection: 'up'
-          },
-          {
-            id: 4,
-            title: 'KODEX 200',
-            shares: '2',
-            targetWeight: '15',
-            pricePerShare: '32,100',
-            changePercent: '0.95',
-            changeDirection: 'up'
-          },
-          {
-            id: 5,
-            title: 'TIGER 차이나전기차SOLACTIVE',
-            shares: '4',
-            targetWeight: '5',
-            pricePerShare: '9,840',
-            changePercent: '4.21',
-            changeDirection: 'down'
-          }
-        ]);
+        // Mock ETF 데이터 (mockData에서 가져오기)
+        const allMockETFs = getAllETFs();
+        const targetWeights = [35, 25, 20, 15, 5];
+        const sharesCounts = [5, 3, 7, 2, 4];
+
+        setEtfs(
+          allMockETFs.slice(0, 5).map((etf, index) => ({
+            id: index + 1,
+            etfId: etf.id, // mockData의 실제 ETF ID
+            title: etf.name,
+            shares: sharesCounts[index].toString(),
+            targetWeight: targetWeights[index].toString(),
+            pricePerShare: etf.currentPrice.toLocaleString('ko-KR'),
+            changePercent: Math.abs(etf.changePercent).toFixed(2),
+            changeDirection: etf.changeDirection
+          }))
+        );
       }
     } else {
       // 사용자 생성 포트폴리오
@@ -205,19 +176,26 @@ const PortfolioDetail = () => {
   const handleAddProduct = () => {
     if (isMaxETFs) return; // 최대 5개까지만 허용
 
+    // mockData에서 전체 ETF 정보 가져오기
+    const allMockETFs = getAllETFs();
+
     navigate(`/portfolio/${id}/rebalance/add-etf`, {
       state: {
         currentETFCount: etfs.length,
         portfolioId: id,
-        existingETFs: etfs.map(etf => ({
-          id: etf.id,
-          name: etf.title,
-          code: etf.id.toString(),
-          price: etf.pricePerShare,
-          change: etf.changePercent,
-          direction: etf.changeDirection,
-          targetWeight: parseInt(etf.targetWeight)
-        }))
+        existingETFs: etfs.map(etf => {
+          // etfId가 있으면 mockData에서 해당 ETF 찾기
+          const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
+          return mockETF || {
+            id: etf.etfId || `etf-${etf.id}`,
+            name: etf.title,
+            code: etf.code || etf.id.toString(),
+            currentPrice: parseInt(etf.pricePerShare.replace(/,/g, '')),
+            changePercent: parseFloat(etf.changePercent),
+            changeDirection: etf.changeDirection,
+            targetWeight: parseInt(etf.targetWeight)
+          };
+        })
       }
     });
   };
@@ -247,75 +225,21 @@ const PortfolioDetail = () => {
           top: 0,
           zIndex: 100,
           backgroundColor: '#FFFFFF',
-          padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`,
           boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
           transition: 'box-shadow 0.2s ease'
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: '50px',
-            width: '100%'
-          }}
-        >
-          {/* 뒤로가기 버튼 */}
-          <button
-            onClick={handleBackClick}
-            style={{
-              padding: '12px 12px 12px 0',
-              border: 'none',
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            aria-label="뒤로가기"
-          >
-            <div
-              style={{
-                width: '18px',
-                height: '24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transform: 'rotate(180deg) scaleY(-1)'
-              }}
-            >
-              <svg width="18" height="24" viewBox="0 0 18 24" fill="none">
-                <path d="M7 2L16 12L7 22" stroke="#1A1C20" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </button>
-
-          {/* 하트 아이콘 */}
-          <button
-            onClick={handleHeartClick}
-            style={{
-              padding: '12px 0 12px 8px',
-              border: 'none',
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            aria-label="즐겨찾기"
-          >
-            <img
-              src={portfolio.isBookmarked ? iconHeartFill : iconHeartOutline}
-              alt="하트"
-              style={{
-                width: '24px',
-                height: '24px',
-                display: 'block'
-              }}
-            />
-          </button>
-        </div>
+        <TopNav
+          title=""
+          depth="2"
+          state="icon"
+          showBackButton={true}
+          showIconL={false}
+          showIconR={true}
+          iconR={portfolio.isBookmarked ? iconHeartFill : iconHeartOutline}
+          onBackClick={handleBackClick}
+          onIconRClick={handleHeartClick}
+        />
       </div>
 
       {/* 포트폴리오 정보 섹션 */}
@@ -1038,6 +962,7 @@ const PortfolioDetail = () => {
                 showTopLabel={false}
                 showPriceComparison={false}
                 showChart={false}
+                onClick={() => navigate(`/etf/${etf.etfId || `etf-${etf.id}`}/detail`)}
               />
             ))}
           </div>

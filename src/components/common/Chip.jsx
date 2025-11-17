@@ -17,6 +17,7 @@ import { useState } from 'react';
  * @param {'select' | 'nonSelect'} props.state - 선택 상태
  * @param {'primary' | 'grey' | 'default' | 'primary2' | 'tab' | 'upTrend' | 'downTrend'} props.color - 색상 테마
  * @param {number} props.iconRotation - 아이콘 회전 각도 (0: 위쪽, 180: 아래쪽)
+ * @param {'small' | 'medium'} props.size - 크기 (small: 12px, medium: 14px)
  */
 export const Chip = ({
   title = '꾸준 인기',
@@ -25,7 +26,8 @@ export const Chip = ({
   showIcon = false,
   state = 'select',
   color = 'primary',
-  iconRotation
+  iconRotation,
+  size = 'medium'
 }) => {
   // 색상 및 상태별 스타일 정의
   const getStyles = () => {
@@ -89,7 +91,7 @@ export const Chip = ({
     if (color === 'grey') {
       if (state === 'select') {
         return {
-          backgroundColor: '#020203',
+          backgroundColor: '#0092FF',
           color: '#FFFFFF',
           border: 'none',
           iconFill: '#FFFFFF',
@@ -195,18 +197,17 @@ export const Chip = ({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: showIcon ? '12px' : '10px',
-        paddingRight: showIcon ? '4px' : '10px',
+        paddingLeft: showIcon ? '12px' : (size === 'medium' ? '10px' : '6px'),
+        paddingRight: showIcon ? '4px' : (size === 'medium' ? '10px' : '6px'),
         paddingTop: '4px',
         paddingBottom: '4px',
-        height: '32px',
         backgroundColor: styles.backgroundColor,
         border: styles.border,
-        borderRadius: '12px',
+        borderRadius: '8px',
         fontFamily: 'Pretendard, sans-serif',
-        fontSize: '14px',
+        fontSize: size === 'small' ? '12px' : '14px',
         fontWeight: 500,
-        lineHeight: '21px',
+        lineHeight: size === 'small' ? '18px' : '21px',
         color: styles.color,
         whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -280,10 +281,9 @@ export const TrendChip = ({
         paddingRight: '4px',
         paddingTop: '4px',
         paddingBottom: '4px',
-        height: '32px',
         backgroundColor: styles.backgroundColor,
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: '8px',
         fontFamily: 'Pretendard, sans-serif',
         fontSize: '14px',
         fontWeight: 500,
