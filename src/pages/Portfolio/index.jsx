@@ -251,7 +251,7 @@ const Portfolio = () => {
                 alignItems: 'center',
                 cursor: 'pointer'
               }}
-              onClick={() => console.log('설정 클릭')}
+              onClick={() => navigate('/portfolio/delete')}
             >
               <div
                 style={{
@@ -307,24 +307,31 @@ const Portfolio = () => {
                     zIndex: isAnimating ? 10 : 1
                   }}
                 >
-                  <PortfolioMainCard
-                    portfolioType="대표 포트폴리오"
-                    tags={getPortfolioTags(portfolio)}
-                    title={portfolio.portfolioName}
-                    isFavorite={portfolio.isBookmarked}
-                    amount={portfolio.amount?.toLocaleString('ko-KR') || '0'}
-                    changePercent={Math.abs(portfolio.returnRate || 0).toString()}
-                    changeDirection={portfolio.returnRate >= 0 ? 'up' : 'down'}
-                    primaryButtonText={portfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
-                    secondaryButtonText="체크포인트"
-                    onFavoriteClick={() => handleFavoriteClick(portfolio.id)}
-                    onPrimaryButtonClick={() => {
-                      console.log('리밸런싱 확인 clicked:', portfolio.id);
-                    }}
-                    onSecondaryButtonClick={() => {
-                      console.log('체크포인트 clicked:', portfolio.id);
-                    }}
-                  />
+                  <div onClick={() => navigate(`/portfolio/${portfolio.id}/detail`)}>
+                    <PortfolioMainCard
+                      portfolioType="대표 포트폴리오"
+                      tags={getPortfolioTags(portfolio)}
+                      title={portfolio.portfolioName}
+                      isFavorite={portfolio.isBookmarked}
+                      amount={portfolio.amount?.toLocaleString('ko-KR') || '0'}
+                      changePercent={Math.abs(portfolio.returnRate || 0).toString()}
+                      changeDirection={portfolio.returnRate >= 0 ? 'up' : 'down'}
+                      primaryButtonText={portfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
+                      secondaryButtonText="체크포인트"
+                      onFavoriteClick={(e) => {
+                        e.stopPropagation();
+                        handleFavoriteClick(portfolio.id);
+                      }}
+                      onPrimaryButtonClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/portfolio/${portfolio.id}/rebalance`);
+                      }}
+                      onSecondaryButtonClick={(e) => {
+                        e.stopPropagation();
+                        console.log('체크포인트 clicked:', portfolio.id);
+                      }}
+                    />
+                  </div>
                 </div>
               );
             }
@@ -341,24 +348,31 @@ const Portfolio = () => {
                   zIndex: isAnimating ? 10 : 1
                 }}
               >
-                <PortfolioListCard
-                  title={portfolio.portfolioName || '포트폴리오'}
-                  investmentStyle={portfolio.isManualCreated ? '직접제작' : (portfolio.riskType || '투자 성향')}
-                  investmentKeyword={portfolio.isManualCreated ? '' : (portfolio.investmentStyle || '투자 키워드')}
-                  price={portfolio.amount?.toLocaleString('ko-KR') || '0'}
-                  changePercent={Math.abs(portfolio.returnRate || 0).toString()}
-                  changeDirection={portfolio.returnRate >= 0 ? 'up' : 'down'}
-                  primaryButtonText={portfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
-                  secondaryButtonText="체크포인트"
-                  isFavorite={portfolio.isBookmarked || false}
-                  onFavoriteClick={() => handleFavoriteClick(portfolio.id)}
-                  onPrimaryButtonClick={() => {
-                    navigate(`/portfolio/${portfolio.id}/rebalance`);
-                  }}
-                  onSecondaryButtonClick={() => {
-                    console.log('체크포인트 clicked:', portfolio.id);
-                  }}
-                />
+                <div onClick={() => navigate(`/portfolio/${portfolio.id}/detail`)}>
+                  <PortfolioListCard
+                    title={portfolio.portfolioName || '포트폴리오'}
+                    investmentStyle={portfolio.isManualCreated ? '직접제작' : (portfolio.riskType || '투자 성향')}
+                    investmentKeyword={portfolio.isManualCreated ? '' : (portfolio.investmentStyle || '투자 키워드')}
+                    price={portfolio.amount?.toLocaleString('ko-KR') || '0'}
+                    changePercent={Math.abs(portfolio.returnRate || 0).toString()}
+                    changeDirection={portfolio.returnRate >= 0 ? 'up' : 'down'}
+                    primaryButtonText={portfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
+                    secondaryButtonText="체크포인트"
+                    isFavorite={portfolio.isBookmarked || false}
+                    onFavoriteClick={(e) => {
+                      e.stopPropagation();
+                      handleFavoriteClick(portfolio.id);
+                    }}
+                    onPrimaryButtonClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/portfolio/${portfolio.id}/rebalance`);
+                    }}
+                    onSecondaryButtonClick={(e) => {
+                      e.stopPropagation();
+                      console.log('체크포인트 clicked:', portfolio.id);
+                    }}
+                  />
+                </div>
               </div>
             );
           })

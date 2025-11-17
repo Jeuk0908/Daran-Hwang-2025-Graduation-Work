@@ -6,9 +6,11 @@ import MyPage from './pages/MyPage'
 import Bookmark from './pages/Bookmark'
 import HomePage from './pages/Home'
 import Portfolio from './pages/Portfolio'
+import PortfolioDelete from './pages/Portfolio/PortfolioDelete'
+import PortfolioDetail from './pages/Portfolio/PortfolioDetail'
 import Search from './pages/Search'
 import PortfolioCreate from './pages/PortfolioCreate'
-import Rebalance from './Pages/Rebalance'
+import Rebalance from './pages/Rebalance'
 import MethodSelection from './pages/PortfolioCreate/MethodSelection'
 import AutoCreate from './pages/PortfolioCreate/AutoCreate'
 import AutoCreateStep2 from './pages/PortfolioCreate/AutoCreateStep2'
@@ -27,7 +29,9 @@ function AppContent() {
   const isHomePage = location.pathname === '/home';
   const isPortfolioCreatePage = location.pathname.startsWith('/portfolio/create');
   const isRebalancePage = location.pathname.includes('/rebalance');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage;
+  const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
+  const isPortfolioDetailPage = location.pathname.includes('/portfolio/') && location.pathname.includes('/detail');
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage;
 
   return (
     <div style={{
@@ -51,6 +55,8 @@ function AppContent() {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/portfolio/delete" element={<PortfolioDelete />} />
+          <Route path="/portfolio/:id/detail" element={<PortfolioDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/vocabulary" element={<Vocabulary />} />
@@ -67,6 +73,7 @@ function AppContent() {
           <Route path="/portfolio/create/step3" element={<ManualCreateStep3 />} />
           <Route path="/portfolio/create/step4" element={<AutoCreateStep5 />} />
           <Route path="/portfolio/:id/rebalance" element={<Rebalance />} />
+          <Route path="/portfolio/:id/rebalance/add-etf" element={<ManualCreateStep2 mode="add" />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>

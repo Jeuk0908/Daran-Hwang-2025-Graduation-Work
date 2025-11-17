@@ -18,6 +18,7 @@ import iconDowndownS from '../../assets/자산 card ui/icon_downdown_s.svg';
  * @param {'up' | 'down'} props.changeDirection - 변동 방향
  * @param {boolean} props.showTopLabel - TOP 라벨 표시 여부 (기본: true)
  * @param {boolean} props.showPriceComparison - 가격 비교 정보 표시 여부 (기본: true, false면 code 표시)
+ * @param {boolean} props.showChart - 차트 표시 여부 (기본: true)
  * @param {boolean} props.isSelected - 선택 여부 (포트폴리오 제작 시 사용)
  * @param {function} props.onClick - 클릭 핸들러
  */
@@ -35,6 +36,7 @@ export const SimpleChartViewer = ({
   changeDirection = 'up',
   showTopLabel = true,
   showPriceComparison = true,
+  showChart = true,
   isSelected = false,
   onClick
 }) => {
@@ -240,54 +242,56 @@ export const SimpleChartViewer = ({
         </div>
 
         {/* 중앙: 차트 */}
-        <div
-          style={{
-            width: '60px',
-            height: '46px',
-            flexShrink: 0,
-            position: 'relative'
-          }}
-        >
-          {chartImage ? (
-            <img
-              src={chartImage}
-              alt=""
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'block'
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: '#F7F7F8',
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <svg
-                width="60"
-                height="46"
-                viewBox="0 0 60 46"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+        {showChart && (
+          <div
+            style={{
+              width: '60px',
+              height: '46px',
+              flexShrink: 0,
+              position: 'relative'
+            }}
+          >
+            {chartImage ? (
+              <img
+                src={chartImage}
+                alt=""
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'block'
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: '#F7F7F8',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                <path
-                  d="M2 40L15 28L25 35L38 15L58 8"
-                  stroke={changeColor}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          )}
-        </div>
+                <svg
+                  width="60"
+                  height="46"
+                  viewBox="0 0 60 46"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2 40L15 28L25 35L38 15L58 8"
+                    stroke={changeColor}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 우측: 가격 정보 */}
         <div
