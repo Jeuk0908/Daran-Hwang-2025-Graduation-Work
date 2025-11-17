@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { PortfolioMainCard } from '../../components/common/PortfolioMainCard';
@@ -10,6 +10,7 @@ import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { getPortfolios, getDefaultPortfolioBookmark, getDefaultPortfolioData, getPortfolioOrder } from '../../utils/portfolioStorage';
 import iconBellOutline from '../../assets/icon_bell_outline_1.svg';
 import iconWhy from '../../assets/icon_why(12_12).svg';
 
@@ -22,8 +23,59 @@ const HomePage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [popularTrend, setPopularTrend] = useState('up'); // 오늘 인기 트렌드 상태
   const [volumeTrend, setVolumeTrend] = useState('up'); // 거래량 트렌드 상태
+  const [favoritePortfolio, setFavoritePortfolio] = useState(null); // 즐겨찾기된 포트폴리오
 
   const periodOptions = ['당일', '1주', 'YTD'];
+
+  // 즐겨찾기된 포트폴리오 로드
+  useEffect(() => {
+    loadFavoritePortfolio();
+  }, []);
+
+  const loadFavoritePortfolio = () => {
+    // 기본 포트폴리오 데이터 (금액, 수익률) 가져오기
+    const defaultData = getDefaultPortfolioData();
+
+    // 기본 포트폴리오 (대표 포트폴리오)
+    const defaultPortfolio = {
+      id: 'default-1',
+      portfolioName: '미국 빅테크 배당금',
+      isMainPortfolio: true,
+      isBookmarked: getDefaultPortfolioBookmark(),
+      amount: defaultData.amount,
+      returnRate: defaultData.returnRate,
+      riskType: '투자 성향',
+      investmentStyle: '투자 키워드',
+      createdAt: '2024-01-01T00:00:00.000Z'
+    };
+
+    const savedPortfolios = getPortfolios();
+
+    // 모든 포트폴리오를 ID로 매핑
+    const portfolioMap = {
+      'default-1': defaultPortfolio,
+      ...Object.fromEntries(savedPortfolios.map(p => [p.id, p]))
+    };
+
+    // 저장된 순서대로 포트폴리오 배열 생성
+    const order = getPortfolioOrder();
+    const sortedPortfolios = order
+      .map(id => portfolioMap[id])
+      .filter(Boolean); // undefined 제거 (삭제된 포트폴리오 등)
+
+    // 첫 번째 포트폴리오가 즐겨찾기된 포트폴리오
+    if (sortedPortfolios.length > 0) {
+      setFavoritePortfolio(sortedPortfolios[0]);
+    }
+  };
+
+  // 포트폴리오 이름에서 투자 스타일과 키워드 추출
+  const getPortfolioTags = (portfolio) => {
+    if (!portfolio) return ['#투자 성향', '#투자 키워드'];
+    const riskType = portfolio.riskType || '안정형';
+    const investmentStyle = portfolio.investmentStyle || '배당';
+    return [`#${riskType}`, `#${investmentStyle}`];
+  };
 
   // Mock data
   const marketIndices = [
@@ -248,20 +300,77 @@ const HomePage = () => {
           width: '100%'
         }}
       >
-        <PortfolioMainCard
-          portfolioType="대표 포트폴리오"
-          tags={['#투자 성향', '#투자 키워드']}
-          title="미국 빅테크 배당금"
-          isFavorite={true}
-          amount="999,999,998"
-          changePercent="27.3"
-          changeDirection="down"
-          primaryButtonText="리밸런싱 확인"
-          secondaryButtonText="체크포인트"
-          onFavoriteClick={() => console.log('Favorite clicked')}
-          onPrimaryButtonClick={() => navigate('/portfolio/1/rebalance')}
-          onSecondaryButtonClick={() => console.log('Secondary button clicked')}
-        />
+        {favoritePortfolio ? (
+          <div onClick={() => navigate(`/portfolio/${favoritePortfolio.id}/detail`)}>
+            <PortfolioMainCard
+              portfolioType="대표 포트폴리오"
+              tags={getPortfolioTags(favoritePortfolio)}
+              title={favoritePortfolio.portfolioName}
+              isFavorite={true}
+              amount={favoritePortfolio.amount?.toLocaleString('ko-KR') || '0'}
+              changePercent={Math.abs(favoritePortfolio.returnRate || 0).toString()}
+              changeDirection={favoritePortfolio.returnRate >= 0 ? 'up' : 'down'}
+              primaryButtonText={favoritePortfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
+              secondaryButtonText="체크포인트"
+              onFavoriteClick={(e) => {
+                e.stopPropagation();
+                navigate('/portfolio');
+              }}
+              onPrimaryButtonClick={(e) => {
+                e.stopPropagation();
+                navigate(`/portfolio/${favoritePortfolio.id}/rebalance`);
+              }}
+              onSecondaryButtonClick={(e) => {
+                e.stopPropagation();
+                console.log('체크포인트 clicked:', favoritePortfolio.id);
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              boxShadow: '1px 2px 13.6px 0px rgba(52, 144, 255, 0.25)',
+              borderRadius: '12px',
+              padding: '40px 16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={() => navigate('/portfolio/create')}
+          >
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                lineHeight: 1.5,
+                color: '#757E8F',
+                margin: 0,
+                textAlign: 'center'
+              }}
+            >
+              아직 생성된 포트폴리오가 없습니다.
+            </p>
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                lineHeight: 1.5,
+                color: '#3490FF',
+                margin: 0,
+                textAlign: 'center'
+              }}
+            >
+              포트폴리오 제작하기
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Market Indices Section */}

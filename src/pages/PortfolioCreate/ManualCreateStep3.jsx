@@ -104,7 +104,7 @@ const ManualCreateStep3 = () => {
       // localStorage에 ETF 목록 저장
       setPortfolioETFs(portfolioId, etfsForRebalance);
 
-      navigate(`/portfolio/${portfolioId}/rebalance`);
+      navigate(`/portfolio/${portfolioId}/rebalance`, { replace: true });
       return;
     }
 

@@ -5,6 +5,7 @@ import { useScrollShadow } from '../../hooks/useScrollShadow';
 import { SimpleChartViewer } from '../../components/common/SimpleChartViewer';
 import { SmallToggle } from '../../components/common/ToggleButton';
 import { Chip } from '../../components/common/Chip';
+import { Button } from '../../components/common/Button';
 import { getPortfolios, toggleBookmark, getDefaultPortfolioBookmark, getDefaultPortfolioData } from '../../utils/portfolioStorage';
 import { getPortfolioETFs } from '../../utils/portfolioStorage';
 import iconHeartFill from '../../assets/icon_heart_fill.svg';
@@ -195,6 +196,30 @@ const PortfolioDetail = () => {
     }
 
     return sortedETFs;
+  };
+
+  // ETF 최대 개수 체크
+  const isMaxETFs = etfs.length >= 5;
+
+  // 상품 추가 핸들러
+  const handleAddProduct = () => {
+    if (isMaxETFs) return; // 최대 5개까지만 허용
+
+    navigate(`/portfolio/${id}/rebalance/add-etf`, {
+      state: {
+        currentETFCount: etfs.length,
+        portfolioId: id,
+        existingETFs: etfs.map(etf => ({
+          id: etf.id,
+          name: etf.title,
+          code: etf.id.toString(),
+          price: etf.pricePerShare,
+          change: etf.changePercent,
+          direction: etf.changeDirection,
+          targetWeight: parseInt(etf.targetWeight)
+        }))
+      }
+    });
   };
 
   if (!portfolio) {
@@ -1048,7 +1073,9 @@ const PortfolioDetail = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              상품 매도와 매수는 리밸런싱에서 할 수 있어요
+              {isMaxETFs
+                ? '포트폴리오에 최대 5개의 상품까지 담을 수 있어요.'
+                : '목표 비중의 합계는 100%가 되어야 해요.'}
             </p>
           </div>
 
@@ -1063,34 +1090,14 @@ const PortfolioDetail = () => {
               borderRadius: '8px'
             }}
           >
-            <div
-              style={{
-                backgroundColor: '#E6E7EA',
-                borderRadius: '12px',
-                padding: '16px',
-                display: 'flex',
-                gap: '10px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                maxWidth: '361px',
-                cursor: 'not-allowed'
-              }}
+            <Button
+              variant={isMaxETFs ? 'grey' : 'primary'}
+              fullWidth={true}
+              onClick={handleAddProduct}
+              disabled={isMaxETFs}
             >
-              <p
-                style={{
-                  fontFamily: 'Pretendard, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  lineHeight: 1.35,
-                  color: '#9198A6',
-                  margin: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                상품 추가하기
-              </p>
-            </div>
+              상품 추가하기
+            </Button>
           </div>
         </div>
       </div>
