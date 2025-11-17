@@ -31,12 +31,19 @@ const TABS = [
   '부동산'
 ];
 
-const ManualCreateStep2 = () => {
+const ManualCreateStep2 = ({ mode = 'create' }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const hasScrolled = useScrollShadow(0);
 
   const previousData = location.state || {};
+
+  // 최대 선택 가능 ETF 개수 계산
+  // 추가 모드: 5 - 현재 ETF 개수 (최소 0개)
+  // 생성 모드: 5개
+  const maxETFs = mode === 'add'
+    ? Math.max(0, 5 - (previousData.currentETFCount || 0))
+    : 5;
 
   const [selectedTab, setSelectedTab] = useState('전체보기');
   const [selectedFilter, setSelectedFilter] = useState('꾸준 인기'); // '꾸준 인기' or '거래량'
@@ -54,23 +61,33 @@ const ManualCreateStep2 = () => {
     if (selectedETFs.includes(etfId)) {
       setSelectedETFs(selectedETFs.filter(id => id !== etfId));
     } else {
-      if (selectedETFs.length < 5) {
+      if (selectedETFs.length < maxETFs) {
         setSelectedETFs([...selectedETFs, etfId]);
       }
     }
   };
 
   const handleNextClick = () => {
-    // 5개가 선택되었을 때만 다음 페이지로 이동
-    if (selectedETFs.length !== 5) return;
+    // 1개 이상 선택되었을 때 다음 페이지로 이동
+    if (selectedETFs.length === 0) return;
 
-    // 다음 단계로 이동 (3/4) - 선택된 ETF 정보 전달
+    // 새로 선택한 ETF 목록
+    const newlySelectedETFs = selectedETFs.map(id =>
+      MOCK_ETFS.find(etf => etf.id === id)
+    );
+
+    // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
+    // create 모드: 새로 선택한 ETF만
+    const allETFs = mode === 'add'
+      ? [...(previousData.existingETFs || []), ...newlySelectedETFs]
+      : newlySelectedETFs;
+
+    // 다음 단계로 이동 (3/4) - 모든 ETF 정보 전달
     navigate('/portfolio/create/step3', {
       state: {
         ...previousData,
-        selectedETFs: selectedETFs.map(id =>
-          MOCK_ETFS.find(etf => etf.id === id)
-        )
+        selectedETFs: allETFs,
+        isAddMode: mode === 'add' // step3에서 add 모드임을 알 수 있도록
       }
     });
   };
@@ -215,7 +232,7 @@ const ManualCreateStep2 = () => {
               alignItems: 'center'
             }}
           >
-            {/* 선택 ETF 확인 Chip */}
+            {/* 선택/담은 ETF 확인 Chip */}
             <div
               onClick={handleSelectedETFClick}
               style={{
@@ -236,23 +253,25 @@ const ManualCreateStep2 = () => {
                   whiteSpace: 'nowrap'
                 }}
               >
-                선택 ETF 확인
+                {mode === 'add' ? '담은 ETF 확인' : '선택 ETF 확인'}
               </p>
             </div>
 
-            {/* Progress Indicator */}
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '20px',
-                fontWeight: 400,
-                lineHeight: 1.5,
-                color: '#757E8F',
-                margin: 0
-              }}
-            >
-              2/4
-            </p>
+            {/* Progress Indicator - 생성 모드에서만 표시 */}
+            {mode === 'create' && (
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '20px',
+                  fontWeight: 400,
+                  lineHeight: 1.5,
+                  color: '#757E8F',
+                  margin: 0
+                }}
+              >
+                2/4
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -673,21 +692,27 @@ const ManualCreateStep2 = () => {
                 textAlign: 'center'
               }}
             >
-              {selectedETFs.length === 5
-                ? '전부 선택했어요!'
+              {mode === 'add'
+                ? selectedETFs.length === maxETFs
+                  ? `최대 ${maxETFs}개까지 선택할 수 있어요`
+                  : selectedETFs.length > 0
+                  ? `최대 ${maxETFs}개까지 담을 수 있어요`
+                  : '담을 ETF를 선택해 주세요'
+                : selectedETFs.length === 5
+                ? '최대 5개까지 선택할 수 있어요'
                 : selectedETFs.length > 0
                 ? '최대 5개까지 담을 수 있어요'
-                : '담을 ETF를 선택해 주세요'}
+                : '담을 ETF를 선택해주세요'}
             </p>
           </div>
           <div style={{ padding: '12px 0' }}>
-            {selectedETFs.length === 5 ? (
+            {selectedETFs.length > 0 ? (
               <button
                 onClick={handleNextClick}
                 style={{
                   width: '100%',
                   height: '54px',
-                  backgroundColor: '#3490FF',
+                  backgroundColor: mode === 'add' ? '#DDEFFF' : '#3490FF',
                   border: 'none',
                   borderRadius: '12px',
                   padding: '16px',
@@ -699,37 +724,14 @@ const ManualCreateStep2 = () => {
                   fontSize: '16px',
                   fontWeight: 600,
                   lineHeight: 1.35,
-                  color: '#FFFFFF',
+                  color: mode === 'add' ? '#005CCC' : '#FFFFFF',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
               >
-                다음으로
-              </button>
-            ) : selectedETFs.length > 0 ? (
-              <button
-                onClick={handleNextClick}
-                style={{
-                  width: '100%',
-                  height: '54px',
-                  backgroundColor: '#E0EEFF',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontFamily: 'Pretendard, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  lineHeight: 1.35,
-                  color: '#004599',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                선택하기 {selectedETFs.length}/5
+                {mode === 'add'
+                  ? `추가하기 ${selectedETFs.length}/${maxETFs}`
+                  : `다음으로 (${selectedETFs.length}/5)`}
               </button>
             ) : (
               <Button
@@ -737,7 +739,7 @@ const ManualCreateStep2 = () => {
                 onClick={handleNextClick}
                 disabled={true}
               >
-                선택하기 0/5
+                {mode === 'add' ? `추가하기 0/${maxETFs}` : '선택하기 0/5'}
               </Button>
             )}
           </div>

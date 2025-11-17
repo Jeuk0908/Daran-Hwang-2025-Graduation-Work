@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { RebalanceInfoCard } from '../../components/common/RebalanceInfoCard';
 import RebalanceETFCard from '../../components/common/RebalanceETFCard';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
+import { getPortfolioETFs } from '../../utils/portfolioStorage';
 
 // Mock 데이터
 const REBALANCE_DATA = {
@@ -77,16 +78,47 @@ const Rebalance = () => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isProfitMode, setIsProfitMode] = useState(true); // 순 수익 모드 (true) vs 목표까지 모드 (false)
+  const [rebalanceData, setRebalanceData] = useState(REBALANCE_DATA[id] || REBALANCE_DATA[1]);
 
-  // Mock 데이터 가져오기
-  const rebalanceData = REBALANCE_DATA[id] || REBALANCE_DATA[1];
+  // localStorage에서 ETF 목록 불러오기
+  useEffect(() => {
+    const savedETFs = getPortfolioETFs(id);
+    if (savedETFs) {
+      // 저장된 ETF 목록이 있으면 rebalanceData 업데이트
+      setRebalanceData(prev => ({
+        ...prev,
+        etfs: savedETFs
+      }));
+    }
+  }, [id]);
+
+  // ETF 최대 개수 체크 (최대 5개)
+  const isMaxETFs = rebalanceData.etfs.length >= 5;
 
   const handleBack = () => {
     navigate(-1);
   };
 
   const handleAddProduct = () => {
-    console.log('상품 추가하기 클릭');
+    // 이미 5개 이상이면 추가 불가
+    if (isMaxETFs) return;
+
+    // ETF 추가 페이지로 이동 (현재 ETF 개수 및 목록 전달)
+    navigate(`/portfolio/${id}/rebalance/add-etf`, {
+      state: {
+        currentETFCount: rebalanceData.etfs.length,
+        portfolioId: id,
+        existingETFs: rebalanceData.etfs.map(etf => ({
+          id: etf.id,
+          name: etf.title,
+          code: etf.id.toString(),
+          price: etf.pricePerShare,
+          change: '0',
+          direction: 'up',
+          targetWeight: parseInt(etf.targetWeight) // 기존 비중 정보 전달
+        }))
+      }
+    });
   };
 
   return (
@@ -205,7 +237,9 @@ const Rebalance = () => {
               margin: 0
             }}
           >
-            목표 비중의 합계는 100%가 되어야 해요.
+            {isMaxETFs
+              ? '포트폴리오에 최대 5개의 상품까지 담을 수 있어요.'
+              : '목표 비중의 합계는 100%가 되어야 해요.'}
           </p>
         </div>
 
@@ -217,9 +251,10 @@ const Rebalance = () => {
           }}
         >
           <Button
-            variant="primary"
+            variant={isMaxETFs ? 'grey' : 'primary'}
             fullWidth={true}
             onClick={handleAddProduct}
+            disabled={isMaxETFs}
           >
             상품 추가하기
           </Button>

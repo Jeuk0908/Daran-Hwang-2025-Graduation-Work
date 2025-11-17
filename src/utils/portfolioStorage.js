@@ -255,3 +255,36 @@ export const toggleBookmark = (id, currentOrder) => {
     return false;
   }
 };
+
+/**
+ * 포트폴리오의 ETF 목록 가져오기
+ * @param {string} portfolioId - 포트폴리오 ID
+ * @returns {Array} ETF 목록
+ */
+export const getPortfolioETFs = (portfolioId) => {
+  try {
+    const key = `portfolio_etfs_${portfolioId}`;
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error('포트폴리오 ETF 목록 불러오기 실패:', error);
+    return null;
+  }
+};
+
+/**
+ * 포트폴리오의 ETF 목록 저장하기
+ * @param {string} portfolioId - 포트폴리오 ID
+ * @param {Array} etfs - ETF 목록
+ * @returns {boolean} 성공 여부
+ */
+export const setPortfolioETFs = (portfolioId, etfs) => {
+  try {
+    const key = `portfolio_etfs_${portfolioId}`;
+    localStorage.setItem(key, JSON.stringify(etfs));
+    return true;
+  } catch (error) {
+    console.error('포트폴리오 ETF 목록 저장 실패:', error);
+    return false;
+  }
+};

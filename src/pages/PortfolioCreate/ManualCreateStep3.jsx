@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { setPortfolioETFs } from '../../utils/portfolioStorage';
 import iconBackL from '../../assets/icon_back_L.svg';
 
 const ManualCreateStep3 = () => {
@@ -17,20 +18,62 @@ const ManualCreateStep3 = () => {
   // 편집 중인 항목 ID 추적
   const [editingItemId, setEditingItemId] = useState(null);
 
-  // 선택된 ETF를 포트폴리오 아이템으로 변환 (초기 비중은 균등 분배)
-  const initialWeight = selectedETFs.length > 0 ? Math.floor(100 / selectedETFs.length) : 0;
-  const [portfolioItems, setPortfolioItems] = useState(
-    selectedETFs.map((etf, index) => ({
-      id: etf.id,
-      name: etf.name,
-      code: etf.code,
-      pricePerShare: parseInt(etf.price.replace(/,/g, '')),
-      targetWeight: initialWeight,
-      appliedWeight: 100,
-      buyShares: 1, // 임시로 1주로 설정
-      totalAmount: parseInt(etf.price.replace(/,/g, ''))
-    }))
-  );
+  // 선택된 ETF를 포트폴리오 아이템으로 변환
+  // add 모드: 기존 ETF는 기존 비중 유지, 새 ETF는 남은 비중을 균등 분배
+  // create 모드: 모든 ETF를 균등 분배
+  const [portfolioItems, setPortfolioItems] = useState(() => {
+    if (previousData.isAddMode) {
+      // 기존 ETF의 ID 목록
+      const existingETFIds = (previousData.existingETFs || []).map(etf => etf.id);
+
+      // 기존 ETF의 총 비중 계산
+      const existingTotalWeight = (previousData.existingETFs || []).reduce(
+        (sum, etf) => sum + (etf.targetWeight || 0),
+        0
+      );
+
+      // 새로 추가된 ETF 개수
+      const newETFCount = selectedETFs.filter(etf => !existingETFIds.includes(etf.id)).length;
+
+      // 새 ETF에 할당할 남은 비중 (균등 분배)
+      const remainingWeight = 100 - existingTotalWeight;
+      const newETFWeight = newETFCount > 0 ? Math.floor(remainingWeight / newETFCount) : 0;
+
+      return selectedETFs.map((etf) => {
+        // 기존 ETF인지 확인
+        const isExistingETF = existingETFIds.includes(etf.id);
+        const existingETF = isExistingETF
+          ? previousData.existingETFs.find(e => e.id === etf.id)
+          : null;
+
+        return {
+          id: etf.id,
+          name: etf.name,
+          code: etf.code,
+          pricePerShare: parseInt(etf.price.replace(/,/g, '')),
+          targetWeight: isExistingETF && existingETF
+            ? existingETF.targetWeight  // 기존 비중 유지
+            : newETFWeight,              // 새 ETF는 남은 비중 균등 분배
+          appliedWeight: 100,
+          buyShares: 1,
+          totalAmount: parseInt(etf.price.replace(/,/g, ''))
+        };
+      });
+    } else {
+      // create 모드: 균등 분배
+      const initialWeight = selectedETFs.length > 0 ? Math.floor(100 / selectedETFs.length) : 0;
+      return selectedETFs.map((etf) => ({
+        id: etf.id,
+        name: etf.name,
+        code: etf.code,
+        pricePerShare: parseInt(etf.price.replace(/,/g, '')),
+        targetWeight: initialWeight,
+        appliedWeight: 100,
+        buyShares: 1,
+        totalAmount: parseInt(etf.price.replace(/,/g, ''))
+      }));
+    }
+  });
 
   const handleBackClick = () => {
     navigate(-1);
@@ -38,7 +81,34 @@ const ManualCreateStep3 = () => {
 
   const handleCompleteClick = () => {
     if (totalWeight !== 100) return;
-    // TODO: 다음 단계로 이동 (4/4) - 포트폴리오 아이템을 포함하여 state로 전달
+
+    // add 모드: 리밸런싱 페이지로 돌아가기
+    if (previousData.isAddMode) {
+      const portfolioId = previousData.portfolioId;
+
+      // portfolioItems를 Rebalance 페이지에서 사용할 수 있는 형식으로 변환
+      const etfsForRebalance = portfolioItems.map((item, index) => ({
+        id: item.id,
+        title: item.name,
+        targetWeight: item.targetWeight.toString(),
+        currentWeight: item.targetWeight.toString(), // 초기에는 목표 비중과 동일
+        adjustedWeight: item.targetWeight.toString(),
+        shares: item.buyShares.toString(),
+        actionType: 'none',
+        actionShares: '0',
+        actionText: '조정하지 않아도 괜찮아요!',
+        pricePerShare: item.pricePerShare.toLocaleString('ko-KR'),
+        totalAmount: item.totalAmount.toLocaleString('ko-KR')
+      }));
+
+      // localStorage에 ETF 목록 저장
+      setPortfolioETFs(portfolioId, etfsForRebalance);
+
+      navigate(`/portfolio/${portfolioId}/rebalance`);
+      return;
+    }
+
+    // create 모드: 다음 단계로 이동 (4/4) - 포트폴리오 아이템을 포함하여 state로 전달
     navigate('/portfolio/create/step4', {
       state: {
         ...previousData,
@@ -144,19 +214,21 @@ const ManualCreateStep3 = () => {
             />
           </button>
 
-          {/* Progress Indicator */}
-          <p
-            style={{
-              fontFamily: 'Pretendard, sans-serif',
-              fontSize: '20px',
-              fontWeight: 400,
-              lineHeight: 1.5,
-              color: '#757E8F',
-              margin: 0
-            }}
-          >
-            3/4
-          </p>
+          {/* Progress Indicator - create 모드에서만 표시 */}
+          {!previousData.isAddMode && (
+            <p
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '20px',
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: '#757E8F',
+                margin: 0
+              }}
+            >
+              3/4
+            </p>
+          )}
         </div>
       </div>
 

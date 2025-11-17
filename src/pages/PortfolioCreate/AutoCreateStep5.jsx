@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
-import { addPortfolio } from '../../utils/portfolioStorage';
+import { addPortfolio, setPortfolioETFs } from '../../utils/portfolioStorage';
 import iconBackL from '../../assets/icon_back_L.svg';
 
 const AutoCreateStep5 = () => {
@@ -202,6 +202,24 @@ const AutoCreateStep5 = () => {
       // localStorage에 저장
       const savedPortfolio = addPortfolio(portfolioData);
       console.log('포트폴리오 생성 완료:', savedPortfolio);
+
+      // ETF 정보가 있으면 함께 저장
+      if (previousData.portfolioItems && previousData.portfolioItems.length > 0) {
+        const etfsForRebalance = previousData.portfolioItems.map((item) => ({
+          id: item.id,
+          title: item.name,
+          targetWeight: item.targetWeight.toString(),
+          currentWeight: item.targetWeight.toString(),
+          adjustedWeight: item.targetWeight.toString(),
+          shares: item.buyShares.toString(),
+          actionType: 'none',
+          actionShares: '0',
+          actionText: '조정하지 않아도 괜찮아요!',
+          pricePerShare: item.pricePerShare.toLocaleString('ko-KR'),
+          totalAmount: item.totalAmount.toLocaleString('ko-KR')
+        }));
+        setPortfolioETFs(savedPortfolio.id, etfsForRebalance);
+      }
 
       // 포트폴리오 페이지로 이동
       navigate('/portfolio');
