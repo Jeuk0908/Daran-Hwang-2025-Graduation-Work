@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LAYOUT } from '../../constants/layout';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
@@ -15,6 +15,8 @@ import { ListItemSkeleton } from '../../components/common/ListItemSkeleton';
 import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
 import iconSearch from '../../assets/icon_search.svg';
 import iconCancel from '../../assets/icon_cancel(S).svg';
+import iconBookmarkOutline from '../../assets/icon_bookmark(s)_o.svg';
+import iconBackDown from '../../assets/icon_back(S)_D.svg';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
 import iconDividenReinvest from '../../assets/분배금 재투자_24.svg';
@@ -292,6 +294,34 @@ const Search = () => {
   const [showIndexGuide, setShowIndexGuide] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // 탐색 탭 초기 로딩
   const [loadedTabs, setLoadedTabs] = useState(new Set()); // 처음 로드되는 탭 추적 (탐색 탭 제외)
+  const [isSearchActive, setIsSearchActive] = useState(false); // 검색창 활성화 상태
+  const [searchTab, setSearchTab] = useState('ETF 상품'); // 검색 활성화 시 탭 (ETF 상품, TIP/용어)
+  const [recentViewedETFs, setRecentViewedETFs] = useState([]); // 최근 본 상품
+  const [showLeftShadow, setShowLeftShadow] = useState(false); // 왼쪽 그림자 표시 여부
+  const [showRightShadow, setShowRightShadow] = useState(true); // 오른쪽 그림자 표시 여부
+  const keywordScrollRef = useRef(null); // 키워드 스크롤 컨테이너 참조
+  const [expandedTipId, setExpandedTipId] = useState(null); // 펼쳐진 TIP 카드 ID
+
+  // 최근 본 상품 로드
+  useEffect(() => {
+    const loadRecentViewedETFs = () => {
+      try {
+        const stored = localStorage.getItem('recentViewedETFs');
+        if (stored) {
+          const etfIds = JSON.parse(stored);
+          // ETF ID를 기반으로 실제 데이터 로드
+          const etfData = etfIds
+            .map(id => ETF_LIST_DATA.find(etf => etf.id === id))
+            .filter(Boolean)
+            .slice(0, 4); // 최대 4개만 표시
+          setRecentViewedETFs(etfData);
+        }
+      } catch (error) {
+        console.error('최근 본 상품 로드 실패:', error);
+      }
+    };
+    loadRecentViewedETFs();
+  }, []);
 
   // 지수 탭 처음 방문 시 가이드 모달 표시
   useEffect(() => {
@@ -307,6 +337,43 @@ const Search = () => {
     setShowIndexGuide(false);
     localStorage.setItem('hasSeenIndexGuide', 'true');
   };
+
+  // 검색창 활성화/비활성화 핸들러
+  const handleSearchFocus = () => {
+    setIsSearchActive(true);
+  };
+
+  const handleSearchCancel = () => {
+    setIsSearchActive(false);
+    setSearchQuery('');
+    setSearchTab('ETF 상품');
+  };
+
+  // 키워드 스크롤 핸들러
+  const handleKeywordScroll = (e) => {
+    const container = e.target;
+    const scrollLeft = container.scrollLeft;
+    const scrollWidth = container.scrollWidth;
+    const clientWidth = container.clientWidth;
+
+    // 왼쪽 끝에서 5px 이상 스크롤되면 왼쪽 그림자 표시
+    setShowLeftShadow(scrollLeft > 5);
+
+    // 오른쪽 끝에서 5px 이상 남으면 오른쪽 그림자 표시
+    setShowRightShadow(scrollLeft < scrollWidth - clientWidth - 5);
+  };
+
+  // 키워드 컨테이너 초기 스크롤 상태 확인
+  useEffect(() => {
+    if (isSearchActive && keywordScrollRef.current) {
+      const container = keywordScrollRef.current;
+      const scrollWidth = container.scrollWidth;
+      const clientWidth = container.clientWidth;
+
+      // 스크롤 가능한지 확인
+      setShowRightShadow(scrollWidth > clientWidth);
+    }
+  }, [isSearchActive]);
 
   // 탭 변경 핸들러
   const handleTabChange = (newTab) => {
@@ -542,78 +609,110 @@ const Search = () => {
           top: 0,
           zIndex: 100,
           backgroundColor: '#FFFFFF',
-          padding: `12px ${LAYOUT.HORIZONTAL_PADDING}px 0`
+          padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px 0`,
+          borderBottom: '1px solid #F7F7F8'
         }}
       >
-        <div
-          style={{
-            backgroundColor: '#F7F7F8',
-            borderRadius: '12px',
-            padding: '10px 12px',
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'center'
-          }}
-        >
-          <div
-            style={{
-              width: '24px',
-              height: '24px',
-              flexShrink: 0
-            }}
-          >
-            <img
-              src={iconSearch}
-              alt="검색"
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'block'
-              }}
-            />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="상품 / 투자TIP / 용어를 검색해 보세요"
-            style={{
-              flex: 1,
-              border: 'none',
-              backgroundColor: 'transparent',
-              fontFamily: 'Pretendard, sans-serif',
-              fontSize: '14px',
-              fontWeight: 500,
-              lineHeight: 1.5,
-              color: '#1A1C20',
-              outline: 'none'
-            }}
-          />
-        </div>
-
-        {/* 탭 네비게이션 */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '16px 0 0',
-            borderBottom: '1px solid #F7F7F8',
-            width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
-            marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
-            marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`
+            gap: '8px',
+            paddingBottom: isSearchActive ? '12px' : '0'
           }}
         >
           <div
             style={{
+              flex: 1,
+              backgroundColor: '#E6E7EA',
+              borderRadius: '12px',
+              padding: '10px 12px',
               display: 'flex',
-              gap: '10px'
+              gap: '10px',
+              alignItems: 'center'
             }}
           >
-            {TABS.map((tab) => (
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                flexShrink: 0
+              }}
+            >
+              <img
+                src={iconSearch}
+                alt="검색"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'block'
+                }}
+              />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={handleSearchFocus}
+              placeholder="상품 / 투자TIP / 용어를 검색해 보세요"
+              style={{
+                flex: 1,
+                border: 'none',
+                backgroundColor: 'transparent',
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                lineHeight: 1.5,
+                color: '#1A1C20',
+                outline: 'none'
+              }}
+            />
+          </div>
+          {isSearchActive && (
+            <div
+              style={{
+                backgroundColor: '#F7F7F8',
+                padding: '4px 10px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+              onClick={handleSearchCancel}
+            >
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  color: '#1A1C20',
+                  margin: 0,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                취소
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* 탭 네비게이션 */}
+        {isSearchActive ? (
+          /* 검색 활성화 시: ETF 상품 / TIP/용어 탭 */
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            {['ETF 상품', 'TIP/용어'].map((tab) => (
               <button
                 key={tab}
-                onClick={() => handleTabChange(tab)}
+                onClick={() => setSearchTab(tab)}
                 style={{
                   padding: '8px 16px 12px',
                   border: 'none',
@@ -630,7 +729,7 @@ const Search = () => {
                     fontSize: '20px',
                     fontWeight: 600,
                     lineHeight: 1.35,
-                    color: selectedTab === tab ? '#005CCC' : '#757E8F',
+                    color: searchTab === tab ? '#005CCC' : '#757E8F',
                     margin: 0,
                     whiteSpace: 'nowrap',
                     transition: 'color 0.2s ease'
@@ -638,7 +737,7 @@ const Search = () => {
                 >
                   {tab}
                 </p>
-                {selectedTab === tab && (
+                {searchTab === tab && (
                   <div
                     style={{
                       position: 'absolute',
@@ -653,10 +752,72 @@ const Search = () => {
               </button>
             ))}
           </div>
-
-          {/* 펼치기/접기 버튼 (리스트 탭에서만 표시) */}
-          {selectedTab === '리스트' && (
+        ) : (
+          /* 검색 비활성화 시: 기본 탭 */
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 0 0',
+              width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
+              marginLeft: `-${LAYOUT.HORIZONTAL_PADDING}px`,
+              marginRight: `-${LAYOUT.HORIZONTAL_PADDING}px`
+            }}
+          >
             <div
+              style={{
+                display: 'flex',
+                gap: '10px'
+              }}
+            >
+              {TABS.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => handleTabChange(tab)}
+                  style={{
+                    padding: '8px 16px 12px',
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s ease'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Pretendard, sans-serif',
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      lineHeight: 1.35,
+                      color: selectedTab === tab ? '#005CCC' : '#757E8F',
+                      margin: 0,
+                      whiteSpace: 'nowrap',
+                      transition: 'color 0.2s ease'
+                    }}
+                  >
+                    {tab}
+                  </p>
+                  {selectedTab === tab && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '0',
+                        left: 0,
+                        right: 0,
+                        height: '2px',
+                        backgroundColor: '#005CCC'
+                      }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* 펼치기/접기 버튼 (리스트 탭에서만 표시) */}
+            {selectedTab === '리스트' && (
+              <div
               style={{
                 padding: '9px 16px',
                 display: 'flex',
@@ -704,11 +865,12 @@ const Search = () => {
                 </p>
               </button>
             </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
-        {/* 서브 탭 네비게이션 및 필터 (리스트 탭에서 표시) */}
-        {selectedTab === '리스트' && (
+        {/* 서브 탭 네비게이션 및 필터 (리스트 탭에서 표시, 검색 비활성화 시) */}
+        {!isSearchActive && selectedTab === '리스트' && (
           <div
             style={{
               width: `calc(100% + ${LAYOUT.HORIZONTAL_PADDING * 2}px)`,
@@ -886,15 +1048,329 @@ const Search = () => {
         )}
       </div>
 
+      {/* 검색 활성화 시: 추천 키워드 및 최근 본 상품/TIP */}
+      {isSearchActive && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`,
+            paddingBottom: `${LAYOUT.BOTTOM_NAV_HEIGHT + 20}px`
+          }}
+        >
+          {/* 추천 키워드 섹션 */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  color: '#757E8F',
+                  margin: 0,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                추천 키워드
+              </p>
+              <div
+                style={{
+                  position: 'relative',
+                  flex: 1,
+                  overflow: 'hidden'
+                }}
+              >
+                {/* 왼쪽 그림자 */}
+                {showLeftShadow && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: '40px',
+                      background: 'linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)',
+                      zIndex: 1,
+                      pointerEvents: 'none'
+                    }}
+                  />
+                )}
+
+                {/* 오른쪽 그림자 */}
+                {showRightShadow && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: '40px',
+                      background: 'linear-gradient(to left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)',
+                      zIndex: 1,
+                      pointerEvents: 'none'
+                    }}
+                  />
+                )}
+
+                {/* 키워드 스크롤 컨테이너 */}
+                <div
+                  ref={keywordScrollRef}
+                  onScroll={handleKeywordScroll}
+                  className="keyword-container"
+                  style={{
+                    display: 'flex',
+                    gap: '8px',
+                    alignItems: 'center',
+                    overflowX: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
+                >
+                  <style>
+                    {`
+                      .keyword-container::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `}
+                  </style>
+                  {['S&P500', '미국', '금/재화', '오토바이'].map((keyword) => (
+                    <button
+                      key={keyword}
+                      onClick={() => setSearchQuery(keyword)}
+                      style={{
+                        backgroundColor: '#E6E7EA',
+                        padding: '10px 16px',
+                        borderRadius: '37px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        flexShrink: 0
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontFamily: 'Pretendard, sans-serif',
+                          fontSize: '16px',
+                          fontWeight: 500,
+                          lineHeight: 1.5,
+                          color: '#474C57',
+                          margin: 0,
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {keyword}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ETF 상품 탭: 최근 본 상품 */}
+          {searchTab === 'ETF 상품' && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  lineHeight: 1.35,
+                  color: '#5E6573',
+                  margin: 0
+                }}
+              >
+                최근 본 상품
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}
+              >
+                {recentViewedETFs.length > 0 ? (
+                  recentViewedETFs.map((etf) => (
+                    <SimpleChartViewer
+                      key={etf.id}
+                      name={etf.name}
+                      code={etf.code}
+                      currentPrice={etf.currentPrice}
+                      changePercent={etf.changePercent}
+                      changeDirection={etf.changeDirection}
+                      showTopLabel={false}
+                      showPriceComparison={false}
+                      onClick={() => {
+                        // ETF 상세 페이지로 이동
+                        navigate(`/etf/${etf.id}/detail`);
+                      }}
+                    />
+                  ))
+                ) : (
+                  <div
+                    style={{
+                      padding: '40px 0',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: 'Pretendard, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        lineHeight: 1.5,
+                        color: '#ADB2BD',
+                        margin: 0
+                      }}
+                    >
+                      최근 본 상품이 없습니다
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TIP/용어 탭: 검색 결과 */}
+          {searchTab === 'TIP/용어' && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  lineHeight: 1.35,
+                  color: '#5E6573',
+                  margin: 0
+                }}
+              >
+                {searchQuery ? '검색 결과' : '최근 본 TIP/용어'}
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px'
+                }}
+              >
+                {(() => {
+                  // 검색어가 있으면 필터링, 없으면 전체 표시
+                  const filteredQA = searchQuery
+                    ? qaData.filter(qa =>
+                        qa.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        qa.tips.some(tip =>
+                          tip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          tip.content.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                      )
+                    : qaData;
+
+                  if (filteredQA.length === 0) {
+                    return (
+                      <div
+                        style={{
+                          padding: '40px 0',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontFamily: 'Pretendard, sans-serif',
+                            fontSize: '14px',
+                            fontWeight: 400,
+                            lineHeight: 1.5,
+                            color: '#ADB2BD',
+                            margin: 0
+                          }}
+                        >
+                          검색 결과가 없습니다
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return filteredQA.map((qa) => {
+                    return (
+                      <TipCard
+                        key={qa.id}
+                        icon={qa.icon}
+                        title={qa.title}
+                        tips={qa.tips}
+                        linkText={qa.linkText}
+                        linkIcon={qa.linkIcon}
+                        showLink={true}
+                        defaultOpen={expandedTipId === qa.id}
+                        initialBookmarked={qa.initialBookmarked}
+                        collapsedStyle={{
+                          backgroundColor: '#F7F7F8',
+                          borderRadius: '8px',
+                          boxShadow: 'none'
+                        }}
+                        style={{
+                          marginBottom: '4px'
+                        }}
+                        onToggle={(isOpen) => {
+                          if (!isOpen) {
+                            setExpandedTipId(null);
+                          } else {
+                            setExpandedTipId(qa.id);
+                          }
+                        }}
+                        onBookmarkChange={(isBookmarked) => {
+                          console.log(`${qa.title} 북마크 ${isBookmarked ? '추가' : '제거'}`);
+                        }}
+                        onLinkClick={() => {
+                          console.log(`${qa.linkText} 클릭`);
+                        }}
+                      />
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* 콘텐츠 리스트 */}
-      <div
-        style={{
-          padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`,
-          paddingBottom: selectedTab === '리스트' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 60}px` : selectedTab === '지수' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 20}px` : `16px`
-        }}
-      >
-        {/* 지수 탭: 지수 카드 그리드 */}
-        {selectedTab === '지수' ? (
+      {!isSearchActive && (
+        <div
+          style={{
+            padding: `16px ${LAYOUT.HORIZONTAL_PADDING}px`,
+            paddingBottom: selectedTab === '리스트' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 60}px` : selectedTab === '지수' ? `${LAYOUT.BOTTOM_NAV_HEIGHT + 20}px` : `16px`
+          }}
+        >
+          {/* 지수 탭: 지수 카드 그리드 */}
+          {selectedTab === '지수' ? (
           <div
             style={{
               display: 'grid',
@@ -1235,10 +1711,11 @@ const Search = () => {
           return null;
         })
         )}
-      </div>
+        </div>
+      )}
 
-      {/* 하단 헤더 (리스트 탭에서만 표시) */}
-      {selectedTab === '리스트' && (
+      {/* 하단 헤더 (리스트 탭에서만 표시, 검색 비활성화 시) */}
+      {!isSearchActive && selectedTab === '리스트' && (
         <div
           style={{
             position: 'sticky',
@@ -1337,8 +1814,8 @@ const Search = () => {
         </div>
       )}
 
-      {/* 지수 가이드 모달 (처음 방문 시에만 표시) */}
-      {selectedTab === '지수' && showIndexGuide && (
+      {/* 지수 가이드 모달 (처음 방문 시에만 표시, 검색 비활성화 시) */}
+      {!isSearchActive && selectedTab === '지수' && showIndexGuide && (
         <div
           style={{
             position: 'fixed',

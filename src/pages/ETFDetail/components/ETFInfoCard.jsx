@@ -14,6 +14,7 @@ import iconInformationS from '../../../assets/icon_information_s.svg';
  * @param {'up' | 'down'} props.changeDirection - 변동 방향
  * @param {string} props.description - 설명 칩 텍스트
  * @param {'emphasis' | 'normal'} props.variant - 카드 스타일 (emphasis: 강조형, normal: 일반형)
+ * @param {string} props.chipColor - 칩 색상 직접 지정 (지정 시 changeDirection 무시)
  * @param {function} props.onInfoClick - 정보 아이콘 클릭 핸들러
  */
 export const ETFInfoCard = ({
@@ -25,13 +26,14 @@ export const ETFInfoCard = ({
   changeDirection = 'up',
   description = '현재 상품의 가격',
   variant = 'emphasis',
+  chipColor,
   onInfoClick
 }) => {
   const isUp = changeDirection === 'up';
 
   // variant별 스타일
-  const backgroundColor = variant === 'emphasis' ? '#FAFCFF' : '#F7F7F8';
-  const borderColor = variant === 'emphasis' ? '#F7F7F8' : '#F7F7F8';
+  const backgroundColor = '#F1F7FF';
+  const borderColor = '#F7F7F8';
 
   return (
     <div
@@ -186,7 +188,7 @@ export const ETFInfoCard = ({
       {description && (
         <Chip
           title={description}
-          color="grey"
+          color={chipColor || (variant === 'emphasis' ? (isUp ? 'up2' : 'down2') : 'grey')}
           state="nonSelect"
           size="small"
           style={{

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { SubNav } from '../../components/common/SubNav';
 import { Chip } from '../../components/common/Chip';
-import { GeneralToggle } from '../../components/common/ToggleButton';
 import { SmallToggle } from '../../components/common/ToggleButton';
 import { ETFInfoCard } from './components/ETFInfoCard';
 import { ETFChart } from './components/ETFChart';
@@ -31,7 +30,6 @@ const ETFDetail = () => {
   const [activeTab, setActiveTab] = useState('returns');
   const [selectedPeriod, setSelectedPeriod] = useState('1D');
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [showDetailDesc, setShowDetailDesc] = useState(true);
   const [showChartTable, setShowChartTable] = useState(false);
 
   // ETF 데이터 가져오기
@@ -54,12 +52,35 @@ const ETFDetail = () => {
     return () => clearTimeout(timer);
   }, [id]);
 
-  // 컴포넌트 마운트 시 즐겨찾기 상태 확인
+  // 컴포넌트 마운트 시 즐겨찾기 상태 확인 및 최근 본 상품에 추가
   useEffect(() => {
     if (id) {
       setIsBookmarked(isETFBookmarked(id));
+      // 최근 본 상품에 추가 (localStorage에 저장)
+      addRecentViewedETF(id);
     }
   }, [id]);
+
+  // 최근 본 상품에 추가하는 함수
+  const addRecentViewedETF = (etfId) => {
+    try {
+      const stored = localStorage.getItem('recentViewedETFs');
+      let recentETFs = stored ? JSON.parse(stored) : [];
+
+      // 이미 있는 경우 제거 (최신 순으로 정렬하기 위해)
+      recentETFs = recentETFs.filter(id => id !== etfId);
+
+      // 맨 앞에 추가
+      recentETFs.unshift(etfId);
+
+      // 최대 10개까지만 저장
+      recentETFs = recentETFs.slice(0, 10);
+
+      localStorage.setItem('recentViewedETFs', JSON.stringify(recentETFs));
+    } catch (error) {
+      console.error('최근 본 상품 저장 실패:', error);
+    }
+  };
 
   // ETF 데이터가 없으면 404 처리
   if (!etfData) {
@@ -256,44 +277,15 @@ const ETFDetail = () => {
             <p
               style={{
                 fontFamily: 'Pretendard, sans-serif',
-                fontSize: '20px',
+                fontSize: '24px',
                 fontWeight: 600,
-                lineHeight: 1.35,
+                lineHeight: 1.25,
                 color: '#000000',
                 margin: 0
               }}
             >
               {etfData.name}
             </p>
-          </div>
-
-          {/* 상세 설명 토글 */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              gap: '10px'
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '12px',
-                fontWeight: 500,
-                lineHeight: 1.5,
-                color: '#000000',
-                margin: 0,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              상세 설명
-            </p>
-            <GeneralToggle
-              checked={showDetailDesc}
-              onChange={() => setShowDetailDesc(!showDetailDesc)}
-              size="medium"
-            />
           </div>
         </div>
 
@@ -330,6 +322,7 @@ const ETFDetail = () => {
               changeDirection={etfData.navChangeDirection}
               description="현재가보다 클 수록 저렴"
               variant="emphasis"
+              chipColor="down2"
             />
           </div>
 
@@ -357,8 +350,8 @@ const ETFDetail = () => {
             />
           </div>
 
-          {/* 전략 설명 (상세 설명 토글 시 표시) */}
-          {showDetailDesc && etfData.strategy && (
+          {/* 전략 설명 */}
+          {etfData.strategy && (
             <div
               style={{
                 backgroundColor: '#F7F7F8',
@@ -372,7 +365,7 @@ const ETFDetail = () => {
             >
               <Chip
                 title={etfData.strategy.title}
-                color="primary"
+                color="grey"
                 state="select"
                 size="small"
               />

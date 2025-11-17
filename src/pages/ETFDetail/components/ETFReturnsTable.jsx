@@ -62,14 +62,22 @@ export const ETFReturnsTable = ({
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        width: '100%',
-        gap: '0'
-      }}
-    >
+    <>
+      {/* 스크롤바 숨김 스타일 */}
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          width: '100%',
+          gap: '0'
+        }}
+      >
       {/* 왼쪽 고정 열 (행 레이블) */}
       <div
         style={{
@@ -211,6 +219,7 @@ export const ETFReturnsTable = ({
 
       {/* 오른쪽 스크롤 가능 영역 (데이터) */}
       <div
+        className="hide-scrollbar"
         style={{
           backgroundColor: '#F7F7F8',
           display: 'flex',
@@ -219,7 +228,10 @@ export const ETFReturnsTable = ({
           flex: 1,
           overflowX: 'auto',
           overflowY: 'hidden',
-          maxWidth: 'calc(100% - 69px)'
+          maxWidth: 'calc(100% - 69px)',
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // IE/Edge
+          WebkitOverflowScrolling: 'touch' // 부드러운 스크롤 (iOS)
         }}
       >
         {/* 데이터 행들 */}
@@ -227,7 +239,8 @@ export const ETFReturnsTable = ({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            minWidth: 'fit-content'
           }}
         >
           {/* 종가 행 */}
@@ -316,14 +329,16 @@ export const ETFReturnsTable = ({
         <div
           style={{
             borderTop: '1px solid #FFFFFF',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            minWidth: 'fit-content'
           }}
         >
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              minWidth: 'fit-content'
             }}
           >
             {periods.map((period, index) => (
@@ -361,5 +376,6 @@ export const ETFReturnsTable = ({
         </div>
       </div>
     </div>
+    </>
   );
 };

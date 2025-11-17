@@ -86,6 +86,7 @@ const HomePage = () => {
 
   // 테마 데이터 (THEME_DATA 기반 - 임의로 상승/하락 분배)
   const upThemes = THEME_DATA.slice(0, 3).map((theme, index) => ({
+    id: theme.id,
     rank: index + 1,
     theme: theme.name,
     changePercent: (24.5 - index * 4).toFixed(2),
@@ -93,6 +94,7 @@ const HomePage = () => {
   }));
 
   const downThemes = THEME_DATA.slice(3, 6).map((theme, index) => ({
+    id: theme.id,
     rank: index + 1,
     theme: theme.name,
     changePercent: (18.3 - index * 4).toFixed(1),
@@ -167,7 +169,6 @@ const HomePage = () => {
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
         boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}>
@@ -184,95 +185,101 @@ const HomePage = () => {
         />
       </div>
 
-      {/* Main Portfolio Card */}
+      {/* Portfolio Card + Market Indices Section with Gradient */}
       <div
         style={{
-          padding: `${LAYOUT.TOP_NAV_MARGIN}px ${LAYOUT.HORIZONTAL_PADDING}px 12px`,
-          width: '100%'
-        }}
-      >
-        {favoritePortfolio ? (
-          <div onClick={() => navigate(`/portfolio/${favoritePortfolio.id}/detail`)}>
-            <PortfolioMainCard
-              portfolioType="대표 포트폴리오"
-              tags={getPortfolioTags(favoritePortfolio)}
-              title={favoritePortfolio.portfolioName}
-              isFavorite={true}
-              amount={favoritePortfolio.amount?.toLocaleString('ko-KR') || '0'}
-              changePercent={Math.abs(favoritePortfolio.returnRate || 0).toString()}
-              changeDirection={favoritePortfolio.returnRate >= 0 ? 'up' : 'down'}
-              primaryButtonText={favoritePortfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
-              secondaryButtonText="체크포인트"
-              onFavoriteClick={(e) => {
-                e.stopPropagation();
-                navigate('/portfolio');
-              }}
-              onPrimaryButtonClick={(e) => {
-                e.stopPropagation();
-                navigate(`/portfolio/${favoritePortfolio.id}/rebalance`);
-              }}
-              onSecondaryButtonClick={(e) => {
-                e.stopPropagation();
-                console.log('체크포인트 clicked:', favoritePortfolio.id);
-              }}
-            />
-          </div>
-        ) : (
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              boxShadow: '1px 2px 13.6px 0px rgba(52, 144, 255, 0.25)',
-              borderRadius: '12px',
-              padding: '40px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-            onClick={() => navigate('/portfolio/create')}
-          >
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '16px',
-                fontWeight: 500,
-                lineHeight: 1.5,
-                color: '#757E8F',
-                margin: 0,
-                textAlign: 'center'
-              }}
-            >
-              아직 생성된 포트폴리오가 없습니다.
-            </p>
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '14px',
-                fontWeight: 500,
-                lineHeight: 1.5,
-                color: '#3490FF',
-                margin: 0,
-                textAlign: 'center'
-              }}
-            >
-              포트폴리오 제작하기
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Market Indices Section */}
-      <div
-        style={{
-          backgroundColor: '#FAFCFF',
+          background: 'linear-gradient(to top, rgba(224, 238, 255, 1) 0%, rgba(224, 238, 255, 0) 70%)',
           width: '100%',
-          paddingTop: '31px',
-          paddingBottom: '16px'
+          paddingTop: '24px',
+          paddingBottom: '30.8px'
         }}
       >
+        {/* Main Portfolio Card */}
+        <div
+          style={{
+            padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 18px`,
+            width: '100%'
+          }}
+        >
+          {favoritePortfolio ? (
+            <div onClick={() => navigate(`/portfolio/${favoritePortfolio.id}/detail`)}>
+              <PortfolioMainCard
+                portfolioType="대표 포트폴리오"
+                tags={getPortfolioTags(favoritePortfolio)}
+                title={favoritePortfolio.portfolioName}
+                isFavorite={true}
+                amount={favoritePortfolio.amount?.toLocaleString('ko-KR') || '0'}
+                changePercent={Math.abs(favoritePortfolio.returnRate || 0).toString()}
+                changeDirection={favoritePortfolio.returnRate >= 0 ? 'up' : 'down'}
+                primaryButtonText={favoritePortfolio.returnRate >= 0 ? '리밸런싱 확인' : '리밸런싱 필요'}
+                secondaryButtonText="체크포인트"
+                onFavoriteClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/portfolio');
+                }}
+                onPrimaryButtonClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/portfolio/${favoritePortfolio.id}/rebalance`);
+                }}
+                onSecondaryButtonClick={(e) => {
+                  e.stopPropagation();
+                  console.log('체크포인트 clicked:', favoritePortfolio.id);
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                boxShadow: '1px 2px 13.6px 0px rgba(52, 144, 255, 0.25)',
+                borderRadius: '12px',
+                padding: '40px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              onClick={() => navigate('/portfolio/create')}
+            >
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  color: '#757E8F',
+                  margin: 0,
+                  textAlign: 'center'
+                }}
+              >
+                아직 생성된 포트폴리오가 없습니다.
+              </p>
+              <p
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  color: '#3490FF',
+                  margin: 0,
+                  textAlign: 'center'
+                }}
+              >
+                포트폴리오 제작하기
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Market Indices Cards */}
+        <div
+          style={{
+            width: '100%'
+          }}
+        >
         {/* Horizontal scroll container */}
         <div
           style={{
@@ -314,9 +321,7 @@ const HomePage = () => {
             padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px`,
             display: 'flex',
             alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            width: '100%',
-            height: '26px'
+            width: '100%'
           }}
         >
           {/* Left: info icon + text */}
@@ -324,7 +329,9 @@ const HomePage = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              gap: '4px',
+              width: '110px',
+              flexShrink: 0
             }}
           >
             <div
@@ -350,7 +357,7 @@ const HomePage = () => {
             <p
               style={{
                 fontFamily: 'Pretendard, sans-serif',
-                fontSize: '12px',
+                fontSize: '10px',
                 fontWeight: 500,
                 lineHeight: 1.5,
                 color: '#757E8F',
@@ -366,17 +373,20 @@ const HomePage = () => {
           <p
             style={{
               fontFamily: 'Pretendard, sans-serif',
-              fontSize: '10px',
+              fontSize: '12px',
               fontWeight: 500,
               lineHeight: 1.25,
               color: '#757E8F',
               margin: 0,
+              marginLeft: '38px',
               textAlign: 'right',
-              whiteSpace: 'pre-line'
+              whiteSpace: 'pre-line',
+              flex: 1
             }}
           >
             {'지수 선물의 등락을 보고 해당지수를 따라가는\n상품의 등락을 예측해봐요'}
           </p>
+        </div>
         </div>
       </div>
 
@@ -577,7 +587,13 @@ const HomePage = () => {
                 theme={theme.theme}
                 changePercent={theme.changePercent}
                 changeDirection={theme.changeDirection}
-                onClick={() => console.log(`Theme ${idx} clicked`)}
+                onClick={() => navigate('/theme', {
+                  state: {
+                    filter: trendFilter,
+                    selectedThemeId: theme.id,
+                    skipScrollReset: true
+                  }
+                })}
               />
             ))}
           </div>
@@ -705,7 +721,7 @@ const HomePage = () => {
         >
           <Button
             variant="skeleton2"
-            onClick={() => console.log('View all clicked')}
+            onClick={() => navigate('/interest-etf')}
           >
             전체 보기
           </Button>

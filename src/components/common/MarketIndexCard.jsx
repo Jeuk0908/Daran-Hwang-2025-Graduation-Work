@@ -30,7 +30,7 @@ export const MarketIndexCard = ({
     <div
       onClick={onClick}
       style={{
-        backgroundColor: '#F7F7F8',
+        backgroundColor: isUp ? 'rgba(239, 250, 236, 0.7)' : 'rgba(254, 246, 241, 0.7)',
         borderRadius: '12px',
         padding: showChart ? '12px' : '16px',
         display: 'flex',

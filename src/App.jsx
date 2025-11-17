@@ -10,6 +10,8 @@ import Portfolio from './pages/Portfolio'
 import PortfolioDelete from './pages/Portfolio/PortfolioDelete'
 import PortfolioDetail from './pages/Portfolio/PortfolioDetail'
 import ETFDetail from './pages/ETFDetail'
+import InterestETF from './pages/InterestETF'
+import ThemeDetail from './pages/Theme/ThemeDetail'
 import Search from './pages/Search'
 import PortfolioCreate from './pages/PortfolioCreate'
 import Rebalance from './pages/Rebalance'
@@ -35,6 +37,11 @@ function AppContent() {
 
   // 페이지 이동 시 스크롤을 맨 위로 초기화
   useEffect(() => {
+    // location.state에 skipScrollReset이 있으면 스크롤 초기화 건너뛰기
+    if (location.state?.skipScrollReset) {
+      return;
+    }
+
     // 즉시 스크롤 초기화
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
@@ -48,7 +55,7 @@ function AppContent() {
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [location.pathname]);
+  }, [location.pathname, location.state]);
   const isDevPage = location.pathname.startsWith('/dev');
   const isVocabularyPage = location.pathname === '/vocabulary';
   const isBookmarkPage = location.pathname === '/bookmark';
@@ -58,7 +65,9 @@ function AppContent() {
   const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
   const isPortfolioDetailPage = location.pathname.includes('/portfolio/') && location.pathname.includes('/detail');
   const isETFDetailPage = location.pathname.includes('/etf/') && location.pathname.includes('/detail');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage;
+  const isInterestETFPage = location.pathname === '/interest-etf';
+  const isThemeDetailPage = location.pathname.includes('/theme/');
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage || isInterestETFPage || isThemeDetailPage;
 
   return (
     <div style={{
@@ -74,8 +83,6 @@ function AppContent() {
       <main style={{
         flex: 1,
         paddingBottom: (hideBottomNav || isHomePage) ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
-        // overflowX 제거: position: sticky가 동작하지 않는 원인
-        // 대신 각 페이지/컴포넌트에서 max-width로 가로 스크롤 방지
         width: '100%'
       }}>
         <Routes>
@@ -85,6 +92,8 @@ function AppContent() {
           <Route path="/portfolio/delete" element={<PortfolioDelete />} />
           <Route path="/portfolio/:id/detail" element={<PortfolioDetail />} />
           <Route path="/etf/:id/detail" element={<ETFDetail />} />
+          <Route path="/interest-etf" element={<InterestETF />} />
+          <Route path="/theme" element={<ThemeDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/vocabulary" element={<Vocabulary />} />

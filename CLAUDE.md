@@ -28,15 +28,31 @@ npm run lint         # Run ESLint
 
 ### Routing Structure
 
-The app uses React Router with a fixed bottom navigation bar that appears on all main routes except `/dev/*` pages:
+The app uses React Router with a fixed bottom navigation bar that appears on main routes. The bottom nav automatically hides on certain detail/flow pages.
 
+**Main Routes (with bottom nav)**:
 - `/home` - Main home page
-- `/exhibition` - Portfolio/exhibition listings
-- `/artist` - Artist discovery/listings
+- `/portfolio` - Portfolio listings
+- `/search` - ETF search page
 - `/mypage` - User profile page
-- `/dev/icons` - Development showcase page (no bottom nav)
 
-Routes are defined in `src/App.jsx` where the app container has a max-width of `430px` for main pages (responsive mobile design).
+**Detail Pages (no bottom nav)**:
+- `/portfolio/:id/detail` - Portfolio detail view
+- `/portfolio/:id/rebalance` - Portfolio rebalancing flow
+- `/etf/:id/detail` - ETF detail view
+- `/vocabulary` - ETF terminology learning
+- `/bookmark` - Bookmarked content
+
+**Portfolio Creation Flow** (multi-step, no bottom nav):
+- `/portfolio/create` - Entry point
+- `/portfolio/create/method` - Method selection (auto/manual)
+- `/portfolio/create/auto` - Auto creation steps 1-5
+- `/portfolio/create/step1-4` - Manual creation steps
+
+**Development Routes**:
+- `/dev/icons` - Icon and component showcase (no max-width constraint)
+
+Routes are defined in `src/App.jsx`. Container max-width is `430px` for main pages (optimized for iPhone 14 Pro Max).
 
 ### Mobile Web App Optimizations
 
@@ -49,23 +65,50 @@ Critical viewport and mobile settings in `index.html`:
 ### Component Architecture
 
 **Common Components** (`src/components/common/`):
-- `BottomNav.jsx` - Fixed bottom navigation with inline SVG icons for 4 routes (home, exhibition, artist, mypage)
-- `Button.jsx` - Button with variants: `primary`, `grey`, `skeleton`, `skeleton2`
-- `PhoneNumFild.jsx` - Phone number input field with states: `default`, `error`, `pass`
-- `SubNav.jsx` - Tab navigation with 4 tabs: `returns`, `info`, `composition`, `dividend`
+
+*Navigation & Layout*:
 - `TopNav.jsx` - Top navigation bar with multiple configurations:
   - `depth='2'` + `state='number'`: Back button + title + chip + number indicator
   - `depth='2'` + `state='icon'`: Back button + title + two action icons
   - `depth='1'` + `state='icon'`: Title + two action icons (no back button)
   - `depth='2'` + `state='2 title'`: Back button + title + subtitle + two action icons
-- `SearchBar.jsx` - Search input with states: `검색 전`, `state2`
-- `TipCard.jsx` - Expandable card component with bookmark functionality
-- `VocabularyCard.jsx` - ETF terminology learning flashcard component with locked/unlocked states
-- `TextField.jsx` - Text input field component
-- `ToggleButton.jsx` - Toggle switch component
-- `Label.jsx`, `Chip.jsx` - Text label and chip components
-- `PortfolioCard.jsx`, `RebalanceETFCard.jsx`, `StockChangeCard.jsx` - Various card components for portfolio/ETF display
+- `BottomNav.jsx` - Fixed bottom navigation (height: 88px = 54px nav + 34px home indicator area)
+- `SubNav.jsx` - Tab navigation with 4 tabs: `returns`, `info`, `composition`, `dividend`
+- `CenterTabNav.jsx` - Centered tab navigation component
+
+*Form Inputs*:
+- `Button.jsx` - Button with variants: `primary`, `grey`, `skeleton`, `skeleton2`
 - `CaptionButton.jsx`, `RebalanceButton.jsx` - Specialized button components
+- `TextField.jsx` - Text input field component
+- `PhoneNumFild.jsx` - Phone number input field with states: `default`, `error`, `pass`
+- `SearchBar.jsx` - Search input with states: `검색 전`, `state2`
+- `ToggleButton.jsx` - Toggle switch component
+
+*Cards & Display Components*:
+- `PortfolioCard.jsx`, `PortfolioListCard.jsx`, `PortfolioMainCard.jsx` - Portfolio display cards
+- `ETFCard.jsx` - ETF information card
+- `RebalanceETFCard.jsx`, `RebalanceInfoCard.jsx` - Rebalancing-related cards
+- `ThemeCard.jsx`, `IndexCard.jsx`, `MarketIndexCard.jsx` - Market theme and index cards
+- `NewsCard.jsx` - News article card
+- `AssetCard.jsx` - Asset allocation card
+- `StockChangeCard.jsx` - Stock change display card
+- `TipCard.jsx` - Expandable card component with bookmark functionality
+- `VocabularyCard.jsx` - ETF terminology learning flashcard (locked/unlocked states)
+- `SelectionCard.jsx` - Selection option card
+- `MenuCard.jsx` - Menu/navigation card
+- `TotalProfitCard.jsx` - Total profit summary card
+- `VideoThumbnail.jsx` - Video preview thumbnail
+
+*Charts & Visualizations*:
+- `SimpleChartViewer.jsx` - Simple line chart component
+- `TreemapChart.jsx` - Treemap visualization for portfolio composition
+
+*Skeleton Loaders*:
+- `IndexCardSkeleton.jsx`, `ListItemSkeleton.jsx`, `ContentCardSkeleton.jsx` - Loading states
+
+*Settings & Other*:
+- `SettingSection.jsx`, `SettingItem.jsx` - Settings page components
+- `Label.jsx`, `Chip.jsx` - Text label and chip components
 
 **Icon System** (`src/components/common/icons/`):
 - SVG icons exported as React components
@@ -78,21 +121,41 @@ Critical viewport and mobile settings in `index.html`:
 
 **Page Structure** (`src/Pages/`):
 Note: Directory is capitalized as `Pages/`, not `pages/`
-- `Home/` - Main landing page
-- `Login/` - Authentication pages
-- `Exhibition/` - Portfolio and exhibition listings
-- `Artist/` - Artist discovery and profiles
+- `Home/` - Main landing page with portfolio summary, market indices, and popular themes
+- `Portfolio/` - Portfolio listings and management
+  - `PortfolioDetail.jsx` - Individual portfolio detail view
+  - `PortfolioDelete.jsx` - Portfolio deletion confirmation
+- `PortfolioCreate/` - Multi-step portfolio creation flow
+  - `MethodSelection.jsx` - Auto vs manual creation selection
+  - `AutoCreate.jsx` + `AutoCreateStep2-5.jsx` - Automated creation flow
+  - `ManualCreateStep2-3.jsx` - Manual creation flow
+- `Rebalance/` - Portfolio rebalancing interface
+- `ETFDetail/` - ETF detail page with performance data and composition
+- `Search/` - ETF search and discovery
 - `MyPage/` - User profile and settings
-- `Dev/` - Development showcase pages (IconShowcase, etc.)
+- `Vocabulary/` - ETF terminology learning cards
+- `Bookmark/` - Bookmarked content
+- `QA/` - Q&A section (placeholder)
+- `VideoTIP/` - Video tips section (placeholder)
+- `Dev/` - Development showcase pages (`IconShowcase.jsx`)
+
+### Scroll Behavior
+
+The app implements aggressive scroll restoration prevention to ensure pages always start at the top:
+- `window.history.scrollRestoration = 'manual'` to disable browser auto-scroll
+- Route changes trigger immediate scroll reset via `useEffect` in `App.jsx`
+- Duplicate scroll reset with `setTimeout(0)` to override browser restoration
+- This behavior is critical for UX - do not modify without explicit user request
 
 ### Bottom Navigation Design
 
 The `BottomNav` component uses:
 - Fixed positioning at bottom of screen
 - Height: 88px (54px nav + 34px iOS home indicator area)
-- Main content has `paddingBottom: '88px'` to account for fixed nav
+- Main content has `paddingBottom: '88px'` to account for fixed nav (except on home page)
 - Active/inactive states with different SVG icons and gradient fills
 - Color scheme: Active uses `#3490FF`, `#005CCC`, `#99C7FF`; Inactive uses `#CACDD4`, `#ADB3BD`, `#E6E7EA`
+- Conditionally hidden on detail pages, creation flows, and dev routes
 
 ### Development Pages
 
@@ -104,10 +167,31 @@ The `BottomNav` component uses:
 
 ## Design System
 
+### Layout Constants (`src/constants/layout.js`)
+
+The project uses a centralized layout constant system optimized for **iPhone 14 Pro Max (430pt)**:
+
+```javascript
+import { LAYOUT } from '../constants/layout';
+
+LAYOUT.MAX_WIDTH              // 430px - Device width
+LAYOUT.HORIZONTAL_PADDING     // 17px - Left/right padding
+LAYOUT.GRID_GAP.ROW          // 16px - Vertical grid spacing
+LAYOUT.GRID_GAP.COLUMN       // 14px - Horizontal grid spacing
+LAYOUT.CARD_GAP              // 16px - Card spacing
+LAYOUT.SECTION_GAP           // 32px - Section spacing
+LAYOUT.TOP_NAV_MARGIN        // 28px - Top nav margin
+LAYOUT.BOTTOM_NAV_HEIGHT     // 88px - Bottom nav height
+LAYOUT.getContentWidth()     // 396px - Content area (430 - 34)
+LAYOUT.getTwoColumnWidth()   // 191px - Two-column grid width
+```
+
+**Usage**: Import and use these constants instead of hardcoding pixel values to maintain consistency across the app.
+
 ### Color Palette
 ```
 Primary 50:      #005CCC  (Active blue)
-Primary Main 30: #3490FF  (Main blue)
+Primary Main 30: #3490FF  (Main blue, theme color)
 Blue Light:      #99C7FF  (Light blue)
 Gray 20:         #CACDD4  (Inactive gray)
 Gray 30:         #ADB2BD  (Medium gray)
@@ -118,15 +202,18 @@ Label Primary:   #000000  (Black)
 ### Typography
 - Font family: Pretendard (fallback: sans-serif)
 - Mobile-responsive font sizes using `clamp()` for fluid typography
+- Pretendard is loaded via web font (check `index.html` or CSS for font loading)
 
 ## Important Notes
 
-- **No backend API calls** - This is a demo/exhibition project
-- **Mock data only** - All data should be hardcoded or generated locally
-- **Mobile-first** - Design is optimized for mobile viewport (max-width: 430px)
+- **No backend API calls** - This is a demo/exhibition project with no API integration
+- **Mock data only** - All data should be hardcoded or generated locally within components
+- **Mobile-first** - Design is optimized for mobile viewport (max-width: 430px, iPhone 14 Pro Max)
 - **SVG icons** - All icons are stored in `src/assets/` and imported as SVG files or React components
 - **Korean language** - Primary language is Korean (한국어)
-- **No state management library** - Uses React's built-in useState/useContext only
+- **No state management library** - Uses React's built-in useState/useContext only (no Redux, Zustand, etc.)
+- **Recharts** - Charts are built with Recharts library (imported in `package.json`)
+- **Case sensitivity** - Note `src/Pages/` (capital P), not `src/pages/`
 
 ## File Organization
 

@@ -91,18 +91,18 @@ export const Chip = ({
     if (color === 'grey') {
       if (state === 'select') {
         return {
-          backgroundColor: '#0092FF',
-          color: '#FFFFFF',
+          backgroundColor: '#E6E7EA',
+          color: '#474C57',
           border: 'none',
-          iconFill: '#FFFFFF',
+          iconFill: '#474C57',
           iconRotation: 0
         };
       } else {
         return {
-          backgroundColor: '#E6E7EA',
-          color: '#1A1C20',
+          backgroundColor: '#FFFFFF',
+          color: '#474C57',
           border: 'none',
-          iconFill: '#1A1C20',
+          iconFill: '#474C57',
           iconRotation: 0
         };
       }
@@ -127,6 +127,28 @@ export const Chip = ({
           iconRotation: 0
         };
       }
+    }
+
+    // up2 색상 (상승 강조)
+    if (color === 'up2') {
+      return {
+        backgroundColor: '#EFFAEC',
+        color: '#43A329',
+        border: 'none',
+        iconFill: '#43A329',
+        iconRotation: 0
+      };
+    }
+
+    // down2 색상 (하락 강조)
+    if (color === 'down2') {
+      return {
+        backgroundColor: '#FEF6F1',
+        color: '#DA6816',
+        border: 'none',
+        iconFill: '#DA6816',
+        iconRotation: 0
+      };
     }
 
     // default 색상

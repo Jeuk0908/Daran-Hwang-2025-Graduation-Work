@@ -50,9 +50,6 @@ export const SimpleChartViewer = ({
       onClick={onClick}
       style={{
         backgroundColor: isSelected ? '#FAFCFF' : '#FFFFFF',
-        boxShadow: isSelected
-          ? '1px 2px 13.6px 0px rgba(52, 144, 255, 0.5)'
-          : '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
         borderRadius: '12px',
         padding: '20px 12px',
         display: 'flex',
@@ -60,6 +57,7 @@ export const SimpleChartViewer = ({
         gap: '8px',
         cursor: onClick ? 'pointer' : 'default',
         width: '100%',
+        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.2s ease'
       }}
     >

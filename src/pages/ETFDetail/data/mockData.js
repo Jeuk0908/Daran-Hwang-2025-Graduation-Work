@@ -1937,6 +1937,256 @@ K-뷰티는 중국, 동남아, 미국 등 해외 시장에서 높은 인기를 �
       { date: '2023.09.25', amount: 75, yieldRate: 1.54, status: 'paid' },
       { date: '2023.06.23', amount: 72, yieldRate: 1.48, status: 'paid' }
     ]
+  },
+
+  'etf-17': {
+    id: 'etf-17',
+    code: '295820',
+    name: 'ZETA 밸류250',
+    category: '국내주식',
+    themes: ['가치주', '배당'],
+    popularity: 68,
+    isFavorite: false,
+    currentPrice: 9340,
+    previousClose: 9480,
+    changeAmount: -140,
+    changePercent: -1.48,
+    changeDirection: 'down',
+    nav: 9200,
+    navChangeAmount: -142,
+    navChangePercent: -1.50,
+    navChangeDirection: 'down',
+    basicInfo: {
+      manager: 'Zeta자산운용',
+      managementFee: '0.15',
+      listingDate: '2018.04.17',
+      indexName: 'Korea Value 250 Index',
+      totalAssets: 425000000000,
+      totalAssetsFormatted: '4,250억원',
+      volume: 15678,
+      volumeFormatted: '15,678',
+      dividendYield: '3.25',
+      expenseRatio: '0.18',
+      trackingError: '0.22',
+      underlyingAsset: '국내주식',
+      marketCap: '4,198억원',
+      netAssets: '4,180억원',
+      listedShares: '45,000,000주',
+      numberOfHoldings: '250종목',
+      leverage: '1배',
+      ter: '0.1950%',
+      actualExpenseRatio: '0.2134%',
+      securitiesTax: '비과세',
+      capitalGainsTax: '비과세',
+      dividendTax: '배당소득세 15.4%'
+    },
+    strategy: {
+      title: '가치투자 - 운용 전략',
+      description: 'Korea Value 250 지수를 추종하여 국내 {가치주 250개 기업}에 분산 투자합니다.',
+      highlightColor: '#3490FF'
+    },
+    strategyDetails: {
+      features: [
+        '저평가 가치주 중심의 포트폴리오 구성',
+        '높은 배당수익률로 안정적인 현금흐름',
+        '경기 회복기에 유리한 투자 전략'
+      ],
+      investmentStrategy: `(1) 운용 전략
+1) 국내 거래소에 상장된 중소형주 및 가치주 250개 종목에 투자하며, Korea Value 250 Index를 추종합니다. 본 지수는 PER, PBR 등 가치 지표를 기준으로 저평가된 종목을 선별합니다.
+
+2) 편입 종목 기준:
+   - PER 15배 이하, PBR 1.5배 이하
+   - ROE 8% 이상
+   - 배당수익률 2% 이상
+   - 최근 3개월 일평균 거래대금 5억원 이상
+
+3) 가중 방식: 가치 스코어 가중 방식을 적용하며, 개별 종목 상한은 3%입니다.
+
+4) 섹터 구성: 금융(22%), 건설(15%), 화학(12%), 철강(10%), 자동차(9%), 유통(8%), 기타(24%)
+
+5) 반기별 리밸런싱을 통해 구성 종목 및 비중을 조정하며, 추적오차는 연 0.30% 이하로 관리됩니다.
+
+(2) 기초지수 정보
+- 기초지수: Korea Value 250 Index
+- 산출기관: 국내지수공사
+- 구성종목: 250개 가치주
+- 가중방식: 가치 스코어 가중
+- 리밸런싱: 반기별 (6월, 12월 첫째 금요일)
+- 배당 처리: 총수익률 방식 (배당금 재투자 가정)
+- 기준일: 2015년 1월 2일 (기준지수 1,000pt)
+
+(3) 투자위험 고지
+경기 침체기에는 가치주의 수익률이 저조할 수 있으며, 성장주 대비 변동성이 클 수 있습니다.`,
+      riskLevel: '중고위험',
+      recommendedPeriod: '2년 이상'
+    },
+    indexDetails: {
+      indexName: 'Korea Value 250 Index',
+      indexProvider: '국내지수공사',
+      indexDescription: `본 지수는 국내 주식시장에서 가치 지표(PER, PBR, 배당수익률 등)가 우수한 250개 종목으로 구성됩니다.
+
+저평가된 가치주를 선별하여 투자하며, 금융(22%), 건설(15%), 화학(12%), 철강(10%) 등 전통 산업 중심으로 구성됩니다.
+
+편입 기준은 PER 15배 이하, PBR 1.5배 이하, ROE 8% 이상, 배당수익률 2% 이상이며, 가치 스코어 가중 방식으로 비중이 결정됩니다.
+
+반기별 리밸런싱을 통해 구성 종목을 최신화하며, 기준일은 2015년 1월 2일(기준지수 1,000pt)입니다.`,
+      rebalancingCycle: '반기별',
+      calculationMethod: '가치 스코어 가중'
+    },
+    chartData: {
+      '1D': generateChartData('1D', 9400),
+      '1M': generateChartData('1M', 9650),
+      '3M': generateChartData('3M', 9850),
+      '6M': generateChartData('6M', 10100),
+      '1Y': generateChartData('1Y', 10500),
+      '3Y': generateChartData('3Y', 11200),
+      '5Y': generateChartData('5Y', 11800),
+      'MAX': generateChartData('MAX', 12500)
+    },
+    holdings: [
+      { rank: 1, name: '제일금융', ticker: '024110', weight: 2.8, change: -0.3, changeDirection: 'down', price: '18,450' },
+      { rank: 2, name: '대한건설', ticker: '003410', weight: 2.6, change: -0.8, changeDirection: 'down', price: '52,300' },
+      { rank: 3, name: '화학공업', ticker: '051900', weight: 2.4, change: -0.5, changeDirection: 'down', price: '98,700' },
+      { rank: 4, name: '철강산업', ticker: '010950', weight: 2.2, change: 0.2, changeDirection: 'up', price: '78,900' },
+      { rank: 5, name: '조선중공업', ticker: '009540', weight: 2.0, change: -1.1, changeDirection: 'down', price: '145,500' },
+      { rank: 6, name: '유통기업', ticker: '023530', weight: 1.9, change: 0.4, changeDirection: 'up', price: '234,500' },
+      { rank: 7, name: '섬유산업', ticker: '120110', weight: 1.8, change: -0.6, changeDirection: 'down', price: '34,200' },
+      { rank: 8, name: '식품가공', ticker: '097950', weight: 1.7, change: 0.3, changeDirection: 'up', price: '168,300' },
+      { rank: 9, name: '에너지공급', ticker: '015760', weight: 1.6, change: -0.4, changeDirection: 'down', price: '89,400' },
+      { rank: 10, name: '운수물류', ticker: '071050', weight: 1.5, change: 0.1, changeDirection: 'up', price: '45,600' }
+    ],
+    dividends: [
+      { date: '2024.03.28', amount: 125, yieldRate: 1.34, status: 'paid' },
+      { date: '2023.12.22', amount: 118, yieldRate: 1.25, status: 'paid' },
+      { date: '2023.09.25', amount: 112, yieldRate: 1.18, status: 'paid' },
+      { date: '2023.06.23', amount: 108, yieldRate: 1.14, status: 'paid' }
+    ]
+  },
+
+  'etf-18': {
+    id: 'etf-18',
+    code: '387290',
+    name: 'THETA 신흥국채권',
+    category: '해외채권',
+    themes: ['채권', '신흥국'],
+    popularity: 62,
+    isFavorite: false,
+    currentPrice: 8920,
+    previousClose: 9040,
+    changeAmount: -120,
+    changePercent: -1.33,
+    changeDirection: 'down',
+    nav: 9080,
+    navChangeAmount: -122,
+    navChangePercent: -1.35,
+    navChangeDirection: 'down',
+    basicInfo: {
+      manager: 'Theta자산운용',
+      managementFee: '0.25',
+      listingDate: '2019.08.22',
+      indexName: 'Emerging Markets Bond Index',
+      totalAssets: 312000000000,
+      totalAssetsFormatted: '3,120억원',
+      volume: 8934,
+      volumeFormatted: '8,934',
+      dividendYield: '4.85',
+      expenseRatio: '0.30',
+      trackingError: '0.35',
+      underlyingAsset: '해외채권',
+      marketCap: '3,089억원',
+      netAssets: '3,072억원',
+      listedShares: '35,000,000주',
+      numberOfHoldings: '180종목',
+      leverage: '1배',
+      ter: '0.3250%',
+      actualExpenseRatio: '0.3578%',
+      securitiesTax: '비과세',
+      capitalGainsTax: '배당소득세 15.4%',
+      dividendTax: '배당소득세 15.4%'
+    },
+    strategy: {
+      title: '채권투자 - 운용 전략',
+      description: '신흥국 국채 및 회사채에 투자하여 {높은 이자수익}을 추구하는 상품입니다.',
+      highlightColor: '#3490FF'
+    },
+    strategyDetails: {
+      features: [
+        '신흥국 국채 중심의 포트폴리오 구성',
+        '높은 이자수익률 제공 (연 4~6%)',
+        '달러 강세 시 환차손 위험'
+      ],
+      investmentStrategy: `(1) 운용 전략
+1) 신흥국(브라질, 인도, 멕시코, 인도네시아, 터키 등)의 국채 및 우량 회사채에 투자하며, Emerging Markets Bond Total Return Index를 추종합니다.
+
+2) 투자 대상:
+   - 신흥국 국채: 70% (투자등급 BBB- 이상)
+   - 신흥국 회사채: 30% (투자등급 BBB 이상)
+   - 만기: 평균 7~10년
+   - 통화: 주로 달러 표시 채권
+
+3) 지역 분산:
+   - 중남미: 35% (브라질, 멕시코 등)
+   - 아시아: 40% (인도, 인도네시아, 중국 등)
+   - 동유럽/중동: 25% (터키, 남아공 등)
+
+4) 이자수익: 연 평균 4.5~5.5% 수준의 쿠폰 이자 수취
+5) 환헷지: 부분 환헷지 (50% 수준), 달러 강세 시 환차손 가능
+
+(2) 기초지수 정보
+- 기초지수: Emerging Markets Bond Index
+- 산출기관: GlobalBond Index Solutions
+- 구성종목: 신흥국 국채 및 회사채 180종목
+- 평균 만기: 8.5년
+- 평균 신용등급: BBB
+- 리밸런싱: 월간
+- 기준일: 2010년 1월 1일 (기준지수 100pt)
+
+(3) 투자위험 고지
+신흥국 채권은 선진국 채권 대비 신용 위험이 높으며, 환율 변동, 정치적 불안정, 금리 상승 시 원금 손실 가능성이 있습니다. 특히 달러 강세 시 환차손이 발생할 수 있습니다.`,
+      riskLevel: '중고위험',
+      recommendedPeriod: '1년 이상'
+    },
+    indexDetails: {
+      indexName: 'Emerging Markets Bond Index',
+      indexProvider: 'GlobalBond Index Solutions',
+      indexDescription: `본 지수는 신흥국의 달러 표시 국채 및 회사채로 구성되며, 평균 신용등급 BBB, 평균 만기 8.5년의 채권 포트폴리오입니다.
+
+중남미(35%), 아시아(40%), 동유럽/중동(25%)로 지역 분산이 이루어지며, 국채 70%, 회사채 30%의 비중으로 구성됩니다.
+
+편입 기준은 신용등급 BBB- 이상, 발행 규모 5억 달러 이상, 잔존 만기 1년 이상이며, 시가총액 가중 방식으로 비중이 결정됩니다.
+
+월간 리밸런싱을 통해 구성 채권을 최신화하며, 기준일은 2010년 1월 1일(기준지수 100pt)입니다.`,
+      rebalancingCycle: '월간',
+      calculationMethod: '시가총액 가중'
+    },
+    chartData: {
+      '1D': generateChartData('1D', 8950),
+      '1M': generateChartData('1M', 9100),
+      '3M': generateChartData('3M', 9280),
+      '6M': generateChartData('6M', 9450),
+      '1Y': generateChartData('1Y', 9780),
+      '3Y': generateChartData('3Y', 10200),
+      '5Y': generateChartData('5Y', 10600),
+      'MAX': generateChartData('MAX', 11000)
+    },
+    holdings: [
+      { rank: 1, name: 'Brazil Government Bond 2030', ticker: 'BRZ30', weight: 8.5, change: -0.5, changeDirection: 'down', price: '$95.20' },
+      { rank: 2, name: 'Mexico Treasury 2029', ticker: 'MEX29', weight: 7.8, change: -0.3, changeDirection: 'down', price: '$97.80' },
+      { rank: 3, name: 'India Government Bond 2032', ticker: 'IND32', weight: 7.2, change: 0.2, changeDirection: 'up', price: '$101.50' },
+      { rank: 4, name: 'Indonesia Treasury 2031', ticker: 'IDN31', weight: 6.9, change: -0.4, changeDirection: 'down', price: '$93.60' },
+      { rank: 5, name: 'Turkey Government Bond 2028', ticker: 'TRK28', weight: 6.5, change: -1.2, changeDirection: 'down', price: '$88.40' },
+      { rank: 6, name: 'South Africa Bond 2030', ticker: 'ZAF30', weight: 5.8, change: -0.6, changeDirection: 'down', price: '$91.70' },
+      { rank: 7, name: 'China Development Bank 2029', ticker: 'CDB29', weight: 5.2, change: 0.1, changeDirection: 'up', price: '$99.30' },
+      { rank: 8, name: 'Petrobras 2032', ticker: 'PBR32', weight: 4.8, change: -0.8, changeDirection: 'down', price: '$92.50' },
+      { rank: 9, name: 'Pemex 2030', ticker: 'PMX30', weight: 4.5, change: -0.7, changeDirection: 'down', price: '$89.80' },
+      { rank: 10, name: 'Tata Steel 2029', ticker: 'TATA29', weight: 4.2, change: 0.3, changeDirection: 'up', price: '$98.20' }
+    ],
+    dividends: [
+      { date: '2024.03.15', amount: 135, yieldRate: 1.52, status: 'paid' },
+      { date: '2023.12.15', amount: 128, yieldRate: 1.42, status: 'paid' },
+      { date: '2023.09.15', amount: 122, yieldRate: 1.37, status: 'paid' },
+      { date: '2023.06.15', amount: 118, yieldRate: 1.31, status: 'paid' }
+    ]
   }
 };
 
@@ -1960,9 +2210,9 @@ export const getAllETFs = () => {
 // ========== 시장 지수 데이터 ==========
 export const INDEX_DATA = [
   { id: 'idx-1', name: 'World 500 선물', value: '6,410.75', changePercent: '2.59', changeDirection: 'up' },
-  { id: 'idx-2', name: 'Global Tech 100 선물', value: '16,245.32', changePercent: '3.12', changeDirection: 'up' },
+  { id: 'idx-2', name: 'Global Tech 100 선물', value: '16,245.32', changePercent: '1.87', changeDirection: 'down' },
   { id: 'idx-3', name: 'Korea Stock 200', value: '348.92', changePercent: '0.83', changeDirection: 'up' },
-  { id: 'idx-4', name: 'Korea Growth 150', value: '1,247.56', changePercent: '0.96', changeDirection: 'up' },
+  { id: 'idx-4', name: 'Korea Growth 150', value: '1,247.56', changePercent: '0.42', changeDirection: 'down' },
   { id: 'idx-5', name: 'Global Bond Index', value: '2,108.43', changePercent: '0.05', changeDirection: 'up' },
   { id: 'idx-6', name: 'Gold Spot', value: '2,042.50', changePercent: '1.03', changeDirection: 'up' },
   { id: 'idx-7', name: 'Oil WTI', value: '78.45', changePercent: '1.58', changeDirection: 'up' },
