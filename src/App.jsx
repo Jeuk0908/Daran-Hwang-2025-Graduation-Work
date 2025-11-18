@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { BottomNav } from './components/common/BottomNav'
+import Splash from './pages/Splash'
 import IconShowcase from './pages/Dev/IconShowcase'
 import Vocabulary from './pages/Vocabulary'
 import MyPage from './pages/MyPage'
@@ -60,6 +61,7 @@ function AppContent() {
   const isVocabularyPage = location.pathname === '/vocabulary';
   const isBookmarkPage = location.pathname === '/bookmark';
   const isHomePage = location.pathname === '/home';
+  const isSplashPage = location.pathname === '/';
   const isPortfolioCreatePage = location.pathname.startsWith('/portfolio/create');
   const isRebalancePage = location.pathname.includes('/rebalance');
   const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
@@ -67,7 +69,7 @@ function AppContent() {
   const isETFDetailPage = location.pathname.includes('/etf/') && location.pathname.includes('/detail');
   const isInterestETFPage = location.pathname === '/interest-etf';
   const isThemeDetailPage = location.pathname.includes('/theme/');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage || isInterestETFPage || isThemeDetailPage;
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isSplashPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage || isInterestETFPage || isThemeDetailPage;
 
   return (
     <div style={{
@@ -86,7 +88,7 @@ function AppContent() {
         width: '100%'
       }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/" element={<Splash />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/portfolio/delete" element={<PortfolioDelete />} />
