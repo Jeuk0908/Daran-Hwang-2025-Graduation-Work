@@ -30,7 +30,7 @@ export const MarketIndexCard = ({
     <div
       onClick={onClick}
       style={{
-        backgroundColor: '#F7F7F8',
+        backgroundColor: isUp ? 'rgba(239, 250, 236, 0.7)' : 'rgba(254, 246, 241, 0.7)',
         borderRadius: '12px',
         padding: showChart ? '12px' : '16px',
         display: 'flex',
@@ -58,7 +58,8 @@ export const MarketIndexCard = ({
             display: 'flex',
             flexDirection: 'column',
             gap: '2px',
-            width: showChart ? '72px' : 'auto'
+            width: showChart ? '72px' : '100%',
+            minWidth: 0
           }}
         >
           {/* 지수 이름 */}

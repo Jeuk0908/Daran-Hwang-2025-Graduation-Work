@@ -6,9 +6,11 @@ import { SettingSection } from '../../components/common/SettingSection';
 import { SettingItem } from '../../components/common/SettingItem';
 import vocabularyIcon from '../../assets/단어장.svg';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
 
   // 용어 백과 클릭 핸들러
   const handleVocabularyClick = () => {
@@ -26,12 +28,18 @@ const MyPage = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: '35px'
       }}
     >
-      {/* 상단 네비게이션 */}
-      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
+      {/* TopNav with Safe Area */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
+      }}>
         <TopNav
           title="투자 일지"
           depth="1"

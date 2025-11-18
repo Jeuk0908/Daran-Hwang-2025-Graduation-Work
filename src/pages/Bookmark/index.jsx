@@ -1,12 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { CenterTabNav } from '../../components/common/CenterTabNav';
 import { TipCard } from '../../components/common/TipCard';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
+import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
 import { shuffleArray } from '../../utils/shuffle';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconDividen from '../../assets/분배금_24.svg';
 import iconNAV from '../../assets/NAV_24.svg';
 import iconETF from '../../assets/ETF_24.svg';
@@ -26,7 +28,10 @@ import thumbnail10 from '../../assets/images/pexels-vlasceanu-1400249.jpg';
 
 const Bookmark = () => {
   const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
   const [activeTab, setActiveTab] = useState('전체');
+  const [isLoading, setIsLoading] = useState(true); // 초기 로딩 상태
+  const [loadedTabs, setLoadedTabs] = useState(new Set()); // 처음 로드되는 탭 추적
 
   // Q&A 데이터
   const qaData = [
@@ -269,11 +274,64 @@ const Bookmark = () => {
     return shuffleArray(combined);
   }, []);
 
+  // 전체 탭용 Masonry 레이아웃 섹션 생성
+  const contentSections = useMemo(() => {
+    const sections = [];
+    let currentTwoColumnItems = [];
+    let columnIndex = 0;
+
+    allContent.forEach((content) => {
+      if (content.type === 'qa') {
+        // 현재까지 모인 2열 아이템들을 섹션에 추가
+        if (currentTwoColumnItems.length > 0) {
+          sections.push({ type: 'twoColumn', items: [...currentTwoColumnItems] });
+          currentTwoColumnItems = [];
+          columnIndex = 0;
+        }
+        // Q&A를 전체 너비 섹션으로 추가
+        sections.push({ type: 'fullWidth', content });
+      } else {
+        // 2열 아이템에 추가 (왼쪽: 0, 오른쪽: 1)
+        currentTwoColumnItems.push({ content, column: columnIndex % 2 });
+        columnIndex++;
+      }
+    });
+
+    // 남은 2열 아이템들 추가
+    if (currentTwoColumnItems.length > 0) {
+      sections.push({ type: 'twoColumn', items: currentTwoColumnItems });
+    }
+
+    return sections;
+  }, [allContent]);
+
+  // 탭 전환 시 로딩 상태 관리
+  useEffect(() => {
+    // 이미 로드된 탭이면 스켈레톤 표시 안 함
+    if (loadedTabs.has(activeTab)) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 처음 방문하는 탭만 로딩 표시
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setLoadedTabs(prev => new Set([...prev, activeTab]));
+    }, 300); // 300ms 로딩
+
+    return () => clearTimeout(timer);
+  }, [activeTab, loadedTabs]);
+
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleTabChange = (tab) => {
+    // 처음 방문하는 탭이면 먼저 로딩 상태 설정
+    if (!loadedTabs.has(tab)) {
+      setIsLoading(true);
+    }
     setActiveTab(tab);
   };
 
@@ -329,12 +387,18 @@ const Bookmark = () => {
         width: '100%',
         minHeight: '100vh',
         backgroundColor: '#FFFFFF',
-        paddingTop: LAYOUT.SAFE_AREA_TOP,
         paddingBottom: '88px'
       }}
     >
-      {/* 상단 네비게이션 */}
-      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
+      {/* TopNav with Safe Area */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
+      }}>
         <TopNav
           title="북마크"
           depth="2"
@@ -364,98 +428,155 @@ const Bookmark = () => {
           overflow: 'hidden'
         }}
       >
-        {/* 전체 탭 컨텐츠 - Masonry Grid Layout */}
+        {/* 전체 탭 컨텐츠 - Masonry Layout */}
         <div style={getTabContentStyle('전체')}>
           <div
             style={{
               padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 20px`,
-              marginTop: `${LAYOUT.SECTION_GAP}px`,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: `${LAYOUT.GRID_GAP.ROW}px`,
-              columnGap: `${LAYOUT.GRID_GAP.COLUMN}px`,
-              gridAutoFlow: 'dense',
-              alignItems: 'start'
+              marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
-            {allContent.map((item) => {
-              // Q&A 타입 - 전체 너비
-              if (item.type === 'qa') {
+            {isLoading && activeTab === '전체' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px',
+                  width: '100%'
+                }}
+              >
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ContentCardSkeleton
+                    key={`content-skeleton-${index}`}
+                    size={index % 3 === 0 ? 'large' : index % 2 === 0 ? 'medium' : 'small'}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* 실제 데이터 */
+              contentSections.map((section, sectionIndex) => {
+              // Q&A 전체 너비 섹션
+              if (section.type === 'fullWidth') {
                 return (
                   <div
-                    key={`qa-${item.id}`}
+                    key={`qa-${section.content.id}`}
                     style={{
-                      gridColumn: 'span 2',
-                      marginBottom: '4px'
+                      marginBottom: sectionIndex < contentSections.length - 1 ? '16px' : '0'
                     }}
                   >
                     <TipCard
-                      icon={item.icon}
-                      title={item.title}
-                      tips={item.tips}
-                      linkText={item.linkText}
-                      linkIcon={item.linkIcon}
+                      icon={section.content.icon}
+                      title={section.content.title}
+                      tips={section.content.tips}
+                      linkText={section.content.linkText}
+                      linkIcon={section.content.linkIcon}
                       showLink={true}
-                      defaultOpen={item.defaultOpen}
-                      initialBookmarked={item.initialBookmarked}
+                      defaultOpen={section.content.defaultOpen}
+                      initialBookmarked={section.content.initialBookmarked}
                       onToggle={(isOpen) => {
-                        console.log(`${item.title} ${isOpen ? '열림' : '닫힘'}`);
+                        console.log(`${section.content.title} ${isOpen ? '열림' : '닫힘'}`);
                       }}
                       onBookmarkChange={(isBookmarked) => {
-                        console.log(
-                          `${item.title} 북마크 ${isBookmarked ? '추가' : '제거'}`
-                        );
+                        console.log(`${section.content.title} 북마크 ${isBookmarked ? '추가' : '제거'}`);
                       }}
                       onLinkClick={() => {
-                        console.log(`${item.linkText} 클릭`);
+                        console.log(`${section.content.linkText} 클릭`);
                       }}
                     />
                   </div>
                 );
               }
 
-              // 영상 타입
-              if (item.type === 'video') {
+              // 2열 Masonry 섹션
+              if (section.type === 'twoColumn') {
+                const leftItems = section.items.filter(item => item.column === 0);
+                const rightItems = section.items.filter(item => item.column === 1);
+
+                const renderItem = (content) => {
+                  const key = `${content.type}-${content.id}`;
+
+                  // 영상 타입
+                  if (content.type === 'video') {
+                    return (
+                      <VideoThumbnail
+                        key={key}
+                        thumbnail={content.thumbnail}
+                        title={content.title}
+                        variant={content.variant}
+                        isBookmarked={content.isBookmarked}
+                        onPlayClick={() => handleVideoPlay(content.id)}
+                        onBookmarkClick={(newState) =>
+                          handleBookmarkToggle(content.id, newState)
+                        }
+                      />
+                    );
+                  }
+
+                  // 뉴스 타입
+                  if (content.type === 'news') {
+                    return (
+                      <NewsCard
+                        key={key}
+                        thumbnail={content.thumbnail}
+                        title={content.title}
+                        isBookmarked={content.isBookmarked}
+                        onCardClick={() => handleNewsClick(content.id)}
+                        onBookmarkClick={(newState) =>
+                          handleNewsBookmarkToggle(content.id, newState)
+                        }
+                      />
+                    );
+                  }
+
+                  return null;
+                };
+
                 return (
                   <div
-                    key={`video-${item.id}`}
+                    key={`section-${sectionIndex}`}
                     style={{
-                      gridRowEnd: item.variant === 'shorts' ? 'span 3' : 'span 1'
+                      marginBottom: sectionIndex < contentSections.length - 1 ? '16px' : '0'
                     }}
                   >
-                    <VideoThumbnail
-                      thumbnail={item.thumbnail}
-                      title={item.title}
-                      variant={item.variant}
-                      isBookmarked={item.isBookmarked}
-                      onPlayClick={() => handleVideoPlay(item.id)}
-                      onBookmarkClick={(newState) =>
-                        handleBookmarkToggle(item.id, newState)
-                      }
-                    />
-                  </div>
-                );
-              }
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: `${LAYOUT.GRID_GAP.COLUMN}px`,
+                        alignItems: 'flex-start'
+                      }}
+                    >
+                      {/* 왼쪽 열 */}
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: `${LAYOUT.GRID_GAP.ROW}px`
+                        }}
+                      >
+                        {leftItems.map(item => renderItem(item.content))}
+                      </div>
 
-              // 뉴스 타입
-              if (item.type === 'news') {
-                return (
-                  <div key={`news-${item.id}`}>
-                    <NewsCard
-                      thumbnail={item.thumbnail}
-                      title={item.title}
-                      isBookmarked={item.isBookmarked}
-                      onCardClick={() => handleNewsClick(item.id)}
-                      onBookmarkClick={(newState) =>
-                        handleNewsBookmarkToggle(item.id, newState)
-                      }
-                    />
+                      {/* 오른쪽 열 */}
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: `${LAYOUT.GRID_GAP.ROW}px`
+                        }}
+                      >
+                        {rightItems.map(item => renderItem(item.content))}
+                      </div>
+                    </div>
                   </div>
                 );
               }
 
               return null;
-            })}
+            })
+            )}
           </div>
         </div>
 
@@ -470,7 +591,17 @@ const Bookmark = () => {
               marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
-            {qaData.map((qa) => (
+            {isLoading && activeTab === 'Q&A' ? (
+              /* 로딩 중: 스켈레톤 */
+              Array.from({ length: 4 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`qa-skeleton-${index}`}
+                  size="medium"
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              qaData.map((qa) => (
               <TipCard
                 key={qa.id}
                 icon={qa.icon}
@@ -493,7 +624,8 @@ const Bookmark = () => {
                   console.log(`${qa.linkText} 클릭`);
                 }}
               />
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -511,7 +643,17 @@ const Bookmark = () => {
               alignItems: 'center'
             }}
           >
-            {videos.map((video) => (
+            {isLoading && activeTab === '영상 TIP' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              Array.from({ length: 8 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`video-skeleton-${index}`}
+                  size={index % 3 === 0 ? 'large' : 'medium'}
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              videos.map((video) => (
               <div
                 key={video.id}
                 style={{
@@ -529,7 +671,8 @@ const Bookmark = () => {
                   }
                 />
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -547,7 +690,17 @@ const Bookmark = () => {
               alignItems: 'start'
             }}
           >
-            {newsData.map((news) => (
+            {isLoading && activeTab === '뉴스' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              Array.from({ length: 8 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`news-skeleton-${index}`}
+                  size="medium"
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              newsData.map((news) => (
               <NewsCard
                 key={news.id}
                 thumbnail={news.thumbnail}
@@ -558,7 +711,8 @@ const Bookmark = () => {
                   handleNewsBookmarkToggle(news.id, newState)
                 }
               />
-            ))}
+            ))
+            )}
           </div>
         </div>
       </div>

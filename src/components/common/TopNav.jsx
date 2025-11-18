@@ -32,7 +32,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -53,7 +53,6 @@ export const TopNav = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '12px 12px 12px 0',
                 cursor: onBackClick ? 'pointer' : 'default',
               }}
             >
@@ -61,7 +60,7 @@ export const TopNav = ({
                 src={iconBackL}
                 alt="뒤로가기"
                 style={{
-                  width: '18px',
+                  width: '24px',
                   height: '24px',
                 }}
               />
@@ -151,7 +150,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -178,7 +177,7 @@ export const TopNav = ({
                 src={iconBackL}
                 alt="뒤로가기"
                 style={{
-                  width: '18px',
+                  width: '24px',
                   height: '24px',
                 }}
               />
@@ -259,7 +258,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -347,7 +346,7 @@ export const TopNav = ({
           justifyContent: 'space-between',
           width: '100%',
           height: '50px',
-          padding: '0',
+          padding: '0 16px',
           backgroundColor: '#FFFFFF',
           ...style,
         }}
@@ -374,7 +373,7 @@ export const TopNav = ({
                 src={iconBackL}
                 alt="뒤로가기"
                 style={{
-                  width: '18px',
+                  width: '24px',
                   height: '24px',
                 }}
               />

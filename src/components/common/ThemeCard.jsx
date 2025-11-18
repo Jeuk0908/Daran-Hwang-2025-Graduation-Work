@@ -26,8 +26,7 @@ export const ThemeCard = ({
     <div
       onClick={onClick}
       style={{
-        backgroundColor: '#FFFFFF',
-        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
+        backgroundColor: '#EFF7FF',
         borderRadius: '12px',
         padding: '16px',
         display: 'flex',

@@ -44,7 +44,6 @@ export const NewsCard = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        paddingBottom: '16px',
         width: '100%'
       }}
     >

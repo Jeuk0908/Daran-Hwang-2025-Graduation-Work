@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import iconBackUpT50 from '../../assets/icon_back(S)_U_t50.svg';
-import iconBackDownT50 from '../../assets/icon_back(S)_D_t50.svg';
 
 /**
  * Chip Components
@@ -19,6 +17,7 @@ import iconBackDownT50 from '../../assets/icon_back(S)_D_t50.svg';
  * @param {'select' | 'nonSelect'} props.state - 선택 상태
  * @param {'primary' | 'grey' | 'default' | 'primary2' | 'tab' | 'upTrend' | 'downTrend'} props.color - 색상 테마
  * @param {number} props.iconRotation - 아이콘 회전 각도 (0: 위쪽, 180: 아래쪽)
+ * @param {'small' | 'medium'} props.size - 크기 (small: 12px, medium: 14px)
  */
 export const Chip = ({
   title = '꾸준 인기',
@@ -27,7 +26,8 @@ export const Chip = ({
   showIcon = false,
   state = 'select',
   color = 'primary',
-  iconRotation
+  iconRotation,
+  size = 'medium'
 }) => {
   // 색상 및 상태별 스타일 정의
   const getStyles = () => {
@@ -91,18 +91,18 @@ export const Chip = ({
     if (color === 'grey') {
       if (state === 'select') {
         return {
-          backgroundColor: '#020203',
-          color: '#FFFFFF',
+          backgroundColor: '#E6E7EA',
+          color: '#474C57',
           border: 'none',
-          iconFill: '#FFFFFF',
+          iconFill: '#474C57',
           iconRotation: 0
         };
       } else {
         return {
-          backgroundColor: 'transparent',
-          color: '#1A1C20',
-          border: '1px solid #E6E7EA',
-          iconFill: '#1A1C20',
+          backgroundColor: '#FFFFFF',
+          color: '#474C57',
+          border: 'none',
+          iconFill: '#474C57',
           iconRotation: 0
         };
       }
@@ -129,14 +129,46 @@ export const Chip = ({
       }
     }
 
+    // up2 색상 (상승 강조)
+    if (color === 'up2') {
+      return {
+        backgroundColor: '#EFFAEC',
+        color: '#43A329',
+        border: 'none',
+        iconFill: '#43A329',
+        iconRotation: 0
+      };
+    }
+
+    // down2 색상 (하락 강조)
+    if (color === 'down2') {
+      return {
+        backgroundColor: '#FEF6F1',
+        color: '#DA6816',
+        border: 'none',
+        iconFill: '#DA6816',
+        iconRotation: 0
+      };
+    }
+
     // default 색상
-    return {
-      backgroundColor: '#F7F7F8',
-      color: '#1A1C20',
-      border: 'none',
-      iconFill: '#1A1C20',
-      iconRotation: 0
-    };
+    if (state === 'select') {
+      return {
+        backgroundColor: '#1A1C20',
+        color: '#FFFFFF',
+        border: 'none',
+        iconFill: '#FFFFFF',
+        iconRotation: 0
+      };
+    } else {
+      return {
+        backgroundColor: '#F7F7F8',
+        color: '#1A1C20',
+        border: 'none',
+        iconFill: '#1A1C20',
+        iconRotation: 0
+      };
+    }
   };
 
   const styles = getStyles();
@@ -148,9 +180,6 @@ export const Chip = ({
     // iconRotation prop이 제공되면 그것을 사용, 아니면 styles의 값 사용
     const rotation = iconRotation !== undefined ? iconRotation : styles.iconRotation;
 
-    // rotation이 180이면 아래쪽 화살표, 아니면 위쪽 화살표
-    const iconSrc = rotation === 180 ? iconBackDownT50 : iconBackUpT50;
-
     return (
       <div
         style={{
@@ -158,20 +187,17 @@ export const Chip = ({
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: '4px',
-          width: '24px',
-          height: '24px',
-          transition: 'opacity 0.2s ease'
+          transform: `rotate(${rotation}deg)`,
+          transition: 'transform 0.3s ease'
         }}
       >
-        <img
-          src={iconSrc}
-          alt=""
-          style={{
-            width: '24px',
-            height: '24px',
-            display: 'block'
-          }}
-        />
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M10 8L6 12L14 12L10 8Z"
+            fill={styles.iconFill}
+            style={{ transition: 'fill 0.3s ease' }}
+          />
+        </svg>
       </div>
     );
   };
@@ -193,18 +219,17 @@ export const Chip = ({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: showIcon ? '12px' : '10px',
-        paddingRight: showIcon ? '4px' : '10px',
+        paddingLeft: showIcon ? '12px' : (size === 'medium' ? '10px' : '6px'),
+        paddingRight: showIcon ? '4px' : (size === 'medium' ? '10px' : '6px'),
         paddingTop: '4px',
         paddingBottom: '4px',
-        height: '32px',
         backgroundColor: styles.backgroundColor,
         border: styles.border,
-        borderRadius: '12px',
+        borderRadius: '8px',
         fontFamily: 'Pretendard, sans-serif',
-        fontSize: '14px',
+        fontSize: size === 'small' ? '12px' : '14px',
         fontWeight: 500,
-        lineHeight: '21px',
+        lineHeight: size === 'small' ? '18px' : '21px',
         color: styles.color,
         whiteSpace: 'nowrap',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -278,10 +303,9 @@ export const TrendChip = ({
         paddingRight: '4px',
         paddingTop: '4px',
         paddingBottom: '4px',
-        height: '32px',
         backgroundColor: styles.backgroundColor,
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: '8px',
         fontFamily: 'Pretendard, sans-serif',
         fontSize: '14px',
         fontWeight: 500,

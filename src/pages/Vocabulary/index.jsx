@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { SearchBar } from '../../components/common/SearchBar';
 import { Chip } from '../../components/common/Chip';
 import VocabularyCard from '../../components/common/VocabularyCard';
 import { LAYOUT } from '../../constants/layout';
+import { useScrollShadow } from '../../hooks/useScrollShadow';
 
 // ETF 용어 아이콘 import
 import etfIcon from '../../assets/ETF_24.svg';
@@ -50,6 +52,8 @@ import leverageIcon from '../../assets/레버리지_24.svg';
 import leverageDisabledIcon from '../../assets/비활성화 아이콘/레버리지_비활성화.svg';
 
 const Vocabulary = () => {
+  const navigate = useNavigate();
+  const hasScrolled = useScrollShadow(0);
   const [searchValue, setSearchValue] = useState('');
   const [activeTab, setActiveTab] = useState('전체');
   const [sortOrder, setSortOrder] = useState('recent'); // 'recent' | 'oldest'
@@ -290,16 +294,27 @@ const Vocabulary = () => {
     }
   };
 
+  // 뒤로가기 핸들러
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
     <div style={{
       width: '100%',
       minHeight: '100vh',
       backgroundColor: '#FFFFFF',
-      paddingTop: LAYOUT.SAFE_AREA_TOP,
       paddingBottom: '88px'
     }}>
-      {/* 상단 네비게이션 */}
-      <div style={{ padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px` }}>
+      {/* TopNav with Safe Area */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: '#FFFFFF',
+        boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
+        transition: 'box-shadow 0.2s ease'
+      }}>
         <TopNav
           title="용어 백과"
           number={obtainedCount.toString()}
@@ -309,6 +324,7 @@ const Vocabulary = () => {
           showBackButton={true}
           showChip={false}
           showNumber={true}
+          onBackClick={handleBackClick}
         />
       </div>
 

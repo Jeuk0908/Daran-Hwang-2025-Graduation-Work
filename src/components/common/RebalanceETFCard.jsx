@@ -40,7 +40,6 @@ const RebalanceETFCard = ({
         onClick={onClick}
         style={{
           width: '100%',
-          maxWidth: '361px',
           padding: '20px 16px',
           background: '#FFFFFF',
           borderRadius: '12px',
@@ -72,7 +71,7 @@ const RebalanceETFCard = ({
           >
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '18px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -91,7 +90,7 @@ const RebalanceETFCard = ({
             >
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -104,7 +103,7 @@ const RebalanceETFCard = ({
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px' }}>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '14px',
                     fontWeight: '500',
                     lineHeight: '1.5',
@@ -116,7 +115,7 @@ const RebalanceETFCard = ({
                 </p>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '12px',
                     fontWeight: '400',
                     lineHeight: '1.5',
@@ -142,7 +141,7 @@ const RebalanceETFCard = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -165,7 +164,7 @@ const RebalanceETFCard = ({
                 >
                   <p
                     style={{
-                      fontFamily: 'Pretendard',
+                      fontFamily: 'Pretendard, sans-serif',
                       fontSize: '16px',
                       fontWeight: '600',
                       lineHeight: '1.35',
@@ -178,7 +177,7 @@ const RebalanceETFCard = ({
                 </div>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '14px',
                     fontWeight: '500',
                     lineHeight: '1.5',
@@ -201,7 +200,7 @@ const RebalanceETFCard = ({
             >
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -214,7 +213,7 @@ const RebalanceETFCard = ({
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '14px',
                     fontWeight: '500',
                     lineHeight: '1.5',
@@ -241,7 +240,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '16px',
                 fontWeight: '600',
                 lineHeight: '1.35',
@@ -253,7 +252,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -265,7 +264,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -280,7 +279,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '12px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -293,7 +292,7 @@ const RebalanceETFCard = ({
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1px' }}>
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '16px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -305,7 +304,7 @@ const RebalanceETFCard = ({
               </p>
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '400',
                   lineHeight: '1.5',
@@ -328,7 +327,6 @@ const RebalanceETFCard = ({
       onClick={onClick}
       style={{
         width: '100%',
-        maxWidth: '361px',
         padding: '20px 16px',
         background: '#FFFFFF',
         borderRadius: '12px',
@@ -353,7 +351,7 @@ const RebalanceETFCard = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <p
             style={{
-              fontFamily: 'Pretendard',
+              fontFamily: 'Pretendard, sans-serif',
               fontSize: '18px',
               fontWeight: '600',
               lineHeight: '1.35',
@@ -377,7 +375,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '12px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -400,7 +398,7 @@ const RebalanceETFCard = ({
               >
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '16px',
                     fontWeight: '600',
                     lineHeight: '1.35',
@@ -413,7 +411,7 @@ const RebalanceETFCard = ({
               </div>
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '14px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -438,7 +436,7 @@ const RebalanceETFCard = ({
             >
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -451,7 +449,7 @@ const RebalanceETFCard = ({
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '14px',
                     fontWeight: '500',
                     lineHeight: '1.5',
@@ -476,7 +474,7 @@ const RebalanceETFCard = ({
             >
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
@@ -489,7 +487,7 @@ const RebalanceETFCard = ({
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <p
                   style={{
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Pretendard, sans-serif',
                     fontSize: '14px',
                     fontWeight: '500',
                     lineHeight: '1.5',
@@ -518,17 +516,23 @@ const RebalanceETFCard = ({
             <div
               style={{
                 padding: '4px 6px',
-                background: actionType === 'buy' ? '#EFFAEC' : '#FFE5E5',
+                background:
+                  actionType === 'buy' ? '#EFFAEC' :
+                  actionType === 'sell' ? '#FEF6F1' :
+                  '#E0EEFF',
                 borderRadius: '8px',
               }}
             >
               <p
                 style={{
-                  fontFamily: 'Pretendard',
+                  fontFamily: 'Pretendard, sans-serif',
                   fontSize: '12px',
                   fontWeight: '500',
                   lineHeight: '1.5',
-                  color: actionType === 'buy' ? '#43A329' : '#DA6816',
+                  color:
+                    actionType === 'buy' ? '#43A329' :
+                    actionType === 'sell' ? '#EB843A' :
+                    '#3490FF',
                   margin: 0,
                 }}
               >
@@ -540,7 +544,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -552,7 +556,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '16px',
                 fontWeight: '600',
                 lineHeight: '1.35',
@@ -564,7 +568,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -590,7 +594,7 @@ const RebalanceETFCard = ({
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px' }}>
           <p
             style={{
-              fontFamily: 'Pretendard',
+              fontFamily: 'Pretendard, sans-serif',
               fontSize: '12px',
               fontWeight: '500',
               lineHeight: '1.5',
@@ -603,7 +607,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -615,7 +619,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '12px',
                 fontWeight: '400',
                 lineHeight: '1.5',
@@ -631,7 +635,7 @@ const RebalanceETFCard = ({
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
           <p
             style={{
-              fontFamily: 'Pretendard',
+              fontFamily: 'Pretendard, sans-serif',
               fontSize: '12px',
               fontWeight: '500',
               lineHeight: '1.5',
@@ -644,7 +648,7 @@ const RebalanceETFCard = ({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1px' }}>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '16px',
                 fontWeight: '500',
                 lineHeight: '1.5',
@@ -656,7 +660,7 @@ const RebalanceETFCard = ({
             </p>
             <p
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard, sans-serif',
                 fontSize: '12px',
                 fontWeight: '400',
                 lineHeight: '1.5',

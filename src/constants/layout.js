@@ -12,7 +12,7 @@ export const LAYOUT = {
   MAX_WIDTH: 430,
 
   // 기본 패딩 (좌우)
-  HORIZONTAL_PADDING: 20, // 기존 16px → 20px로 증가
+  HORIZONTAL_PADDING: 17, // iPhone 14 Pro: 16px → iPhone 14 Pro Max: 17px (16 * 1.094)
 
   // 그리드 간격
   GRID_GAP: {
@@ -32,18 +32,17 @@ export const LAYOUT = {
   // 하단 네비게이션 높이
   BOTTOM_NAV_HEIGHT: 88,
 
-  // Safe Area - 다이나믹 아일랜드와 상태바를 위한 상단 여백
-  // 총 상단 여백: 50px (다이나믹 아일랜드 포함)
-  SAFE_AREA_TOP: '50px',
+  // Safe Area - 제거됨
+  SAFE_AREA_TOP: '0px',
 
   // 컨텐츠 영역 계산
   getContentWidth() {
-    return this.MAX_WIDTH - (this.HORIZONTAL_PADDING * 2); // 390px
+    return this.MAX_WIDTH - (this.HORIZONTAL_PADDING * 2); // 396px (430 - 34)
   },
 
   // 2열 그리드 각 컬럼 너비 계산
   getTwoColumnWidth() {
-    return (this.getContentWidth() - this.GRID_GAP.COLUMN) / 2; // 188px
+    return (this.getContentWidth() - this.GRID_GAP.COLUMN) / 2; // 191px
   }
 };
 

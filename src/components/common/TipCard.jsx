@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import iconBackSD from '../../assets/icon_back(S)_D.svg';
 import iconBackSU from '../../assets/icon_back(S)_U.svg';
 import iconBackSR from '../../assets/icon_back(S)_R.svg';
@@ -28,6 +28,7 @@ export const TipCard = ({
   showLink = true,
   initialBookmarked = false,
   defaultOpen = false,
+  collapsedStyle = null, // collapsed 상태의 커스텀 스타일
   onToggle,
   onBookmarkChange,
   onLinkClick,
@@ -35,6 +36,11 @@ export const TipCard = ({
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
+
+  // defaultOpen이 변경되면 isOpen 상태를 업데이트 (외부에서 제어 가능)
+  useEffect(() => {
+    setIsOpen(defaultOpen);
+  }, [defaultOpen]);
 
   const handleToggle = () => {
     const newState = !isOpen;
@@ -59,19 +65,22 @@ export const TipCard = ({
     }
   };
 
+  // collapsed 상태일 때 커스텀 스타일 적용
+  const cardStyle = {
+    backgroundColor: '#FFFFFF',
+    borderRadius: isOpen ? '12px' : '8px',
+    boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+    ...style,
+    // collapsed 상태이고 collapsedStyle이 있으면 적용
+    ...(!isOpen && collapsedStyle ? collapsedStyle : {}),
+  };
+
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: isOpen ? '12px' : '8px',
-        boxShadow: '1px 2px 13.6px 0px rgba(0, 0, 0, 0.1)',
-        width: '100%',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
-        transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        ...style,
-      }}
-    >
+    <div style={cardStyle}>
       {/* 헤더 */}
       <div
         onClick={handleToggle}
@@ -81,8 +90,8 @@ export const TipCard = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           cursor: 'pointer',
-          borderBottom: isOpen ? '1px solid #F7F7F8' : 'none',
-          transition: 'border-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          borderBottom: isOpen ? '1px solid #F7F7F8' : '1px solid transparent',
+          transition: 'border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
         {/* 왼쪽: 아이콘 + 제목 */}
