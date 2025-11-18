@@ -12,6 +12,7 @@ import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
 import { getPortfolios, getDefaultPortfolioBookmark, getDefaultPortfolioData, getPortfolioOrder } from '../../utils/portfolioStorage';
 import { getPopularETFs, INDEX_DATA, THEME_DATA, getETFsByPopularity, getETFsByVolume } from '../ETFDetail/data/mockData';
+import { addETFBookmark } from '../../utils/etfStorage';
 import iconBellOutline from '../../assets/icon_bell_outline_1.svg';
 import iconWhy from '../../assets/icon_why(12_12).svg';
 
@@ -31,6 +32,25 @@ const HomePage = () => {
   // 즐겨찾기된 포트폴리오 로드
   useEffect(() => {
     loadFavoritePortfolio();
+  }, []);
+
+  // 관심 ETF를 자동으로 즐겨찾기에 추가
+  useEffect(() => {
+    // 모든 관심 ETF ID 수집
+    const interestETFIds = [
+      ...getPopularETFs('up', 3).map(etf => etf.id),
+      ...getPopularETFs('down', 3).map(etf => etf.id),
+      ...getETFsByVolume().filter(etf => etf.changeDirection === 'up').slice(0, 3).map(etf => etf.id),
+      ...getETFsByVolume().filter(etf => etf.changeDirection === 'down').slice(0, 3).map(etf => etf.id)
+    ];
+
+    // 중복 제거
+    const uniqueETFIds = [...new Set(interestETFIds)];
+
+    // 각 ETF를 즐겨찾기에 추가
+    uniqueETFIds.forEach(etfId => {
+      addETFBookmark(etfId);
+    });
   }, []);
 
   const loadFavoritePortfolio = () => {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { SearchBar } from '../../components/common/SearchBar';
 import { Chip } from '../../components/common/Chip';
@@ -51,6 +52,7 @@ import leverageIcon from '../../assets/레버리지_24.svg';
 import leverageDisabledIcon from '../../assets/비활성화 아이콘/레버리지_비활성화.svg';
 
 const Vocabulary = () => {
+  const navigate = useNavigate();
   const hasScrolled = useScrollShadow(0);
   const [searchValue, setSearchValue] = useState('');
   const [activeTab, setActiveTab] = useState('전체');
@@ -292,6 +294,11 @@ const Vocabulary = () => {
     }
   };
 
+  // 뒤로가기 핸들러
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
     <div style={{
       width: '100%',
@@ -305,7 +312,6 @@ const Vocabulary = () => {
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
         boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}>
@@ -318,6 +324,7 @@ const Vocabulary = () => {
           showBackButton={true}
           showChip={false}
           showNumber={true}
+          onBackClick={handleBackClick}
         />
       </div>
 

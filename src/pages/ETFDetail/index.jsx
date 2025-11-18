@@ -4,6 +4,7 @@ import { TopNav } from '../../components/common/TopNav';
 import { SubNav } from '../../components/common/SubNav';
 import { Chip } from '../../components/common/Chip';
 import { SmallToggle } from '../../components/common/ToggleButton';
+import { TermModal } from '../../components/common/TermModal';
 import { ETFInfoCard } from './components/ETFInfoCard';
 import { ETFChart } from './components/ETFChart';
 import { ETFReturnsTable } from './components/ETFReturnsTable';
@@ -20,6 +21,10 @@ import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconSearch from '../../assets/icon_search.svg';
 import iconHeartFill from '../../assets/icon_heart_fill.svg';
 import iconHeartOutline from '../../assets/icon_heart_outline.svg';
+import termCurrentPrice from '../../assets/LargeVocabularyCard/단어장 해금/용어백과 설명.svg';
+import termNav from '../../assets/LargeVocabularyCard/단어장 해금/용어백과 설명-14.svg';
+import termAssets from '../../assets/LargeVocabularyCard/단어장 해금/용어백과 설명-12.svg';
+import termVolume from '../../assets/LargeVocabularyCard/단어장 해금/용어백과 설명-18.svg';
 
 const ETFDetail = () => {
   const { id } = useParams();
@@ -31,6 +36,8 @@ const ETFDetail = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('1D');
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showChartTable, setShowChartTable] = useState(false);
+  const [isTermModalOpen, setIsTermModalOpen] = useState(false);
+  const [termModalImage, setTermModalImage] = useState('');
 
   // ETF 데이터 가져오기
   const etfData = getETFData(id);
@@ -142,6 +149,17 @@ const ETFDetail = () => {
   const handleToggleBookmark = () => {
     const newState = toggleETFBookmark(id);
     setIsBookmarked(newState);
+  };
+
+  // 용어 설명 모달 열기
+  const handleOpenTermModal = (imageSrc) => {
+    setTermModalImage(imageSrc);
+    setIsTermModalOpen(true);
+  };
+
+  // 용어 설명 모달 닫기
+  const handleCloseTermModal = () => {
+    setIsTermModalOpen(false);
   };
 
   // 포트폴리오 태그 생성
@@ -294,7 +312,7 @@ const ETFDetail = () => {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '4px'
+            gap: '12px'
           }}
         >
           {/* 첫 번째 행: 현재가, 기준가 */}
@@ -313,6 +331,7 @@ const ETFDetail = () => {
               changeDirection={etfData.changeDirection}
               description="현재 상품의 가격"
               variant="emphasis"
+              onInfoClick={() => handleOpenTermModal(termCurrentPrice)}
             />
             <ETFInfoCard
               title="기준가(iNAV)"
@@ -323,6 +342,7 @@ const ETFDetail = () => {
               description="현재가보다 클 수록 저렴"
               variant="emphasis"
               chipColor="down2"
+              onInfoClick={() => handleOpenTermModal(termNav)}
             />
           </div>
 
@@ -340,6 +360,7 @@ const ETFDetail = () => {
               unit="원"
               description="규모가 클 수록 안정+믿음"
               variant="normal"
+              onInfoClick={() => handleOpenTermModal(termAssets)}
             />
             <ETFInfoCard
               title="거래량"
@@ -347,6 +368,7 @@ const ETFDetail = () => {
               unit="주"
               description="시장에서 얼마나 활발 거래"
               variant="normal"
+              onInfoClick={() => handleOpenTermModal(termVolume)}
             />
           </div>
 
@@ -539,6 +561,13 @@ const ETFDetail = () => {
           <DividendTab dividends={etfData.dividends} />
         )}
       </div>
+
+      {/* 용어 설명 모달 */}
+      <TermModal
+        isOpen={isTermModalOpen}
+        onClose={handleCloseTermModal}
+        imageSrc={termModalImage}
+      />
     </div>
   );
 };

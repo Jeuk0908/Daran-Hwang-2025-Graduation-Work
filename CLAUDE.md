@@ -119,8 +119,7 @@ Critical viewport and mobile settings in `index.html`:
 - `MainLayout.jsx` - Main app layout wrapper
 - `AuthLayout.jsx` - Authentication layout wrapper
 
-**Page Structure** (`src/Pages/`):
-Note: Directory is capitalized as `Pages/`, not `pages/`
+**Page Structure** (`src/pages/`):
 - `Home/` - Main landing page with portfolio summary, market indices, and popular themes
 - `Portfolio/` - Portfolio listings and management
   - `PortfolioDetail.jsx` - Individual portfolio detail view
@@ -131,12 +130,16 @@ Note: Directory is capitalized as `Pages/`, not `pages/`
   - `ManualCreateStep2-3.jsx` - Manual creation flow
 - `Rebalance/` - Portfolio rebalancing interface
 - `ETFDetail/` - ETF detail page with performance data and composition
+- `InterestETF/` - Interest/bookmarked ETF listings (route: `/interest-etf`)
+- `Theme/` - Theme detail page showing themed ETF collections (route: `/theme`)
 - `Search/` - ETF search and discovery
 - `MyPage/` - User profile and settings
 - `Vocabulary/` - ETF terminology learning cards
 - `Bookmark/` - Bookmarked content
-- `QA/` - Q&A section (placeholder)
-- `VideoTIP/` - Video tips section (placeholder)
+- `QA/` - Q&A section
+- `VideoTIP/` - Video tips section
+- `Login/` - Login/authentication page
+- `Artist/` - Artist page
 - `Dev/` - Development showcase pages (`IconShowcase.jsx`)
 
 ### Scroll Behavior
@@ -164,6 +167,21 @@ The `BottomNav` component uses:
 - Displays all icon assets organized by category
 - Shows interactive examples of all common components
 - Provides copy-paste usage examples
+
+## Data Management
+
+Since this is a demo app without backend, all data is managed via localStorage:
+
+**Storage Utilities** (`src/utils/`):
+- `portfolioStorage.js` - Portfolio CRUD operations, bookmark management, ETF list per portfolio
+  - Key functions: `getPortfolios()`, `addPortfolio()`, `updatePortfolio()`, `deletePortfolio()`
+  - Handles portfolio ordering and bookmark toggling (only 1 portfolio can be bookmarked at a time)
+  - Stores portfolio-specific ETF lists with shares and target weights
+  - Manages default portfolio data (amount, return rate, target profit) with random generation
+- `etfStorage.js` - ETF bookmark management and search history
+  - Key functions: `toggleETFBookmark()`, `addETFSearchHistory()`, `clearETFSearchHistory()`
+  - Maintains search history with timestamps (max 20 items)
+  - Handles bookmark state for individual ETFs
 
 ## Design System
 
@@ -213,13 +231,12 @@ Label Primary:   #000000  (Black)
 - **Korean language** - Primary language is Korean (한국어)
 - **No state management library** - Uses React's built-in useState/useContext only (no Redux, Zustand, etc.)
 - **Recharts** - Charts are built with Recharts library (imported in `package.json`)
-- **Case sensitivity** - Note `src/Pages/` (capital P), not `src/pages/`
 
 ## File Organization
 
 - Keep components in appropriate directories (`common/`, `layout/`, `features/`)
 - Store all icon assets in `src/assets/`
-- **Page components go in `src/Pages/`** (note the capital P)
+- Page components go in `src/pages/`
 - Mock data services in `src/services/`
 - Utilities in `src/utils/`
 - Custom hooks in `src/hooks/`

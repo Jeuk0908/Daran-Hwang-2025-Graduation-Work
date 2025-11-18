@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { CenterTabNav } from '../../components/common/CenterTabNav';
 import { TipCard } from '../../components/common/TipCard';
 import { VideoThumbnail } from '../../components/common/VideoThumbnail';
 import { NewsCard } from '../../components/common/NewsCard';
+import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
 import { shuffleArray } from '../../utils/shuffle';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
@@ -29,6 +30,8 @@ const Bookmark = () => {
   const navigate = useNavigate();
   const hasScrolled = useScrollShadow(0);
   const [activeTab, setActiveTab] = useState('전체');
+  const [isLoading, setIsLoading] = useState(true); // 초기 로딩 상태
+  const [loadedTabs, setLoadedTabs] = useState(new Set()); // 처음 로드되는 탭 추적
 
   // Q&A 데이터
   const qaData = [
@@ -302,11 +305,33 @@ const Bookmark = () => {
     return sections;
   }, [allContent]);
 
+  // 탭 전환 시 로딩 상태 관리
+  useEffect(() => {
+    // 이미 로드된 탭이면 스켈레톤 표시 안 함
+    if (loadedTabs.has(activeTab)) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 처음 방문하는 탭만 로딩 표시
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setLoadedTabs(prev => new Set([...prev, activeTab]));
+    }, 300); // 300ms 로딩
+
+    return () => clearTimeout(timer);
+  }, [activeTab, loadedTabs]);
+
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleTabChange = (tab) => {
+    // 처음 방문하는 탭이면 먼저 로딩 상태 설정
+    if (!loadedTabs.has(tab)) {
+      setIsLoading(true);
+    }
     setActiveTab(tab);
   };
 
@@ -371,7 +396,6 @@ const Bookmark = () => {
         top: 0,
         zIndex: 100,
         backgroundColor: '#FFFFFF',
-        padding: `0 ${LAYOUT.HORIZONTAL_PADDING}px 0`,
         boxShadow: hasScrolled ? '0 2px 8px 0 rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}>
@@ -412,7 +436,26 @@ const Bookmark = () => {
               marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
-            {contentSections.map((section, sectionIndex) => {
+            {isLoading && activeTab === '전체' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px',
+                  width: '100%'
+                }}
+              >
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ContentCardSkeleton
+                    key={`content-skeleton-${index}`}
+                    size={index % 3 === 0 ? 'large' : index % 2 === 0 ? 'medium' : 'small'}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* 실제 데이터 */
+              contentSections.map((section, sectionIndex) => {
               // Q&A 전체 너비 섹션
               if (section.type === 'fullWidth') {
                 return (
@@ -532,7 +575,8 @@ const Bookmark = () => {
               }
 
               return null;
-            })}
+            })
+            )}
           </div>
         </div>
 
@@ -547,7 +591,17 @@ const Bookmark = () => {
               marginTop: `${LAYOUT.SECTION_GAP}px`
             }}
           >
-            {qaData.map((qa) => (
+            {isLoading && activeTab === 'Q&A' ? (
+              /* 로딩 중: 스켈레톤 */
+              Array.from({ length: 4 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`qa-skeleton-${index}`}
+                  size="medium"
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              qaData.map((qa) => (
               <TipCard
                 key={qa.id}
                 icon={qa.icon}
@@ -570,7 +624,8 @@ const Bookmark = () => {
                   console.log(`${qa.linkText} 클릭`);
                 }}
               />
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -588,7 +643,17 @@ const Bookmark = () => {
               alignItems: 'center'
             }}
           >
-            {videos.map((video) => (
+            {isLoading && activeTab === '영상 TIP' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              Array.from({ length: 8 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`video-skeleton-${index}`}
+                  size={index % 3 === 0 ? 'large' : 'medium'}
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              videos.map((video) => (
               <div
                 key={video.id}
                 style={{
@@ -606,7 +671,8 @@ const Bookmark = () => {
                   }
                 />
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -624,7 +690,17 @@ const Bookmark = () => {
               alignItems: 'start'
             }}
           >
-            {newsData.map((news) => (
+            {isLoading && activeTab === '뉴스' ? (
+              /* 로딩 중: 스켈레톤 그리드 */
+              Array.from({ length: 8 }).map((_, index) => (
+                <ContentCardSkeleton
+                  key={`news-skeleton-${index}`}
+                  size="medium"
+                />
+              ))
+            ) : (
+              /* 실제 데이터 */
+              newsData.map((news) => (
               <NewsCard
                 key={news.id}
                 thumbnail={news.thumbnail}
@@ -635,7 +711,8 @@ const Bookmark = () => {
                   handleNewsBookmarkToggle(news.id, newState)
                 }
               />
-            ))}
+            ))
+            )}
           </div>
         </div>
       </div>

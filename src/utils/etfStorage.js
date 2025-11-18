@@ -31,6 +31,30 @@ export const isETFBookmarked = (etfId) => {
 };
 
 /**
+ * ETF 즐겨찾기 추가
+ * @param {string} etfId - ETF ID
+ * @returns {boolean} 성공 여부
+ */
+export const addETFBookmark = (etfId) => {
+  try {
+    const bookmarks = getETFBookmarks();
+
+    // 이미 즐겨찾기에 있으면 추가하지 않음
+    if (bookmarks.includes(etfId)) {
+      return true;
+    }
+
+    // 즐겨찾기 추가
+    bookmarks.push(etfId);
+    localStorage.setItem(ETF_BOOKMARK_KEY, JSON.stringify(bookmarks));
+    return true;
+  } catch (error) {
+    console.error('ETF 즐겨찾기 추가 실패:', error);
+    return false;
+  }
+};
+
+/**
  * ETF 즐겨찾기 토글
  * @param {string} etfId - ETF ID
  * @returns {boolean} 토글 후 즐겨찾기 상태 (true: 추가됨, false: 제거됨)
