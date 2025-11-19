@@ -7,22 +7,15 @@ function Splash({ onComplete }) {
   useEffect(() => {
     // 스플래시 페이지에서 상태바 색상을 파란색으로 변경
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    const metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
 
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', '#3490FF')
-    }
-    if (metaStatusBar) {
-      metaStatusBar.setAttribute('content', 'black-translucent')
     }
 
     return () => {
       // 페이지 떠날 때 원래 색상으로 복원
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', '#FFFFFF')
-      }
-      if (metaStatusBar) {
-        metaStatusBar.setAttribute('content', 'default')
       }
     }
   }, [])
@@ -72,7 +65,10 @@ function Splash({ onComplete }) {
         transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
         transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         zIndex: 9999,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        // safe-area를 고려하여 상단까지 파란색으로 채우기
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
       <img
