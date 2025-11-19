@@ -43,7 +43,7 @@ function MissionComplete() {
 
       {/* 하단 버튼 영역 */}
       <div style={{
-        padding: '12px 16px',
+        padding: '12px 16px 34px',
         marginTop: 'auto'
       }}>
         <Button
@@ -52,21 +52,6 @@ function MissionComplete() {
         >
           미션 완료
         </Button>
-      </div>
-
-      {/* 홈 인디케이터 영역 */}
-      <div style={{
-        height: '34px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{
-          width: '134px',
-          height: '5px',
-          backgroundColor: '#000000',
-          borderRadius: '100px'
-        }} />
       </div>
     </div>
   )

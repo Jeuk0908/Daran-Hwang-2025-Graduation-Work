@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { TopNav } from '../components/common/TopNav'
 import { Button } from '../components/common/Button'
-import centerImage from '../assets/images/image 133.svg'
+import centerImage from '../assets/images/Group 171.png'
 
 function MissionStart() {
   const navigate = useNavigate()
