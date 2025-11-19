@@ -4,6 +4,8 @@ import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
 import { addPortfolio, setPortfolioETFs } from '../../utils/portfolioStorage';
+import { isActiveMission } from '../../utils/missionStorage';
+import { MissionCompleteModal } from '../../components/common/MissionCompleteModal';
 import iconBackL from '../../assets/icon_back_L.svg';
 
 const AutoCreateStep5 = () => {
@@ -22,9 +24,20 @@ const AutoCreateStep5 = () => {
   const previousData = location.state || {};
 
   const [selectedPercentage, setSelectedPercentage] = useState(6);
+  const [showMissionModal, setShowMissionModal] = useState(false);
 
   const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const handleMissionModalClose = () => {
+    setShowMissionModal(false);
+    navigate('/portfolio');
+  };
+
+  const handleMissionModalNext = () => {
+    setShowMissionModal(false);
+    navigate('/mission-rating', { replace: true });
   };
 
   // 휠 이벤트 핸들러 - 네이티브 이벤트 리스너만 사용
@@ -207,6 +220,7 @@ const AutoCreateStep5 = () => {
       if (previousData.portfolioItems && previousData.portfolioItems.length > 0) {
         const etfsForRebalance = previousData.portfolioItems.map((item) => ({
           id: item.id,
+          etfId: item.id, // mockData의 실제 ETF ID 저장
           title: item.name,
           targetWeight: item.targetWeight.toString(),
           currentWeight: item.targetWeight.toString(),
@@ -221,8 +235,13 @@ const AutoCreateStep5 = () => {
         setPortfolioETFs(savedPortfolio.id, etfsForRebalance);
       }
 
-      // 포트폴리오 페이지로 이동
-      navigate('/portfolio');
+      // 포트폴리오 미션이 활성화되어 있으면 미션 완료 모달 표시
+      if (isActiveMission('portfolio')) {
+        setShowMissionModal(true);
+      } else {
+        // 미션이 아니면 바로 포트폴리오 페이지로 이동
+        navigate('/portfolio');
+      }
     } catch (error) {
       console.error('포트폴리오 저장 실패:', error);
       alert('포트폴리오 저장에 실패했습니다. 다시 시도해주세요.');
@@ -588,6 +607,13 @@ const AutoCreateStep5 = () => {
           완료하기
         </Button>
       </div>
+
+      {/* 미션 완료 모달 */}
+      <MissionCompleteModal
+        isOpen={showMissionModal}
+        onClose={handleMissionModalClose}
+        onNext={handleMissionModalNext}
+      />
     </div>
   );
 };

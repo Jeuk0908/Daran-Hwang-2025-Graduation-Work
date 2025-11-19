@@ -1,19 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import splashImage from '../assets/images/스플래시.svg'
 
-function Splash() {
+function Splash({ onComplete }) {
   const [isVisible, setIsVisible] = useState(true)
-  const navigate = useNavigate()
 
   useEffect(() => {
-    // 이미 스플래시를 본 경우 바로 홈으로 이동 (세션당 1회만 표시)
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash')
-    if (hasSeenSplash) {
-      navigate('/home', { replace: true })
-      return
-    }
-
     // 스플래시 페이지에서 상태바 색상을 파란색으로 변경
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
     const metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
@@ -34,18 +25,33 @@ function Splash() {
         metaStatusBar.setAttribute('content', 'default')
       }
     }
-  }, [navigate])
+  }, [])
+
+  // 뒤로가기/앞으로가기 방지
+  useEffect(() => {
+    // 히스토리에 더미 상태 추가
+    window.history.pushState(null, '', window.location.href)
+
+    const preventNavigation = (e) => {
+      // 뒤로가기 시도 시 다시 앞으로 이동
+      window.history.pushState(null, '', window.location.href)
+    }
+
+    window.addEventListener('popstate', preventNavigation)
+
+    return () => {
+      window.removeEventListener('popstate', preventNavigation)
+    }
+  }, [])
 
   const handleTap = () => {
+    // 즉시 콜백 호출하여 네비게이션 시작
+    if (onComplete) {
+      onComplete()
+    }
+
+    // 슬라이드 애니메이션 시작
     setIsVisible(false)
-
-    // 스플래시를 본 것으로 표시
-    sessionStorage.setItem('hasSeenSplash', 'true')
-
-    // 애니메이션 완료 후 홈으로 이동
-    setTimeout(() => {
-      navigate('/home', { replace: true })
-    }, 500) // 0.5초 애니메이션 시간과 동일
   }
 
   return (
@@ -63,8 +69,8 @@ function Splash() {
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.5s ease-out',
+        transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         zIndex: 9999,
         overflow: 'hidden'
       }}

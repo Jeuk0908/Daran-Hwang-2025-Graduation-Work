@@ -8,8 +8,9 @@ import { LAYOUT } from '../../constants/layout';
  * @param {boolean} props.isLocked - 잠금 상태 (기본값: true)
  * @param {string} props.title - 용어 제목 (활성화 상태일 때 표시)
  * @param {string} props.description - 용어 설명 (활성화 상태일 때 표시)
+ * @param {Function} props.onClick - 클릭 핸들러 (활성화 상태일 때만 동작)
  */
-const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' }) => {
+const VocabularyCard = ({ icon, isLocked = true, title = '', description = '', onClick }) => {
   const containerStyle = {
     width: `${LAYOUT.getTwoColumnWidth()}px`,
     height: '293px',
@@ -21,7 +22,9 @@ const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' })
     flexDirection: 'column',
     alignItems: 'center',
     gap: '20px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    cursor: isLocked ? 'default' : 'pointer',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
   };
 
   const iconWrapperStyle = {
@@ -80,8 +83,14 @@ const VocabularyCard = ({ icon, isLocked = true, title = '', description = '' })
     margin: 0
   };
 
+  const handleClick = () => {
+    if (!isLocked && onClick) {
+      onClick()
+    }
+  }
+
   return (
-    <div style={containerStyle}>
+    <div style={containerStyle} onClick={handleClick}>
       <div style={iconWrapperStyle}>
         <img
           src={icon}

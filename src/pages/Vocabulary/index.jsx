@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../../components/common/TopNav';
 import { SearchBar } from '../../components/common/SearchBar';
@@ -6,6 +6,9 @@ import { Chip } from '../../components/common/Chip';
 import VocabularyCard from '../../components/common/VocabularyCard';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { isActiveMission } from '../../utils/missionStorage';
+import { MissionCompleteModal } from '../../components/common/MissionCompleteModal';
+import { VocabularyDetailModal } from '../../components/common/VocabularyDetailModal';
 
 // ETF 용어 아이콘 import
 import etfIcon from '../../assets/ETF_24.svg';
@@ -57,6 +60,11 @@ const Vocabulary = () => {
   const [searchValue, setSearchValue] = useState('');
   const [activeTab, setActiveTab] = useState('전체');
   const [sortOrder, setSortOrder] = useState('recent'); // 'recent' | 'oldest'
+  const [showMissionModal, setShowMissionModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [missionTimer, setMissionTimer] = useState(null);
+  const [countdown, setCountdown] = useState(null);
 
   // 용어 데이터 (각 열에 활성화/비활성화 카드가 섞여 있음)
   // 짝수 인덱스(0,2,4...) = 1열, 홀수 인덱스(1,3,5...) = 2열
@@ -299,6 +307,62 @@ const Vocabulary = () => {
     navigate(-1);
   };
 
+  // 미션 완료 모달 핸들러
+  const handleMissionModalClose = () => {
+    setShowMissionModal(false);
+  };
+
+  const handleMissionModalNext = () => {
+    setShowMissionModal(false);
+    navigate('/mission-rating', { replace: true });
+  };
+
+  // 단어카드 클릭 핸들러
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+    setShowDetailModal(true);
+
+    // vocabulary 미션이 활성화되어 있으면 카운트다운 시작
+    if (isActiveMission('vocabulary')) {
+      setCountdown(3);
+
+      let count = 3;
+      const intervalId = setInterval(() => {
+        count -= 1;
+        setCountdown(count);
+
+        if (count === 0) {
+          clearInterval(intervalId);
+          setShowMissionModal(true);
+        }
+      }, 1000);
+
+      setMissionTimer(intervalId);
+    }
+  };
+
+  // 상세 모달 닫기 핸들러
+  const handleDetailModalClose = () => {
+    setShowDetailModal(false);
+    setSelectedCard(null);
+    setCountdown(null);
+
+    // 타이머가 진행 중이면 중지
+    if (missionTimer) {
+      clearInterval(missionTimer);
+      setMissionTimer(null);
+    }
+  };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (missionTimer) {
+        clearInterval(missionTimer);
+      }
+    };
+  }, [missionTimer]);
+
   return (
     <div style={{
       width: '100%',
@@ -366,9 +430,29 @@ const Vocabulary = () => {
             isLocked={item.isLocked}
             title={item.title}
             description={item.description}
+            onClick={() => handleCardClick(item)}
           />
         ))}
       </div>
+
+      {/* 미션 완료 모달 */}
+      <MissionCompleteModal
+        isOpen={showMissionModal}
+        onClose={handleMissionModalClose}
+        onNext={handleMissionModalNext}
+      />
+
+      {/* 단어카드 상세 모달 */}
+      {selectedCard && (
+        <VocabularyDetailModal
+          isOpen={showDetailModal}
+          onClose={handleDetailModalClose}
+          icon={selectedCard.icon}
+          title={selectedCard.title}
+          description={selectedCard.description}
+          countdown={countdown}
+        />
+      )}
     </div>
   );
 };

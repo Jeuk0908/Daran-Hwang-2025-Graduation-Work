@@ -1,7 +1,14 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { BottomNav } from './components/common/BottomNav'
+import { QuitButton } from './components/common/QuitButton'
 import Splash from './pages/Splash'
+import Onboarding from './pages/Onboarding'
+import MissionSelection from './pages/MissionSelection'
+import MissionStart from './pages/MissionStart'
+import MissionQuit from './pages/MissionQuit'
+import MissionComplete from './pages/MissionComplete'
+import MissionRating from './pages/MissionRating'
 import IconShowcase from './pages/Dev/IconShowcase'
 import Vocabulary from './pages/Vocabulary'
 import MyPage from './pages/MyPage'
@@ -28,6 +35,8 @@ import './App.css'
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [showSplash, setShowSplash] = useState(location.pathname === '/');
 
   // 브라우저의 자동 스크롤 복원 비활성화
   useEffect(() => {
@@ -62,6 +71,12 @@ function AppContent() {
   const isBookmarkPage = location.pathname === '/bookmark';
   const isHomePage = location.pathname === '/home';
   const isSplashPage = location.pathname === '/';
+  const isOnboardingPage = location.pathname === '/onboarding';
+  const isMissionSelectionPage = location.pathname === '/mission-selection';
+  const isMissionStartPage = location.pathname === '/mission-start';
+  const isMissionQuitPage = location.pathname === '/mission-quit';
+  const isMissionCompletePage = location.pathname === '/mission-complete';
+  const isMissionRatingPage = location.pathname === '/mission-rating';
   const isPortfolioCreatePage = location.pathname.startsWith('/portfolio/create');
   const isRebalancePage = location.pathname.includes('/rebalance');
   const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
@@ -69,7 +84,34 @@ function AppContent() {
   const isETFDetailPage = location.pathname.includes('/etf/') && location.pathname.includes('/detail');
   const isInterestETFPage = location.pathname === '/interest-etf';
   const isThemeDetailPage = location.pathname.includes('/theme/');
-  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isSplashPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage || isInterestETFPage || isThemeDetailPage;
+  const hideBottomNav = isDevPage || isVocabularyPage || isBookmarkPage || isSplashPage || isOnboardingPage || isMissionSelectionPage || isMissionStartPage || isMissionQuitPage || isMissionCompletePage || isMissionRatingPage || isPortfolioCreatePage || isRebalancePage || isPortfolioDeletePage || isPortfolioDetailPage || isETFDetailPage || isInterestETFPage || isThemeDetailPage;
+
+  // 포기하기 버튼을 숨길 페이지들 (스플래시, 온보딩, 미션 선택, 미션 시작, 미션 포기, 미션 완료, 미션 평가)
+  const hideQuitButton = isSplashPage || isOnboardingPage || isMissionSelectionPage || isMissionStartPage || isMissionQuitPage || isMissionCompletePage || isMissionRatingPage;
+
+  // resetSplash 플래그 확인하여 스플래시 다시 표시
+  useEffect(() => {
+    if (location.state?.resetSplash && location.pathname === '/') {
+      setShowSplash(true)
+    }
+  }, [location.state, location.pathname])
+
+  // 스플래시 완료 처리
+  useEffect(() => {
+    if (location.pathname === '/' && !showSplash) {
+      navigate('/onboarding', { replace: true })
+    }
+  }, [location.pathname, showSplash, navigate])
+
+  const handleSplashComplete = () => {
+    // 즉시 네비게이션하여 온보딩 페이지 렌더링
+    navigate('/onboarding', { replace: true })
+
+    // 애니메이션 완료 후 스플래시 제거
+    setTimeout(() => {
+      setShowSplash(false)
+    }, 600)
+  }
 
   return (
     <div style={{
@@ -82,13 +124,22 @@ function AppContent() {
       position: 'relative',
       backgroundColor: '#ffffff'
     }}>
+      {/* 스플래시 오버레이 */}
+      {showSplash && <Splash onComplete={handleSplashComplete} />}
+
       <main style={{
         flex: 1,
         paddingBottom: (hideBottomNav || isHomePage) ? '0' : '88px', // BottomNav 높이 (54px) + 홈 인디케이터 영역 (34px)
         width: '100%'
       }}>
         <Routes>
-          <Route path="/" element={<Splash />} />
+          <Route path="/" element={<div />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/mission-selection" element={<MissionSelection />} />
+          <Route path="/mission-start" element={<MissionStart />} />
+          <Route path="/mission-quit" element={<MissionQuit />} />
+          <Route path="/mission-complete" element={<MissionComplete />} />
+          <Route path="/mission-rating" element={<MissionRating />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/portfolio/delete" element={<PortfolioDelete />} />
@@ -118,6 +169,7 @@ function AppContent() {
         </Routes>
       </main>
       {!hideBottomNav && <BottomNav />}
+      {!hideQuitButton && <QuitButton />}
     </div>
   );
 }

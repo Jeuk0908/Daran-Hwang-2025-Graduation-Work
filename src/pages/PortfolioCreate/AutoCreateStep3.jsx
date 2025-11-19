@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
+import { getAllETFs } from '../ETFDetail/data/mockData';
 import iconBackL from '../../assets/icon_back_L.svg';
 
 const AutoCreateStep3 = () => {
@@ -16,54 +17,28 @@ const AutoCreateStep3 = () => {
   // 편집 중인 항목 ID 추적
   const [editingItemId, setEditingItemId] = useState(null);
 
-  // 임시 포트폴리오 데이터
-  const [portfolioItems, setPortfolioItems] = useState([
-    {
-      id: 1,
-      name: '2차 전지 TIGER x2',
-      pricePerShare: 123456789,
-      targetWeight: 10,
+  // mockData에서 ETF 선택 및 초기 포트폴리오 데이터 생성
+  const initialPortfolioItems = useMemo(() => {
+    const allETFs = getAllETFs();
+    // 첫 5개 ETF 선택 (실제로는 투자 성향과 스타일에 따라 선택)
+    const selectedETFs = allETFs.slice(0, 5);
+
+    // 초기 비중 (균등 분배)
+    const initialWeights = [20, 20, 20, 20, 20];
+
+    return selectedETFs.map((etf, index) => ({
+      id: etf.id, // mockData의 실제 ETF ID
+      name: etf.name,
+      pricePerShare: etf.currentPrice,
+      targetWeight: initialWeights[index],
       appliedWeight: 100,
-      buyShares: 2,
-      totalAmount: 123456789
-    },
-    {
-      id: 2,
-      name: 'KODEX 200',
-      pricePerShare: 45678900,
-      targetWeight: 20,
-      appliedWeight: 100,
-      buyShares: 3,
-      totalAmount: 137036700
-    },
-    {
-      id: 3,
-      name: 'TIGER 미국S&P500',
-      pricePerShare: 98765432,
-      targetWeight: 30,
-      appliedWeight: 100,
-      buyShares: 5,
-      totalAmount: 493827160
-    },
-    {
-      id: 4,
-      name: 'KODEX 배당성장',
-      pricePerShare: 56789012,
-      targetWeight: 25,
-      appliedWeight: 100,
-      buyShares: 4,
-      totalAmount: 227156048
-    },
-    {
-      id: 5,
-      name: 'TIGER 글로벌리츠',
-      pricePerShare: 34567890,
-      targetWeight: 15,
-      appliedWeight: 100,
-      buyShares: 2,
-      totalAmount: 69135780
-    }
-  ]);
+      buyShares: Math.floor(Math.random() * 5) + 1, // 1-5주 랜덤
+      totalAmount: etf.currentPrice * (Math.floor(Math.random() * 5) + 1)
+    }));
+  }, []);
+
+  // 포트폴리오 데이터
+  const [portfolioItems, setPortfolioItems] = useState(initialPortfolioItems);
 
   const handleBackClick = () => {
     navigate(-1);

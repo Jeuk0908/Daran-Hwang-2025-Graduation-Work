@@ -7,8 +7,9 @@ import React, { useEffect, useState } from 'react';
  * @param {boolean} props.isOpen - 모달 열림 상태
  * @param {function} props.onClose - 모달 닫기 핸들러
  * @param {string} props.imageSrc - 표시할 용어 설명 이미지 경로
+ * @param {number} props.countdown - 카운트다운 숫자 (null이면 표시 안 함)
  */
-export const TermModal = ({ isOpen, onClose, imageSrc }) => {
+export const TermModal = ({ isOpen, onClose, imageSrc, countdown }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -47,8 +48,10 @@ export const TermModal = ({ isOpen, onClose, imageSrc }) => {
         backdropFilter: 'blur(4px)',
         WebkitBackdropFilter: 'blur(4px)', // Safari 지원
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: '12px',
         zIndex: 1000,
         padding: '20px',
         opacity: isAnimating ? 1 : 0,
@@ -79,8 +82,7 @@ export const TermModal = ({ isOpen, onClose, imageSrc }) => {
             width: '100%',
             height: 'auto',
             objectFit: 'contain',
-            borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+            borderRadius: '12px'
           }}
         />
 
@@ -103,6 +105,23 @@ export const TermModal = ({ isOpen, onClose, imageSrc }) => {
           aria-label="닫기"
         />
       </div>
+
+      {/* 카운트다운 표시 (모달 외부 하단) */}
+      {countdown !== null && countdown > 0 && (
+        <p style={{
+          fontFamily: 'Pretendard',
+          fontWeight: 400,
+          fontSize: '12px',
+          lineHeight: '1.5',
+          color: '#FFFFFF',
+          margin: 0,
+          textAlign: 'center',
+          opacity: isAnimating ? 1 : 0,
+          transition: 'opacity 0.3s ease-in-out'
+        }}>
+          미션 완료까지 {countdown}초...
+        </p>
+      )}
     </div>
   );
 };

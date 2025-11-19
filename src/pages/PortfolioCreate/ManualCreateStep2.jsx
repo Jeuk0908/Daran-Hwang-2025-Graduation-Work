@@ -63,9 +63,13 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
 
     // 새로 선택한 ETF 목록 (mockData에서 가져오기)
     const allMockETFs = getAllETFs();
-    const newlySelectedETFs = selectedETFs.map(id =>
-      allMockETFs.find(etf => etf.id === id)
-    );
+    const newlySelectedETFs = selectedETFs.map(id => {
+      const etf = allMockETFs.find(e => e.id === id);
+      return {
+        ...etf,
+        price: etf.currentPrice.toLocaleString('ko-KR') // price 필드 추가
+      };
+    });
 
     // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
     // create 모드: 새로 선택한 ETF만

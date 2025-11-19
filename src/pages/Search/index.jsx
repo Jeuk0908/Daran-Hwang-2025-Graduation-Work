@@ -13,6 +13,9 @@ import { IndexCard } from '../../components/common/IndexCard';
 import { IndexCardSkeleton } from '../../components/common/IndexCardSkeleton';
 import { ListItemSkeleton } from '../../components/common/ListItemSkeleton';
 import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
+import { TermModal } from '../../components/common/TermModal';
+import { MissionCompleteModal } from '../../components/common/MissionCompleteModal';
+import { isActiveMission } from '../../utils/missionStorage';
 import iconSearch from '../../assets/icon_search.svg';
 import iconCancel from '../../assets/icon_cancel(S).svg';
 import iconBookmarkOutline from '../../assets/icon_bookmark(s)_o.svg';
@@ -132,26 +135,26 @@ const vocabularyData = [
 
 // 큰 용어 카드 데이터
 const largeVocabularyData = [
-  { id: 1, image: largeVocab1 },
-  { id: 2, image: largeVocab2 },
-  { id: 3, image: largeVocab3 },
-  { id: 4, image: largeVocab4 },
-  { id: 5, image: largeVocab5 },
-  { id: 6, image: largeVocab6 },
-  { id: 7, image: largeVocab7 },
-  { id: 8, image: largeVocab8 },
-  { id: 9, image: largeVocab9 },
-  { id: 10, image: largeVocab10 },
-  { id: 11, image: largeVocab11 },
-  { id: 12, image: largeVocab12 },
-  { id: 13, image: largeVocab13 },
-  { id: 14, image: largeVocab14 },
-  { id: 15, image: largeVocab15 },
-  { id: 16, image: largeVocab16 },
-  { id: 17, image: largeVocab17 },
-  { id: 18, image: largeVocab18 },
-  { id: 19, image: largeVocab19 },
-  { id: 20, image: largeVocab20 }
+  { id: 1, image: largeVocab1, keywords: ['ETF', '상장지수펀드', '용어', '단어'] },
+  { id: 2, image: largeVocab2, keywords: ['NAV', '순자산가치', '용어', '단어'] },
+  { id: 3, image: largeVocab3, keywords: ['분배금', '배당', '용어', '단어'] },
+  { id: 4, image: largeVocab4, keywords: ['총보수', '수수료', '용어', '단어'] },
+  { id: 5, image: largeVocab5, keywords: ['추적오차', '용어', '단어'] },
+  { id: 6, image: largeVocab6, keywords: ['리밸런싱', '재조정', '용어', '단어'] },
+  { id: 7, image: largeVocab7, keywords: ['레버리지', '용어', '단어'] },
+  { id: 8, image: largeVocab8, keywords: ['인버스', '용어', '단어'] },
+  { id: 9, image: largeVocab9, keywords: ['TR', '토탈리턴', '용어', '단어'] },
+  { id: 10, image: largeVocab10, keywords: ['지수', '인덱스', '용어', '단어'] },
+  { id: 11, image: largeVocab11, keywords: ['액티브', '용어', '단어'] },
+  { id: 12, image: largeVocab12, keywords: ['패시브', '용어', '단어'] },
+  { id: 13, image: largeVocab13, keywords: ['거래량', '용어', '단어'] },
+  { id: 14, image: largeVocab14, keywords: ['호가', '용어', '단어'] },
+  { id: 15, image: largeVocab15, keywords: ['스프레드', '용어', '단어'] },
+  { id: 16, image: largeVocab16, keywords: ['설정', '환매', '용어', '단어'] },
+  { id: 17, image: largeVocab17, keywords: ['자산배분', '포트폴리오', '용어', '단어'] },
+  { id: 18, image: largeVocab18, keywords: ['섹터', '업종', '용어', '단어'] },
+  { id: 19, image: largeVocab19, keywords: ['테마', '용어', '단어'] },
+  { id: 20, image: largeVocab20, keywords: ['채권', '용어', '단어'] }
 ];
 
 // 영상/뉴스 데이터
@@ -301,6 +304,11 @@ const Search = () => {
   const [showRightShadow, setShowRightShadow] = useState(true); // 오른쪽 그림자 표시 여부
   const keywordScrollRef = useRef(null); // 키워드 스크롤 컨테이너 참조
   const [expandedTipId, setExpandedTipId] = useState(null); // 펼쳐진 TIP 카드 ID
+  const [isTermModalOpen, setIsTermModalOpen] = useState(false); // 용어 모달 열림 상태
+  const [termModalImage, setTermModalImage] = useState(''); // 용어 모달 이미지
+  const [showMissionModal, setShowMissionModal] = useState(false); // 미션 완료 모달
+  const [countdown, setCountdown] = useState(null); // 카운트다운
+  const [missionTimer, setMissionTimer] = useState(null); // 미션 타이머
 
   // 최근 본 상품 로드
   useEffect(() => {
@@ -337,6 +345,61 @@ const Search = () => {
     setShowIndexGuide(false);
     localStorage.setItem('hasSeenIndexGuide', 'true');
   };
+
+  // 용어 카드 클릭 핸들러
+  const handleVocabCardClick = (imageSrc) => {
+    setTermModalImage(imageSrc);
+    setIsTermModalOpen(true);
+
+    // vocabulary 미션이 활성화되어 있으면 카운트다운 시작
+    if (isActiveMission('vocabulary')) {
+      setCountdown(3);
+
+      let count = 3;
+      const intervalId = setInterval(() => {
+        count -= 1;
+        setCountdown(count);
+
+        if (count === 0) {
+          clearInterval(intervalId);
+          setShowMissionModal(true);
+        }
+      }, 1000);
+
+      setMissionTimer(intervalId);
+    }
+  };
+
+  // 용어 모달 닫기 핸들러
+  const handleCloseTermModal = () => {
+    setIsTermModalOpen(false);
+    setCountdown(null);
+
+    // 타이머가 진행 중이면 중지
+    if (missionTimer) {
+      clearInterval(missionTimer);
+      setMissionTimer(null);
+    }
+  };
+
+  // 미션 완료 모달 핸들러
+  const handleMissionModalClose = () => {
+    setShowMissionModal(false);
+  };
+
+  const handleMissionModalNext = () => {
+    setShowMissionModal(false);
+    navigate('/mission-rating', { replace: true });
+  };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (missionTimer) {
+        clearInterval(missionTimer);
+      }
+    };
+  }, [missionTimer]);
 
   // 검색창 활성화/비활성화 핸들러
   const handleSearchFocus = () => {
@@ -1180,7 +1243,7 @@ const Search = () => {
             </div>
           </div>
 
-          {/* ETF 상품 탭: 최근 본 상품 */}
+          {/* ETF 상품 탭: 최근 본 상품 또는 검색 결과 */}
           {searchTab === 'ETF 상품' && (
             <div
               style={{
@@ -1199,7 +1262,7 @@ const Search = () => {
                   margin: 0
                 }}
               >
-                최근 본 상품
+                {searchQuery ? '검색 결과' : '최근 본 상품'}
               </p>
               <div
                 style={{
@@ -1208,91 +1271,17 @@ const Search = () => {
                   gap: '8px'
                 }}
               >
-                {recentViewedETFs.length > 0 ? (
-                  recentViewedETFs.map((etf) => (
-                    <SimpleChartViewer
-                      key={etf.id}
-                      name={etf.name}
-                      code={etf.code}
-                      currentPrice={etf.currentPrice}
-                      changePercent={etf.changePercent}
-                      changeDirection={etf.changeDirection}
-                      showTopLabel={false}
-                      showPriceComparison={false}
-                      onClick={() => {
-                        // ETF 상세 페이지로 이동
-                        navigate(`/etf/${etf.id}/detail`);
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div
-                    style={{
-                      padding: '40px 0',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontFamily: 'Pretendard, sans-serif',
-                        fontSize: '14px',
-                        fontWeight: 400,
-                        lineHeight: 1.5,
-                        color: '#ADB2BD',
-                        margin: 0
-                      }}
-                    >
-                      최근 본 상품이 없습니다
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TIP/용어 탭: 검색 결과 */}
-          {searchTab === 'TIP/용어' && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px'
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: 'Pretendard, sans-serif',
-                  fontSize: '20px',
-                  fontWeight: 600,
-                  lineHeight: 1.35,
-                  color: '#5E6573',
-                  margin: 0
-                }}
-              >
-                {searchQuery ? '검색 결과' : '최근 본 TIP/용어'}
-              </p>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px'
-                }}
-              >
                 {(() => {
-                  // 검색어가 있으면 필터링, 없으면 전체 표시
-                  const filteredQA = searchQuery
-                    ? qaData.filter(qa =>
-                        qa.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        qa.tips.some(tip =>
-                          tip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          tip.content.toLowerCase().includes(searchQuery.toLowerCase())
-                        )
+                  // 검색어가 있으면 ETF 검색, 없으면 최근 본 상품 표시
+                  const displayETFs = searchQuery
+                    ? ETF_LIST_DATA.filter(etf =>
+                        etf.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        etf.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        etf.category.includes(searchQuery)
                       )
-                    : qaData;
+                    : recentViewedETFs;
 
-                  if (filteredQA.length === 0) {
+                  if (displayETFs.length === 0) {
                     return (
                       <div
                         style={{
@@ -1312,50 +1301,295 @@ const Search = () => {
                             margin: 0
                           }}
                         >
-                          검색 결과가 없습니다
+                          {searchQuery ? '검색 결과가 없습니다' : '최근 본 상품이 없습니다'}
                         </p>
                       </div>
                     );
                   }
 
-                  return filteredQA.map((qa) => {
-                    return (
-                      <TipCard
-                        key={qa.id}
-                        icon={qa.icon}
-                        title={qa.title}
-                        tips={qa.tips}
-                        linkText={qa.linkText}
-                        linkIcon={qa.linkIcon}
-                        showLink={true}
-                        defaultOpen={expandedTipId === qa.id}
-                        initialBookmarked={qa.initialBookmarked}
-                        collapsedStyle={{
-                          backgroundColor: '#F7F7F8',
-                          borderRadius: '8px',
-                          boxShadow: 'none'
-                        }}
-                        style={{
-                          marginBottom: '4px'
-                        }}
-                        onToggle={(isOpen) => {
-                          if (!isOpen) {
-                            setExpandedTipId(null);
-                          } else {
-                            setExpandedTipId(qa.id);
-                          }
-                        }}
-                        onBookmarkChange={(isBookmarked) => {
-                          console.log(`${qa.title} 북마크 ${isBookmarked ? '추가' : '제거'}`);
-                        }}
-                        onLinkClick={() => {
-                          console.log(`${qa.linkText} 클릭`);
-                        }}
-                      />
-                    );
-                  });
+                  return displayETFs.map((etf) => (
+                    <SimpleChartViewer
+                      key={etf.id}
+                      name={etf.name}
+                      code={etf.code}
+                      currentPrice={etf.currentPrice}
+                      changePercent={etf.changePercent}
+                      changeDirection={etf.changeDirection}
+                      showTopLabel={false}
+                      showPriceComparison={false}
+                      onClick={() => {
+                        // ETF 상세 페이지로 이동
+                        navigate(`/etf/${etf.id}/detail`);
+                      }}
+                    />
+                  ));
                 })()}
               </div>
+            </div>
+          )}
+
+          {/* TIP/용어 탭: 검색 결과 */}
+          {searchTab === 'TIP/용어' && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '24px'
+              }}
+            >
+              {(() => {
+                // 검색어에 따라 모든 콘텐츠 필터링
+                const filteredQA = searchQuery
+                  ? qaData.filter(qa =>
+                      qa.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      qa.tips.some(tip =>
+                        tip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        tip.content.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                    )
+                  : qaData;
+
+                const filteredVocabulary = searchQuery
+                  ? largeVocabularyData.filter(vocab =>
+                      vocab.keywords.some(keyword =>
+                        keyword.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                    )
+                  : largeVocabularyData.slice(0, 6); // 검색 안할 때는 처음 6개만
+
+                const filteredNews = searchQuery
+                  ? MOCK_CONTENTS.filter(item =>
+                      item.type === 'news' &&
+                      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                  : MOCK_CONTENTS.filter(item => item.type === 'news').slice(0, 3);
+
+                const filteredVideos = searchQuery
+                  ? MOCK_CONTENTS.filter(item =>
+                      item.type === 'video' &&
+                      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                  : MOCK_CONTENTS.filter(item => item.type === 'video').slice(0, 3);
+
+                const hasResults = filteredQA.length > 0 || filteredVocabulary.length > 0 ||
+                                   filteredNews.length > 0 || filteredVideos.length > 0;
+
+                if (!hasResults) {
+                  return (
+                    <div
+                      style={{
+                        padding: '40px 0',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontFamily: 'Pretendard, sans-serif',
+                          fontSize: '14px',
+                          fontWeight: 400,
+                          lineHeight: 1.5,
+                          color: '#ADB2BD',
+                          margin: 0
+                        }}
+                      >
+                        검색 결과가 없습니다
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <>
+                    {/* Q&A 섹션 */}
+                    {filteredQA.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p
+                          style={{
+                            fontFamily: 'Pretendard, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 600,
+                            lineHeight: 1.35,
+                            color: '#5E6573',
+                            margin: 0
+                          }}
+                        >
+                          Q&A
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          {filteredQA.map((qa) => (
+                            <TipCard
+                              key={qa.id}
+                              icon={qa.icon}
+                              title={qa.title}
+                              tips={qa.tips}
+                              linkText={qa.linkText}
+                              linkIcon={qa.linkIcon}
+                              showLink={true}
+                              defaultOpen={expandedTipId === qa.id}
+                              initialBookmarked={qa.initialBookmarked}
+                              collapsedStyle={{
+                                backgroundColor: '#F7F7F8',
+                                borderRadius: '8px',
+                                boxShadow: 'none'
+                              }}
+                              style={{
+                                marginBottom: '4px'
+                              }}
+                              onToggle={(isOpen) => {
+                                if (!isOpen) {
+                                  setExpandedTipId(null);
+                                } else {
+                                  setExpandedTipId(qa.id);
+                                }
+                              }}
+                              onBookmarkChange={(isBookmarked) => {
+                                console.log(`${qa.title} 북마크 ${isBookmarked ? '추가' : '제거'}`);
+                              }}
+                              onLinkClick={() => {
+                                console.log(`${qa.linkText} 클릭`);
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 용어 카드 섹션 */}
+                    {filteredVocabulary.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p
+                          style={{
+                            fontFamily: 'Pretendard, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 600,
+                            lineHeight: 1.35,
+                            color: '#5E6573',
+                            margin: 0
+                          }}
+                        >
+                          용어
+                        </p>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(2, 1fr)',
+                            gap: '12px'
+                          }}
+                        >
+                          {filteredVocabulary.map((vocab) => (
+                            <div
+                              key={vocab.id}
+                              onClick={() => handleVocabCardClick(vocab.image)}
+                              style={{
+                                position: 'relative',
+                                width: '100%',
+                                paddingBottom: '100%',
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <img
+                                src={vocab.image}
+                                alt="용어 카드"
+                                style={{
+                                  width: '111%',
+                                  height: '111%',
+                                  objectFit: 'cover',
+                                  display: 'block',
+                                  position: 'absolute',
+                                  top: '50%',
+                                  left: '50%',
+                                  transform: 'translate(-50%, -50%)'
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 뉴스 섹션 */}
+                    {filteredNews.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p
+                          style={{
+                            fontFamily: 'Pretendard, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 600,
+                            lineHeight: 1.35,
+                            color: '#5E6573',
+                            margin: 0
+                          }}
+                        >
+                          뉴스
+                        </p>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(2, 1fr)',
+                            gap: '12px'
+                          }}
+                        >
+                          {filteredNews.map((news) => (
+                            <NewsCard
+                              key={news.id}
+                              thumbnail={news.thumbnail}
+                              title={news.title}
+                              isBookmarked={news.isBookmarked}
+                              onCardClick={() => console.log(`뉴스 ${news.id} 클릭`)}
+                              onBookmarkClick={(newState) =>
+                                console.log(`뉴스 ${news.id} 북마크 ${newState ? '추가' : '제거'}`)
+                              }
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 영상 섹션 */}
+                    {filteredVideos.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p
+                          style={{
+                            fontFamily: 'Pretendard, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 600,
+                            lineHeight: 1.35,
+                            color: '#5E6573',
+                            margin: 0
+                          }}
+                        >
+                          영상
+                        </p>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(2, 1fr)',
+                            gap: '12px'
+                          }}
+                        >
+                          {filteredVideos.map((video) => (
+                            <VideoThumbnail
+                              key={video.id}
+                              thumbnail={video.thumbnail}
+                              title={video.title}
+                              variant={video.variant}
+                              isBookmarked={video.isBookmarked}
+                              onPlayClick={() => console.log(`비디오 재생: ${video.id}`)}
+                              onBookmarkClick={(newState) =>
+                                console.log(`비디오 ${video.id} 북마크 ${newState ? '추가' : '제거'}`)
+                              }
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>
@@ -1604,12 +1838,14 @@ const Search = () => {
                 return (
                   <div
                     key={key}
+                    onClick={() => handleVocabCardClick(content.image)}
                     style={{
                       position: 'relative',
                       width: '100%',
                       paddingBottom: '100%',
                       borderRadius: '12px',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      cursor: 'pointer'
                     }}
                   >
                     <img
@@ -1928,6 +2164,21 @@ const Search = () => {
           </div>
         </div>
       )}
+
+      {/* 용어 설명 모달 */}
+      <TermModal
+        isOpen={isTermModalOpen}
+        onClose={handleCloseTermModal}
+        imageSrc={termModalImage}
+        countdown={countdown}
+      />
+
+      {/* 미션 완료 모달 */}
+      <MissionCompleteModal
+        isOpen={showMissionModal}
+        onClose={handleMissionModalClose}
+        onNext={handleMissionModalNext}
+      />
     </div>
   );
 };

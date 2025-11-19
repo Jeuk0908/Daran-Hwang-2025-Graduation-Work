@@ -89,6 +89,7 @@ const ManualCreateStep3 = () => {
       // portfolioItems를 Rebalance 페이지에서 사용할 수 있는 형식으로 변환
       const etfsForRebalance = portfolioItems.map((item, index) => ({
         id: item.id,
+        etfId: item.id, // mockData의 실제 ETF ID 저장
         title: item.name,
         targetWeight: item.targetWeight.toString(),
         currentWeight: item.targetWeight.toString(), // 초기에는 목표 비중과 동일
