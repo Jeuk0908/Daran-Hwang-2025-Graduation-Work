@@ -51,7 +51,7 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   min-height: -webkit-fill-available; /* iOS Safari fix */
-  background-color: #000000; /* Black background for safe areas */
+  background-color: #ffffff; /* White background for most pages */
 }
 
 #root {
