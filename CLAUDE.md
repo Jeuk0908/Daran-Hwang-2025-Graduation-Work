@@ -30,6 +30,15 @@ npm run lint         # Run ESLint
 
 The app uses React Router with a fixed bottom navigation bar that appears on main routes. The bottom nav automatically hides on certain detail/flow pages.
 
+**Onboarding & Mission Flow** (no bottom nav, no quit button):
+- `/` - Splash screen (auto-redirects to `/onboarding`)
+- `/onboarding` - Initial onboarding experience
+- `/mission-selection` - Mission type selection (portfolio or vocabulary)
+- `/mission-start` - Mission start confirmation
+- `/mission-quit` - Mission quit confirmation
+- `/mission-complete` - Mission completion screen
+- `/mission-rating` - Post-mission rating screen
+
 **Main Routes (with bottom nav)**:
 - `/home` - Main home page
 - `/portfolio` - Portfolio listings
@@ -39,9 +48,12 @@ The app uses React Router with a fixed bottom navigation bar that appears on mai
 **Detail Pages (no bottom nav)**:
 - `/portfolio/:id/detail` - Portfolio detail view
 - `/portfolio/:id/rebalance` - Portfolio rebalancing flow
+- `/portfolio/:id/rebalance/add-etf` - Add ETF to portfolio during rebalancing
 - `/etf/:id/detail` - ETF detail view
 - `/vocabulary` - ETF terminology learning
 - `/bookmark` - Bookmarked content
+- `/interest-etf` - Bookmarked ETF listings
+- `/theme` - Theme detail page
 
 **Portfolio Creation Flow** (multi-step, no bottom nav):
 - `/portfolio/create` - Entry point
@@ -53,6 +65,25 @@ The app uses React Router with a fixed bottom navigation bar that appears on mai
 - `/dev/icons` - Icon and component showcase (no max-width constraint)
 
 Routes are defined in `src/App.jsx`. Container max-width is `430px` for main pages (optimized for iPhone 14 Pro Max).
+
+### Mission System
+
+The app includes a mission-based onboarding flow that guides users through key features:
+
+**QuitButton Component** (`src/components/common/QuitButton.jsx`):
+- Floating quit button displayed during active missions
+- Shows mission name at bottom ("포트폴리오 제작 미션 중", "단어카드 열람 미션 중")
+- Expands from X icon to "포기하기" text button on click
+- Auto-collapses on outside click or scroll
+- Hidden on splash, onboarding, and mission flow pages
+
+**Mission Flow**:
+1. User selects mission type in `/mission-selection` (portfolio or vocabulary)
+2. Mission ID stored in localStorage via `missionStorage.js`
+3. QuitButton appears throughout app during active mission
+4. User completes or quits mission
+5. Redirected to completion/quit screen
+6. Mission state cleared from localStorage
 
 ### Mobile Web App Optimizations
 
@@ -73,6 +104,7 @@ Critical viewport and mobile settings in `index.html`:
   - `depth='1'` + `state='icon'`: Title + two action icons (no back button)
   - `depth='2'` + `state='2 title'`: Back button + title + subtitle + two action icons
 - `BottomNav.jsx` - Fixed bottom navigation (height: 88px = 54px nav + 34px home indicator area)
+- `QuitButton.jsx` - Floating mission quit button (hidden on splash/onboarding/mission pages)
 - `SubNav.jsx` - Tab navigation with 4 tabs: `returns`, `info`, `composition`, `dividend`
 - `CenterTabNav.jsx` - Centered tab navigation component
 
@@ -120,6 +152,13 @@ Critical viewport and mobile settings in `index.html`:
 - `AuthLayout.jsx` - Authentication layout wrapper
 
 **Page Structure** (`src/pages/`):
+- `Splash.jsx` - Splash screen shown on initial load
+- `Onboarding.jsx` - Onboarding introduction screen
+- `MissionSelection.jsx` - Mission type selection (portfolio/vocabulary)
+- `MissionStart.jsx` - Mission start confirmation
+- `MissionQuit.jsx` - Mission quit confirmation with navigation back to onboarding
+- `MissionComplete.jsx` - Mission completion celebration
+- `MissionRating.jsx` - Post-mission rating interface
 - `Home/` - Main landing page with portfolio summary, market indices, and popular themes
 - `Portfolio/` - Portfolio listings and management
   - `PortfolioDetail.jsx` - Individual portfolio detail view
@@ -127,7 +166,7 @@ Critical viewport and mobile settings in `index.html`:
 - `PortfolioCreate/` - Multi-step portfolio creation flow
   - `MethodSelection.jsx` - Auto vs manual creation selection
   - `AutoCreate.jsx` + `AutoCreateStep2-5.jsx` - Automated creation flow
-  - `ManualCreateStep2-3.jsx` - Manual creation flow
+  - `ManualCreateStep2-3.jsx` - Manual creation flow (also used for adding ETFs during rebalancing)
 - `Rebalance/` - Portfolio rebalancing interface
 - `ETFDetail/` - ETF detail page with performance data and composition
 - `InterestETF/` - Interest/bookmarked ETF listings (route: `/interest-etf`)
@@ -136,10 +175,6 @@ Critical viewport and mobile settings in `index.html`:
 - `MyPage/` - User profile and settings
 - `Vocabulary/` - ETF terminology learning cards
 - `Bookmark/` - Bookmarked content
-- `QA/` - Q&A section
-- `VideoTIP/` - Video tips section
-- `Login/` - Login/authentication page
-- `Artist/` - Artist page
 - `Dev/` - Development showcase pages (`IconShowcase.jsx`)
 
 ### Scroll Behavior
@@ -182,6 +217,10 @@ Since this is a demo app without backend, all data is managed via localStorage:
   - Key functions: `toggleETFBookmark()`, `addETFSearchHistory()`, `clearETFSearchHistory()`
   - Maintains search history with timestamps (max 20 items)
   - Handles bookmark state for individual ETFs
+- `missionStorage.js` - Mission state management
+  - Key functions: `setActiveMission()`, `getActiveMission()`, `clearActiveMission()`, `isActiveMission()`
+  - Tracks active mission ID ('portfolio' or 'vocabulary')
+  - Used to show/hide QuitButton and mission name indicator
 
 ## Design System
 

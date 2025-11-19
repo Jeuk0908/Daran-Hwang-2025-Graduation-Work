@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavig
 import { useEffect, useState } from 'react'
 import { BottomNav } from './components/common/BottomNav'
 import { QuitButton } from './components/common/QuitButton'
+import { TrackingProvider } from './contexts/TrackingContext'
 import Splash from './pages/Splash'
 import Onboarding from './pages/Onboarding'
 import MissionSelection from './pages/MissionSelection'
@@ -177,7 +178,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <TrackingProvider>
+        <AppContent />
+      </TrackingProvider>
     </Router>
   )
 }

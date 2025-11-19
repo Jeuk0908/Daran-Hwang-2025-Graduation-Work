@@ -1,24 +1,85 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../components/common/Button'
+import { useTracking } from '../hooks/useTracking'
+import { getActiveMission, clearActiveMission } from '../utils/missionStorage'
 
 function MissionQuit() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const tracking = useTracking()
   const [feedback, setFeedback] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleComplete = () => {
-    // 피드백 제출 로직 (현재는 localStorage에 저장)
-    if (feedback.trim()) {
-      const existingFeedback = JSON.parse(localStorage.getItem('missionFeedback') || '[]')
-      existingFeedback.push({
-        feedback: feedback.trim(),
-        timestamp: new Date().toISOString()
+  const handleComplete = async () => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+
+    try {
+      const missionId = getActiveMission()
+      if (!missionId) {
+        console.warn('[MissionQuit] No active mission found')
+        navigate('/mission-complete', { replace: true })
+        return
+      }
+
+      const missionNames = {
+        portfolio: '포트폴리오 제작 미션',
+        vocabulary: '단어카드 열람 미션'
+      }
+
+      const missionName = missionNames[missionId] || missionId
+      const quitReason = feedback.trim() || '사용자 포기'
+      const lastPage = location.state?.from || location.pathname
+
+      // 총 소요 시간 계산 (임시: 0으로 설정)
+      // TODO: 실제 미션 시작 시간을 추적하여 정확한 duration 계산
+      const totalDuration = 0
+
+      console.log('[MissionQuit] Tracking mission quit:', {
+        missionId,
+        missionName,
+        quitReason,
+        totalDuration,
+        lastPage
       })
-      localStorage.setItem('missionFeedback', JSON.stringify(existingFeedback))
-    }
 
-    // 미션 완료 페이지로 이동
-    navigate('/mission-complete', { replace: true })
+      // 미션 포기 이벤트 전송
+      await tracking.trackMissionQuitted(missionId, missionName, quitReason, totalDuration, lastPage)
+
+      // WebSocket 연결 종료
+      tracking.stopTracking()
+
+      // 미션 상태 초기화
+      clearActiveMission()
+
+      // 피드백을 localStorage에도 저장 (백업)
+      if (feedback.trim()) {
+        const existingFeedback = JSON.parse(localStorage.getItem('missionFeedback') || '[]')
+        existingFeedback.push({
+          feedback: feedback.trim(),
+          timestamp: new Date().toISOString(),
+          missionId,
+          missionName
+        })
+        localStorage.setItem('missionFeedback', JSON.stringify(existingFeedback))
+      }
+
+      console.log('[MissionQuit] Mission quit tracked successfully')
+
+      // 미션 완료 페이지로 이동
+      navigate('/mission-complete', { replace: true })
+
+    } catch (error) {
+      console.error('[MissionQuit] Failed to track mission quit:', error)
+      // 에러가 발생해도 미션 종료 프로세스 진행
+      tracking.stopTracking()
+      clearActiveMission()
+      navigate('/mission-complete', { replace: true })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -94,8 +155,9 @@ function MissionQuit() {
         <Button
           variant="primary"
           onClick={handleComplete}
+          disabled={isSubmitting}
         >
-          완료하기
+          {isSubmitting ? '제출 중...' : '완료하기'}
         </Button>
       </div>
 
