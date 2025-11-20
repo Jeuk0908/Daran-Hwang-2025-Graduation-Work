@@ -72,12 +72,23 @@ const Rebalance = () => {
   // localStorage에서 ETF 목록 불러오기
   useEffect(() => {
     const savedETFs = getPortfolioETFs(id);
-    if (savedETFs) {
-      // 저장된 ETF 목록이 있으면 rebalanceData 업데이트
-      setRebalanceData(prev => ({
-        ...prev,
-        etfs: savedETFs
-      }));
+    if (savedETFs && savedETFs.length > 0) {
+      // savedETFs의 targetWeight가 모두 0이 아닌지 확인
+      const hasValidWeights = savedETFs.some(etf =>
+        parseInt(etf.targetWeight) > 0
+      );
+
+      if (hasValidWeights) {
+        // 유효한 비중 데이터가 있으면 사용
+        setRebalanceData(prev => ({
+          ...prev,
+          etfs: savedETFs
+        }));
+      } else {
+        // 모든 비중이 0이면 localStorage 클리어하고 mockData 사용
+        console.warn('[Rebalance] localStorage에 잘못된 데이터가 있어서 초기화합니다.');
+        localStorage.removeItem(`portfolio_${id}_etfs`);
+      }
     }
   }, [id]);
 
@@ -103,14 +114,19 @@ const Rebalance = () => {
         existingETFs: rebalanceData.etfs.map(etf => {
           // etfId가 있으면 mockData에서 해당 ETF 찾기
           const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
-          return mockETF || {
+
+          // mockETF가 있으면 mockETF에 targetWeight를 추가, 없으면 기본 객체 생성
+          return mockETF ? {
+            ...mockETF,
+            targetWeight: parseInt(etf.targetWeight) || 0
+          } : {
             id: etf.etfId || `etf-${etf.id}`,
             name: etf.title,
             code: etf.code || etf.id.toString(),
             currentPrice: parseInt(etf.pricePerShare.replace(/,/g, '')),
             changePercent: 0,
             changeDirection: 'up',
-            targetWeight: parseInt(etf.targetWeight)
+            targetWeight: parseInt(etf.targetWeight) || 0
           };
         })
       }

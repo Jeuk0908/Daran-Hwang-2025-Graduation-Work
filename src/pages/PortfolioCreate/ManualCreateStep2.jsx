@@ -71,18 +71,48 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
       };
     });
 
-    // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
-    // create 모드: 새로 선택한 ETF만
-    const allETFs = mode === 'add'
-      ? [...(previousData.existingETFs || []), ...newlySelectedETFs]
-      : newlySelectedETFs;
+    // add 모드: 비중 조정 페이지로 이동
+    if (mode === 'add') {
+      const portfolioId = previousData.portfolioId;
 
-    // 다음 단계로 이동 (3/4) - 모든 ETF 정보 전달
+      // 기존 ETF를 ManualCreateStep3가 기대하는 형식으로 변환
+      const existingETFsFormatted = (previousData.existingETFs || []).map(etf => {
+        // currentPrice 필드를 price 필드로 변환
+        const priceValue = etf.price
+          ? etf.price
+          : (typeof etf.currentPrice === 'number'
+            ? etf.currentPrice.toLocaleString('ko-KR')
+            : '0');
+
+        return {
+          id: etf.id,
+          name: etf.name,
+          code: etf.code,
+          price: priceValue,
+          targetWeight: etf.targetWeight || 0
+        };
+      });
+
+      // 기존 ETF + 새로 선택한 ETF 합치기
+      const allETFs = [...existingETFsFormatted, ...newlySelectedETFs];
+
+      // 비중 조정 페이지로 이동
+      navigate(`/portfolio/${portfolioId}/rebalance/step3`, {
+        state: {
+          existingETFs: existingETFsFormatted,
+          selectedETFs: allETFs,
+          isAddMode: true,
+          portfolioId: portfolioId
+        }
+      });
+      return;
+    }
+
+    // create 모드: 다음 단계로 이동 (3/4) - 모든 ETF 정보 전달
     navigate('/portfolio/create/step3', {
       state: {
         ...previousData,
-        selectedETFs: allETFs,
-        isAddMode: mode === 'add' // step3에서 add 모드임을 알 수 있도록
+        selectedETFs: newlySelectedETFs
       }
     });
   };

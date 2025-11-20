@@ -19,41 +19,62 @@ const ManualCreateStep3 = () => {
   const [editingItemId, setEditingItemId] = useState(null);
 
   // 선택된 ETF를 포트폴리오 아이템으로 변환
-  // add 모드: 기존 ETF는 기존 비중 유지, 새 ETF는 남은 비중을 균등 분배
+  // add 모드: 기존 ETF는 기존 비중 유지, 새 ETF는 균등 분배 비중 (총합 100% 초과)
   // create 모드: 모든 ETF를 균등 분배
   const [portfolioItems, setPortfolioItems] = useState(() => {
     if (previousData.isAddMode) {
-      // 기존 ETF의 ID 목록
-      const existingETFIds = (previousData.existingETFs || []).map(etf => etf.id);
+      console.log('========================================');
+      console.log('🔵 리밸런싱 모드 - 비중 조정 시작');
+      console.log('========================================');
 
-      // 기존 ETF의 총 비중 계산
-      const existingTotalWeight = (previousData.existingETFs || []).reduce(
-        (sum, etf) => sum + (etf.targetWeight || 0),
-        0
-      );
+      // 기존 ETF 정보 출력
+      console.log('\n📦 previousData.existingETFs:');
+      (previousData.existingETFs || []).forEach((etf, index) => {
+        console.log(`  ${index + 1}. ${etf.name} (ID: ${etf.id})`);
+        console.log(`     - targetWeight: ${etf.targetWeight} (타입: ${typeof etf.targetWeight})`);
+        console.log(`     - currentPrice: ${etf.currentPrice}`);
+      });
 
-      // 새로 추가된 ETF 개수
-      const newETFCount = selectedETFs.filter(etf => !existingETFIds.includes(etf.id)).length;
+      // 선택된 전체 ETF 정보 출력
+      console.log('\n📦 selectedETFs (기존 + 새로 추가):');
+      selectedETFs.forEach((etf, index) => {
+        console.log(`  ${index + 1}. ${etf.name} (ID: ${etf.id})`);
+      });
 
-      // 새 ETF에 할당할 남은 비중 (균등 분배)
-      const remainingWeight = 100 - existingTotalWeight;
-      const newETFWeight = newETFCount > 0 ? Math.floor(remainingWeight / newETFCount) : 0;
+      // 기존 ETF의 ID 목록 (문자열로 변환하여 비교)
+      const existingETFIds = (previousData.existingETFs || []).map(etf => String(etf.id));
 
-      return selectedETFs.map((etf) => {
-        // 기존 ETF인지 확인
-        const isExistingETF = existingETFIds.includes(etf.id);
+      // 새 ETF의 기본 비중: 전체 ETF 개수로 균등 분배
+      const totalETFCount = selectedETFs.length;
+      const defaultWeight = totalETFCount > 0 ? Math.floor(100 / totalETFCount) : 0;
+
+      console.log(`\n📊 전체 ETF 개수: ${totalETFCount}`);
+      console.log(`📊 새 ETF 기본 비중: ${defaultWeight}%`);
+
+      console.log('\n🔍 각 ETF 처리 결과:');
+
+      return selectedETFs.map((etf, index) => {
+        // 기존 ETF인지 확인 (ID를 문자열로 변환하여 비교)
+        const isExistingETF = existingETFIds.includes(String(etf.id));
         const existingETF = isExistingETF
-          ? previousData.existingETFs.find(e => e.id === etf.id)
+          ? previousData.existingETFs.find(e => String(e.id) === String(etf.id))
           : null;
+
+        const finalWeight = isExistingETF && existingETF
+          ? existingETF.targetWeight  // 기존 비중 유지
+          : defaultWeight;             // 새 ETF는 균등 분배 비중
+
+        console.log(`  ${index + 1}. ${etf.name}`);
+        console.log(`     - 기존 ETF? ${isExistingETF ? '✅ 예' : '❌ 아니오 (새로 추가)'}`);
+        console.log(`     - 기존 비중: ${existingETF?.targetWeight}%`);
+        console.log(`     - 최종 비중: ${finalWeight}%`);
 
         return {
           id: etf.id,
           name: etf.name,
           code: etf.code,
           pricePerShare: parseInt(etf.price.replace(/,/g, '')),
-          targetWeight: isExistingETF && existingETF
-            ? existingETF.targetWeight  // 기존 비중 유지
-            : newETFWeight,              // 새 ETF는 남은 비중 균등 분배
+          targetWeight: finalWeight,
           appliedWeight: 100,
           buyShares: 1,
           totalAmount: parseInt(etf.price.replace(/,/g, ''))

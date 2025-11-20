@@ -215,6 +215,7 @@ function AppContent() {
           <Route path="/portfolio/create/step4" element={<AutoCreateStep5 />} />
           <Route path="/portfolio/:id/rebalance" element={<Rebalance />} />
           <Route path="/portfolio/:id/rebalance/add-etf" element={<ManualCreateStep2 mode="add" />} />
+          <Route path="/portfolio/:id/rebalance/step3" element={<ManualCreateStep3 />} />
           {/* 개발용 페이지 */}
           <Route path="/dev/icons" element={<IconShowcase />} />
         </Routes>
