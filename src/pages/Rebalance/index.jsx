@@ -85,7 +85,8 @@ const Rebalance = () => {
   const isMaxETFs = rebalanceData.etfs.length >= 5;
 
   const handleBack = () => {
-    navigate(-1);
+    // 리밸런싱을 시작했던 포트폴리오 상세 페이지로 돌아가기
+    navigate(`/portfolio/${id}/detail`, { replace: true });
   };
 
   const handleAddProduct = () => {
@@ -96,23 +97,42 @@ const Rebalance = () => {
     const allMockETFs = getAllETFs();
 
     // ETF 추가 페이지로 이동 (현재 ETF 개수 및 목록 전달)
+    const existingETFsList = rebalanceData.etfs.map(etf => {
+      // etfId가 있으면 mockData에서 해당 ETF 찾기
+      const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
+
+      // targetWeight 파싱 (문자열이면 숫자로, undefined면 0)
+      const parsedWeight = etf.targetWeight !== undefined && etf.targetWeight !== null
+        ? (typeof etf.targetWeight === 'number' ? etf.targetWeight : parseInt(etf.targetWeight))
+        : 0;
+
+      // mockETF를 찾았으면 targetWeight를 추가하여 반환
+      if (mockETF) {
+        return {
+          ...mockETF,
+          price: mockETF.currentPrice?.toLocaleString('ko-KR') || '0',
+          targetWeight: parsedWeight
+        };
+      }
+
+      // mockETF를 못 찾았으면 기본 객체 반환
+      return {
+        id: etf.etfId || `etf-${etf.id}`,
+        name: etf.title,
+        code: etf.code || etf.id.toString(),
+        currentPrice: parseInt(etf.pricePerShare?.replace(/,/g, '')) || 0,
+        price: etf.pricePerShare || '0',
+        changePercent: 0,
+        changeDirection: 'up',
+        targetWeight: parsedWeight
+      };
+    });
+
     navigate(`/portfolio/${id}/rebalance/add-etf`, {
       state: {
         currentETFCount: rebalanceData.etfs.length,
         portfolioId: id,
-        existingETFs: rebalanceData.etfs.map(etf => {
-          // etfId가 있으면 mockData에서 해당 ETF 찾기
-          const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
-          return mockETF || {
-            id: etf.etfId || `etf-${etf.id}`,
-            name: etf.title,
-            code: etf.code || etf.id.toString(),
-            currentPrice: parseInt(etf.pricePerShare.replace(/,/g, '')),
-            changePercent: 0,
-            changeDirection: 'up',
-            targetWeight: parseInt(etf.targetWeight)
-          };
-        })
+        existingETFs: existingETFsList
       }
     });
   };

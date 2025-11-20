@@ -186,14 +186,31 @@ const PortfolioDetail = () => {
         existingETFs: etfs.map(etf => {
           // etfId가 있으면 mockData에서 해당 ETF 찾기
           const mockETF = etf.etfId ? allMockETFs.find(e => e.id === etf.etfId) : null;
-          return mockETF || {
+
+          // targetWeight 파싱 (문자열이면 숫자로, undefined면 0)
+          const parsedWeight = etf.targetWeight !== undefined && etf.targetWeight !== null
+            ? (typeof etf.targetWeight === 'number' ? etf.targetWeight : parseInt(etf.targetWeight))
+            : 0;
+
+          // mockETF를 찾았으면 price와 targetWeight 추가
+          if (mockETF) {
+            return {
+              ...mockETF,
+              price: mockETF.currentPrice?.toLocaleString('ko-KR') || '0',
+              targetWeight: parsedWeight
+            };
+          }
+
+          // mockETF를 못 찾았으면 fallback 객체 반환
+          return {
             id: etf.etfId || `etf-${etf.id}`,
             name: etf.title,
             code: etf.code || etf.id.toString(),
-            currentPrice: parseInt(etf.pricePerShare.replace(/,/g, '')),
-            changePercent: parseFloat(etf.changePercent),
-            changeDirection: etf.changeDirection,
-            targetWeight: parseInt(etf.targetWeight)
+            currentPrice: parseInt(etf.pricePerShare?.replace(/,/g, '')) || 0,
+            price: etf.pricePerShare || '0',
+            changePercent: parseFloat(etf.changePercent) || 0,
+            changeDirection: etf.changeDirection || 'up',
+            targetWeight: parsedWeight
           };
         })
       }

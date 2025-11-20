@@ -72,28 +72,30 @@ export const ETFInfoCard = ({
           {title}
         </p>
 
-        {/* 정보 아이콘 */}
-        <div
-          onClick={onInfoClick}
-          style={{
-            width: '24px',
-            height: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: onInfoClick ? 'pointer' : 'default'
-          }}
-        >
-          <img
-            src={iconInformationS}
-            alt="정보"
+        {/* 정보 아이콘 - onInfoClick이 있을 때만 표시 */}
+        {onInfoClick && (
+          <div
+            onClick={onInfoClick}
             style={{
               width: '24px',
               height: '24px',
-              display: 'block'
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
             }}
-          />
-        </div>
+          >
+            <img
+              src={iconInformationS}
+              alt="정보"
+              style={{
+                width: '24px',
+                height: '24px',
+                display: 'block'
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* 가격 정보 */}

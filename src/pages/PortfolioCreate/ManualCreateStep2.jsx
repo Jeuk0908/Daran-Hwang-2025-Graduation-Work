@@ -75,16 +75,26 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
       };
     }).filter(Boolean); // null 제거
 
-    // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
+    // add 모드: 기존 ETF + 새로 선택한 ETF 합치기 (중복 제거)
     // create 모드: 새로 선택한 ETF만
-    const allETFs = mode === 'add'
-      ? [...(previousData.existingETFs || []), ...newlySelectedETFs]
-      : newlySelectedETFs;
+    let allETFs;
+    if (mode === 'add') {
+      const existingETFs = previousData.existingETFs || [];
+      const existingETFIds = existingETFs.map(etf => etf.id);
 
-    console.log('ManualCreateStep2 - Navigating to step3 with:', {
-      selectedETFs: allETFs,
-      isAddMode: mode === 'add'
-    });
+      // 새로 선택한 ETF 중에서 기존에 없는 것만 필터링
+      const newETFsOnly = newlySelectedETFs.filter(etf => !existingETFIds.includes(etf.id));
+
+      // 새 ETF에 targetWeight 추가 (각각 25%로 고정)
+      const newETFsWithWeight = newETFsOnly.map(etf => ({
+        ...etf,
+        targetWeight: 25  // 새로 추가되는 ETF는 25% 기본값
+      }));
+
+      allETFs = [...existingETFs, ...newETFsWithWeight];
+    } else {
+      allETFs = newlySelectedETFs;
+    }
 
     // 다음 단계로 이동 (3/4) - 모든 ETF 정보 전달
     navigate('/portfolio/create/step3', {

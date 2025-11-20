@@ -395,7 +395,6 @@ const Vocabulary = () => {
           icon={selectedCard.icon}
           title={selectedCard.title}
           description={selectedCard.description}
-          countdown={countdown}
         />
       )}
     </div>

@@ -15,53 +15,31 @@ const ManualCreateStep3 = () => {
   const previousData = location.state || {};
   const selectedETFs = previousData.selectedETFs || [];
 
-  // 디버깅: 데이터 확인
-  console.log('ManualCreateStep3 - previousData:', previousData);
-  console.log('ManualCreateStep3 - selectedETFs:', selectedETFs);
-
   // 편집 중인 항목 ID 추적
   const [editingItemId, setEditingItemId] = useState(null);
 
   // 선택된 ETF를 포트폴리오 아이템으로 변환
-  // add 모드: 기존 ETF는 기존 비중 유지, 새 ETF는 남은 비중을 균등 분배
+  // add 모드: selectedETFs에 이미 targetWeight가 포함되어 있음 (기존 ETF는 기존 비중, 새 ETF는 0)
   // create 모드: 모든 ETF를 균등 분배
   const [portfolioItems, setPortfolioItems] = useState(() => {
     if (previousData.isAddMode) {
-      // 기존 ETF의 ID 목록
-      const existingETFIds = (previousData.existingETFs || []).map(etf => etf.id);
-
-      // 기존 ETF의 총 비중 계산
-      const existingTotalWeight = (previousData.existingETFs || []).reduce(
-        (sum, etf) => sum + (etf.targetWeight || 0),
-        0
-      );
-
-      // 새로 추가된 ETF 개수
-      const newETFCount = selectedETFs.filter(etf => !existingETFIds.includes(etf.id)).length;
-
-      // 새 ETF에 할당할 남은 비중 (균등 분배)
-      const remainingWeight = 100 - existingTotalWeight;
-      const newETFWeight = newETFCount > 0 ? Math.floor(remainingWeight / newETFCount) : 0;
-
+      // add 모드: selectedETFs에 이미 targetWeight가 있음
       return selectedETFs.map((etf) => {
-        // 기존 ETF인지 확인
-        const isExistingETF = existingETFIds.includes(etf.id);
-        const existingETF = isExistingETF
-          ? previousData.existingETFs.find(e => e.id === etf.id)
-          : null;
-
         // price 필드 안전하게 처리
         const priceString = etf.price || etf.currentPrice?.toString() || '0';
         const priceValue = parseInt(priceString.toString().replace(/,/g, '')) || 0;
+
+        // targetWeight 안전하게 파싱 (숫자 또는 문자열)
+        const weight = etf.targetWeight
+          ? (typeof etf.targetWeight === 'number' ? etf.targetWeight : parseInt(etf.targetWeight))
+          : 0;
 
         return {
           id: etf.id,
           name: etf.name,
           code: etf.code,
           pricePerShare: priceValue,
-          targetWeight: isExistingETF && existingETF
-            ? existingETF.targetWeight  // 기존 비중 유지
-            : newETFWeight,              // 새 ETF는 남은 비중 균등 분배
+          targetWeight: weight,
           appliedWeight: 100,
           buyShares: 1,
           totalAmount: priceValue
@@ -119,7 +97,9 @@ const ManualCreateStep3 = () => {
       // localStorage에 ETF 목록 저장
       setPortfolioETFs(portfolioId, etfsForRebalance);
 
-      navigate(`/portfolio/${portfolioId}/rebalance`, { replace: true });
+      // 히스토리에서 Step2와 Step3를 제거하고 Rebalance로 돌아가기
+      // Step3(현재) → Step2 → Rebalance 순서이므로 -2 단계 뒤로
+      window.history.go(-2);
       return;
     }
 

@@ -332,7 +332,6 @@ const ETFDetail = () => {
               changeDirection={etfData.changeDirection}
               description="현재 상품의 가격"
               variant="emphasis"
-              onInfoClick={() => handleOpenTermModal(termCurrentPrice)}
             />
             <ETFInfoCard
               title="기준가(iNAV)"
