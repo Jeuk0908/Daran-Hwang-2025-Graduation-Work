@@ -32,26 +32,31 @@ a:hover {
   color: #535bf2;
 }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  /* Prevent pull-to-refresh on mobile */
-  overscroll-behavior-y: contain;
-  /* iPhone 14 Pro optimization */
-  position: fixed;
-  touch-action: pan-y;
+  min-height: 100%;
+  /* iPad 전시용 회색 배경 */
+  background-color: #EEEEEE;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: contain;
   /* iPhone 14 Pro Max: 430px × 932px */
   max-width: 430px;
   margin: 0 auto;
   min-height: 100vh;
   min-height: -webkit-fill-available; /* iOS Safari fix */
-  background-color: #ffffff; /* White background for most pages */
+  background-color: #ffffff; /* White background for app content */
+  /* iPad 전시용 그림자 효과 */
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+  touch-action: pan-y;
 }
 
 #root {
