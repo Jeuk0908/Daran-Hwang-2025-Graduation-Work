@@ -1,9 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { BottomNav } from './components/common/BottomNav'
 import { QuitButton } from './components/common/QuitButton'
 import { TrackingProvider } from './contexts/TrackingContext'
 import { AutoTracker } from './components/common/AutoTracker'
+import { useTracking } from './hooks/useTracking'
+import { useInactivityTimer } from './hooks/useInactivityTimer'
+import { InactivityWarning } from './components/common/InactivityWarning'
+import { clearActiveMission } from './utils/missionStorage'
 import Splash from './pages/Splash'
 import Onboarding from './pages/Onboarding'
 import MissionSelection from './pages/MissionSelection'
@@ -39,6 +43,45 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(location.pathname === '/');
+  const tracking = useTracking();
+  const [showWarning, setShowWarning] = useState(false);
+
+  // 자동 포기 처리 함수
+  const handleAutoQuit = useCallback(async () => {
+    console.log('[App] Auto-quitting mission due to inactivity (2 minutes)')
+
+    try {
+      // 미션 포기 이벤트 전송
+      await tracking.trackMissionQuitted('자동 포기 (2분 비활동)', null)
+
+      // WebSocket 연결 종료
+      tracking.stopTracking()
+
+      // 미션 상태 초기화
+      clearActiveMission()
+
+      // 스플래시 페이지로 이동
+      navigate('/', { replace: true, state: { resetSplash: true } })
+
+    } catch (error) {
+      console.error('[App] Failed to handle auto-quit:', error)
+      // 에러가 발생해도 미션 종료 프로세스 진행
+      clearActiveMission()
+      navigate('/', { replace: true, state: { resetSplash: true } })
+    }
+  }, [tracking, navigate])
+
+  // 비활동 타이머 (2분 비활동 시 자동 포기)
+  useInactivityTimer({
+    isActive: !!tracking.activeMission,
+    onWarning: () => {
+      console.log('[App] Inactivity warning: 15 seconds remaining')
+      setShowWarning(true)
+    },
+    onTimeout: handleAutoQuit,
+    warningTime: 105000, // 1분 45초
+    timeoutDuration: 120000 // 2분
+  })
 
   // 브라우저의 자동 스크롤 복원 비활성화
   useEffect(() => {
@@ -128,6 +171,9 @@ function AppContent() {
     }}>
       {/* 자동 추적 */}
       <AutoTracker />
+
+      {/* 비활동 경고 */}
+      <InactivityWarning show={showWarning} />
 
       {/* 스플래시 오버레이 */}
       {showSplash && <Splash onComplete={handleSplashComplete} />}
