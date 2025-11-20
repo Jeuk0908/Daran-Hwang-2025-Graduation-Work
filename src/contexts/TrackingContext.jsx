@@ -1,7 +1,62 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useSession } from '../hooks/useSession'
 import { getActiveMission } from '../utils/missionStorage'
 import { wsClient } from '../utils/websocket'
+
+/**
+ * 포트폴리오 미션에만 적용되는 공통 페이지
+ */
+const PORTFOLIO_COMMON_PAGES = [
+  '/mission-selection',
+  '/mission-start',
+  '/mission-rating',
+  '/mission-complete',
+  '/mission-quit'
+]
+
+/**
+ * 현재 페이지가 활성 미션과 관련 있는지 확인
+ *
+ * @param {string} pathname - 현재 페이지 경로
+ * @param {string} missionType - 미션 타입 ('portfolio' | 'vocabulary')
+ * @returns {boolean} 미션과 관련 있으면 true
+ */
+function isPageMissionRelevant(pathname, missionType) {
+  if (!missionType) return false
+
+  // 포트폴리오 미션: /portfolio 목록과 생성 플로우만 허용
+  if (missionType === 'portfolio') {
+    // 포트폴리오 미션 공통 페이지 확인
+    if (PORTFOLIO_COMMON_PAGES.some(page => pathname.startsWith(page))) {
+      return true
+    }
+
+    // 정확히 /portfolio 경로 (목록 페이지)
+    if (pathname === '/portfolio') return true
+    // /portfolio/create로 시작하는 생성 플로우 (자동/직접 제작)
+    if (pathname.startsWith('/portfolio/create')) return true
+    // 그 외 포트폴리오 관련 페이지 (상세, 리밸런싱 등)는 false
+    return false
+  }
+
+  // 단어카드 미션: 특정 페이지만 허용
+  if (missionType === 'vocabulary') {
+    // /mission-complete만 공통 페이지로 허용
+    if (pathname.startsWith('/mission-complete')) return true
+
+    // 단어카드 미션 전용 페이지
+    if (pathname === '/vocabulary') return true
+    if (pathname === '/search') return true
+    if (pathname === '/mypage') return true
+    if (pathname.startsWith('/etf/')) return true  // ETF 상세 (동적 라우트)
+
+    // 그 외 페이지는 모두 false
+    return false
+  }
+
+  return false
+}
 
 /**
  * 추적 컨텍스트
@@ -25,6 +80,7 @@ const TrackingContext = createContext(null)
  */
 export function TrackingProvider({ children }) {
   const sessionId = useSession()
+  const location = useLocation()
   const [activeMission, setActiveMission] = useState(() => getActiveMission())
   const [attemptId, setAttemptId] = useState(null)
   const [isConnected, setIsConnected] = useState(false)
@@ -135,7 +191,7 @@ export function TrackingProvider({ children }) {
   }, [])
 
   /**
-   * 이벤트 전송 (sessionId 자동 추가)
+   * 이벤트 전송 (sessionId, isMissionRelevant 자동 추가)
    *
    * @param {Object} event - 이벤트 데이터
    * @param {string} event.eventType - 이벤트 타입
@@ -143,14 +199,23 @@ export function TrackingProvider({ children }) {
    * @returns {Promise<void>}
    */
   const trackEvent = useCallback(async (event) => {
-    // sessionId 자동 추가
-    const eventWithSession = {
+    // isMissionRelevant 판단: 미션 진행 중 + 현재 페이지가 미션과 관련 있는지 확인
+    const isMissionRelevant = activeMission
+      ? isPageMissionRelevant(location.pathname, activeMission)
+      : false
+
+    // sessionId와 isMissionRelevant 자동 추가
+    const eventWithMetadata = {
       ...event,
-      sessionId
+      sessionId,
+      data: {
+        ...event.data,
+        isMissionRelevant
+      }
     }
 
-    await wsClient.sendEvent(eventWithSession)
-  }, [sessionId])
+    await wsClient.sendEvent(eventWithMetadata)
+  }, [sessionId, activeMission, location.pathname])
 
   const value = {
     // 세션 정보
