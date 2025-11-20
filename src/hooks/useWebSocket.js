@@ -9,7 +9,6 @@ import { wsClient } from '../utils/websocket'
  * @param {Object} config - WebSocket 설정
  * @param {string} config.wsUrl - WebSocket 서버 URL
  * @param {string} config.attemptId - 미션 시도 ID
- * @param {string} config.wsToken - WebSocket 인증 토큰
  * @param {boolean} config.autoConnect - 자동 연결 여부 (기본값: false)
  *
  * @returns {Object} WebSocket 상태 및 함수
@@ -24,7 +23,6 @@ import { wsClient } from '../utils/websocket'
  * const { isConnected, connect, sendEvent, disconnect } = useWebSocket({
  *   wsUrl: 'wss://your-domain.com/ws',
  *   attemptId: 'attempt_1234567890',
- *   wsToken: 'jwt-token',
  *   autoConnect: true
  * })
  *
@@ -35,27 +33,27 @@ import { wsClient } from '../utils/websocket'
  *   data: { url: '/home', pageName: 'Home' }
  * })
  */
-export function useWebSocket({ wsUrl, attemptId, wsToken, autoConnect = false } = {}) {
+export function useWebSocket({ wsUrl, attemptId, autoConnect = false } = {}) {
   const [isConnected, setIsConnected] = useState(false)
   const [pendingEvents, setPendingEvents] = useState(0)
   const [connectionInfo, setConnectionInfo] = useState(null)
   const [error, setError] = useState(null)
 
-  const configRef = useRef({ wsUrl, attemptId, wsToken })
+  const configRef = useRef({ wsUrl, attemptId })
 
   // 설정 업데이트
   useEffect(() => {
-    configRef.current = { wsUrl, attemptId, wsToken }
-  }, [wsUrl, attemptId, wsToken])
+    configRef.current = { wsUrl, attemptId }
+  }, [wsUrl, attemptId])
 
   /**
    * WebSocket 연결
    */
   const connect = useCallback(async () => {
-    const { wsUrl, attemptId, wsToken } = configRef.current
+    const { wsUrl, attemptId } = configRef.current
 
-    if (!wsUrl || !attemptId || !wsToken) {
-      const error = new Error('Missing WebSocket configuration: wsUrl, attemptId, wsToken required')
+    if (!wsUrl || !attemptId) {
+      const error = new Error('Missing WebSocket configuration: wsUrl, attemptId required')
       console.error('[useWebSocket]', error)
       setError(error)
       return
@@ -63,7 +61,7 @@ export function useWebSocket({ wsUrl, attemptId, wsToken, autoConnect = false } 
 
     try {
       console.log('[useWebSocket] Connecting...', { attemptId })
-      await wsClient.connect(wsUrl, attemptId, wsToken)
+      await wsClient.connect(wsUrl, attemptId)
       setConnectionInfo({
         attemptId,
         connectedAt: new Date().toISOString()
@@ -163,7 +161,7 @@ export function useWebSocket({ wsUrl, attemptId, wsToken, autoConnect = false } 
 
   // 자동 연결
   useEffect(() => {
-    if (autoConnect && wsUrl && attemptId && wsToken) {
+    if (autoConnect && wsUrl && attemptId) {
       connect()
     }
 
@@ -173,7 +171,7 @@ export function useWebSocket({ wsUrl, attemptId, wsToken, autoConnect = false } 
         disconnect()
       }
     }
-  }, [autoConnect, wsUrl, attemptId, wsToken, connect, disconnect])
+  }, [autoConnect, wsUrl, attemptId, connect, disconnect])
 
   return {
     isConnected,

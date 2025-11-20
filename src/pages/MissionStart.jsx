@@ -36,23 +36,31 @@ function MissionStart() {
 
       const missionName = missionNames[missionId] || missionId
 
-      console.log('[MissionStart] Starting mission tracking:', { missionId, missionName })
+      // missionId를 missionType으로 변환 (소문자 -> 대문자)
+      const missionType = missionId.toUpperCase() // 'portfolio' -> 'PORTFOLIO', 'vocabulary' -> 'VOCABULARY'
 
-      // WebSocket 연결 시작 및 미션 시작 이벤트 전송
-      await tracking.startTracking(missionId)
-      await tracking.trackMissionStarted(missionId, missionName)
+      console.log('[MissionStart] Starting mission tracking:', { missionId, missionType, missionName })
 
-      console.log('[MissionStart] Mission tracking started successfully')
+      // 웹소켓 연결을 백그라운드에서 시작 (await 제거)
+      // 연결 성공 여부와 관계없이 다음 페이지로 이동하여 웹소켓 연결 시간 확보
+      tracking.startTracking(missionId).catch(error => {
+        console.error('[MissionStart] Failed to start tracking (background):', error)
+      })
+
+      // 1초 로딩 효과 (웹소켓 연결 시간 확보)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      console.log('[MissionStart] Navigating to home')
 
       // 홈 화면으로 이동
       navigate('/home', { replace: true })
 
     } catch (error) {
       console.error('[MissionStart] Failed to start mission:', error)
-      // 에러가 발생해도 홈 화면으로 이동 (추적 실패가 사용자 경험을 방해하지 않도록)
-      navigate('/home', { replace: true })
-    } finally {
-      setIsStarting(false)
+      // 에러가 발생해도 1초 후 홈으로 이동
+      setTimeout(() => {
+        navigate('/home', { replace: true })
+      }, 1000)
     }
   }
 
@@ -60,7 +68,7 @@ function MissionStart() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh', // iOS Safari 호환: Dynamic Viewport Height
       height: '100%',
       backgroundColor: '#ffffff'
     }}>
@@ -130,7 +138,7 @@ function MissionStart() {
           onClick={handleStart}
           disabled={isStarting}
         >
-          {isStarting ? '시작 중...' : '바로 시작'}
+          {isStarting ? '시작중...' : '바로 시작'}
         </Button>
       </div>
     </div>

@@ -1,86 +1,154 @@
+import { Client } from '@stomp/stompjs'
+
 /**
- * WebSocket 클라이언트 클래스
+ * STOMP WebSocket 클라이언트 클래스
  *
- * 미션 추적 이벤트를 백엔드로 전송하는 WebSocket 연결을 관리합니다.
+ * STOMP over WebSocket을 사용하여 미션 추적 이벤트를 백엔드로 전송합니다.
  *
  * 주요 기능:
- * - WebSocket 연결 생성 및 관리
- * - 이벤트 메시지 전송
- * - 연결 상태 관리 및 재연결
- * - 서버 응답 처리 (connection_ack, event_ack, error)
+ * - STOMP 프로토콜 기반 WebSocket 연결
+ * - Destination 기반 메시지 라우팅
+ * - Pub/Sub 패턴 지원
+ * - ACK 및 에러 메시지 구독
+ * - 자동 재연결
  *
  * @class WebSocketClient
  */
 export class WebSocketClient {
   constructor() {
-    this.ws = null
+    this.stompClient = null
     this.attemptId = null
+    this.sessionId = null
     this.isConnected = false
     this.reconnectAttempts = 0
     this.maxReconnectAttempts = 5
     this.reconnectDelay = 1000 // 1초
     this.eventListeners = new Map()
+    this.subscriptions = new Map()
     this.pendingEvents = [] // 연결 대기 중 이벤트 큐
   }
 
   /**
-   * WebSocket 연결 시작
+   * STOMP WebSocket 연결 시작
    *
-   * @param {string} wsUrl - WebSocket 서버 URL (예: wss://your-domain.com/ws)
+   * @param {string} wsUrl - WebSocket 서버 URL (예: ws://localhost:8080/ws)
    * @param {string} attemptId - 미션 시도 ID
-   * @param {string} wsToken - WebSocket 인증 토큰
+   * @param {string} sessionId - 세션 ID
    * @returns {Promise<void>}
    */
-  connect(wsUrl, attemptId, wsToken) {
+  connect(wsUrl, attemptId, sessionId) {
     return new Promise((resolve, reject) => {
       try {
         // 기존 연결이 있으면 닫기
-        if (this.ws) {
-          this.ws.close()
+        if (this.stompClient) {
+          this.disconnect()
         }
 
         this.attemptId = attemptId
+        this.sessionId = sessionId
 
-        // WebSocket 연결 생성
-        const url = `${wsUrl}?attemptId=${attemptId}&token=${wsToken}`
-        this.ws = new WebSocket(url)
+        // STOMP 클라이언트 생성
+        this.stompClient = new Client({
+          brokerURL: wsUrl,
 
-        // 연결 성공
-        this.ws.onopen = () => {
-          console.log('[WebSocket] Connected:', attemptId)
-          this.isConnected = true
-          this.reconnectAttempts = 0
+          // 연결 성공
+          onConnect: (frame) => {
+            console.log('[WebSocket] Connected:', { attemptId, sessionId })
+            console.log('[WebSocket] STOMP frame:', frame)
+            this.isConnected = true
+            this.reconnectAttempts = 0
 
-          // 대기 중이던 이벤트 전송
-          this.flushPendingEvents()
+            // ACK 메시지 구독
+            try {
+              const ackSubscription = this.stompClient.subscribe(
+                `/topic/mission/${attemptId}/ack`,
+                (message) => {
+                  const ack = JSON.parse(message.body)
+                  console.log('[WebSocket] ACK received:', ack)
+                  this.emit('event_ack', ack)
+                }
+              )
+              this.subscriptions.set('ack', ackSubscription)
 
-          this.emit('open', { attemptId })
-          resolve()
-        }
+              // 에러 메시지 구독
+              const errorSubscription = this.stompClient.subscribe(
+                `/topic/mission/${attemptId}/error`,
+                (message) => {
+                  const error = JSON.parse(message.body)
+                  console.error('[WebSocket] Server error:', error)
+                  this.emit('server_error', error)
+                }
+              )
+              this.subscriptions.set('error', errorSubscription)
 
-        // 메시지 수신
-        this.ws.onmessage = (event) => {
-          this.handleMessage(event.data)
-        }
+              console.log('[WebSocket] Subscriptions ready')
 
-        // 연결 종료
-        this.ws.onclose = (event) => {
-          console.log('[WebSocket] Disconnected:', event.code, event.reason)
-          this.isConnected = false
-          this.emit('close', { code: event.code, reason: event.reason })
+              // Connection ACK 이벤트 발생
+              this.emit('open', { attemptId, sessionId })
 
-          // 비정상 종료 시 재연결 시도
-          if (!event.wasClean && this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.attemptReconnect(wsUrl, attemptId, wsToken)
+              // 대기 중이던 이벤트 전송
+              this.flushPendingEvents()
+
+              resolve()
+            } catch (error) {
+              console.error('[WebSocket] Subscription failed:', error)
+              reject(error)
+            }
+          },
+
+          // 연결 종료
+          onDisconnect: (frame) => {
+            console.log('[WebSocket] Disconnected:', {
+              sessionId: this.sessionId,
+              frame: frame
+            })
+            this.isConnected = false
+            this.emit('close', { reason: 'disconnected' })
+          },
+
+          // STOMP 에러
+          onStompError: (frame) => {
+            console.error('[WebSocket] STOMP error:', frame.headers['message'])
+            console.error('[WebSocket] Error details:', frame.body)
+            this.isConnected = false
+            this.emit('error', { error: frame.body })
+            reject(new Error(frame.headers['message'] || 'STOMP error'))
+          },
+
+          // WebSocket 에러
+          onWebSocketError: (event) => {
+            console.error('[WebSocket] WebSocket error:', event)
+            this.emit('error', { error: event })
+            reject(event)
+          },
+
+          // WebSocket 닫힘
+          onWebSocketClose: (event) => {
+            console.log('[WebSocket] WebSocket closed:', {
+              sessionId: this.sessionId,
+              code: event.code,
+              reason: event.reason,
+              wasClean: event.wasClean
+            })
+            this.isConnected = false
+            this.emit('close', { code: event.code, reason: event.reason })
+
+            // 비정상 종료 시 재연결 시도
+            if (!event.wasClean && this.reconnectAttempts < this.maxReconnectAttempts) {
+              this.attemptReconnect(wsUrl, attemptId, sessionId)
+            }
+          },
+
+          // 디버그 로그 (개발 환경에서만)
+          debug: (str) => {
+            if (import.meta.env.DEV) {
+              console.log('[WebSocket] STOMP Debug:', str)
+            }
           }
-        }
+        })
 
-        // 에러 처리
-        this.ws.onerror = (error) => {
-          console.error('[WebSocket] Error:', error)
-          this.emit('error', { error })
-          reject(error)
-        }
+        // 연결 시작
+        this.stompClient.activate()
 
       } catch (error) {
         console.error('[WebSocket] Connection failed:', error)
@@ -94,16 +162,16 @@ export class WebSocketClient {
    *
    * @param {string} wsUrl - WebSocket 서버 URL
    * @param {string} attemptId - 미션 시도 ID
-   * @param {string} wsToken - WebSocket 인증 토큰
+   * @param {string} sessionId - 세션 ID
    */
-  attemptReconnect(wsUrl, attemptId, wsToken) {
+  attemptReconnect(wsUrl, attemptId, sessionId) {
     this.reconnectAttempts++
     const delay = this.reconnectDelay * this.reconnectAttempts
 
-    console.log(`[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+    console.log(`[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`, { sessionId })
 
     setTimeout(() => {
-      this.connect(wsUrl, attemptId, wsToken)
+      this.connect(wsUrl, attemptId, sessionId)
         .catch((error) => {
           console.error('[WebSocket] Reconnection failed:', error)
         })
@@ -111,42 +179,7 @@ export class WebSocketClient {
   }
 
   /**
-   * 서버 메시지 처리
-   *
-   * @param {string} data - 서버에서 받은 메시지 (JSON string)
-   */
-  handleMessage(data) {
-    try {
-      const message = JSON.parse(data)
-      console.log('[WebSocket] Message received:', message)
-
-      switch (message.type) {
-        case 'connection_ack':
-          console.log('[WebSocket] Connection acknowledged:', message.attemptId)
-          this.emit('connection_ack', message)
-          break
-
-        case 'event_ack':
-          console.log('[WebSocket] Event acknowledged:', message.eventId)
-          this.emit('event_ack', message)
-          break
-
-        case 'error':
-          console.error('[WebSocket] Server error:', message.code, message.message)
-          this.emit('server_error', message)
-          break
-
-        default:
-          console.warn('[WebSocket] Unknown message type:', message.type)
-      }
-
-    } catch (error) {
-      console.error('[WebSocket] Failed to parse message:', error)
-    }
-  }
-
-  /**
-   * 이벤트 전송
+   * 이벤트 전송 (STOMP destination 사용)
    *
    * @param {Object} event - 이벤트 데이터
    * @param {string} event.eventType - 이벤트 타입
@@ -164,7 +197,7 @@ export class WebSocketClient {
         return
       }
 
-      // WebSocket 메시지 포맷 (BACKEND_WEBSOCKET_SPEC.md 참조)
+      // STOMP 메시지 포맷
       const message = {
         eventType: event.eventType,
         timestamp: new Date().toISOString(),
@@ -174,16 +207,26 @@ export class WebSocketClient {
       }
 
       // 연결되지 않은 경우 큐에 저장
-      if (!this.isConnected) {
-        console.warn('[WebSocket] Not connected, queueing event:', event.eventType)
+      if (!this.isConnected || !this.stompClient?.connected) {
+        console.warn('[WebSocket] Not connected, queueing event:', {
+          eventType: event.eventType,
+          sessionId: event.sessionId
+        })
         this.pendingEvents.push({ message, resolve, reject })
         return
       }
 
-      // 이벤트 전송
+      // STOMP destination으로 이벤트 전송
       try {
-        this.ws.send(JSON.stringify(message))
-        console.log('[WebSocket] Event sent:', event.eventType, message)
+        this.stompClient.publish({
+          destination: '/app/mission/event',
+          body: JSON.stringify(message)
+        })
+        console.log('[WebSocket] Event sent:', {
+          eventType: event.eventType,
+          sessionId: event.sessionId,
+          attemptId: this.attemptId
+        })
         resolve()
       } catch (error) {
         console.error('[WebSocket] Failed to send event:', error)
@@ -198,15 +241,21 @@ export class WebSocketClient {
   flushPendingEvents() {
     if (this.pendingEvents.length === 0) return
 
-    console.log(`[WebSocket] Flushing ${this.pendingEvents.length} pending events`)
+    console.log(`[WebSocket] Flushing ${this.pendingEvents.length} pending events`, { sessionId: this.sessionId })
 
     const events = [...this.pendingEvents]
     this.pendingEvents = []
 
     events.forEach(({ message, resolve, reject }) => {
       try {
-        this.ws.send(JSON.stringify(message))
-        console.log('[WebSocket] Pending event sent:', message.eventType)
+        this.stompClient.publish({
+          destination: '/app/mission/event',
+          body: JSON.stringify(message)
+        })
+        console.log('[WebSocket] Pending event sent:', {
+          eventType: message.eventType,
+          sessionId: message.sessionId
+        })
         resolve()
       } catch (error) {
         console.error('[WebSocket] Failed to send pending event:', error)
@@ -218,7 +267,7 @@ export class WebSocketClient {
   /**
    * 이벤트 리스너 등록
    *
-   * @param {string} eventName - 이벤트 이름 (open, close, error, connection_ack, event_ack, server_error)
+   * @param {string} eventName - 이벤트 이름 (open, close, error, event_ack, server_error)
    * @param {Function} callback - 콜백 함수
    */
   on(eventName, callback) {
@@ -267,11 +316,27 @@ export class WebSocketClient {
    * WebSocket 연결 종료
    */
   disconnect() {
-    if (this.ws) {
-      console.log('[WebSocket] Disconnecting...')
+    if (this.stompClient) {
+      console.log('[WebSocket] Disconnecting...', {
+        sessionId: this.sessionId,
+        attemptId: this.attemptId
+      })
+
+      // 모든 구독 해제
+      this.subscriptions.forEach((subscription, key) => {
+        try {
+          subscription.unsubscribe()
+          console.log(`[WebSocket] Unsubscribed from ${key}`)
+        } catch (error) {
+          console.error(`[WebSocket] Failed to unsubscribe from ${key}:`, error)
+        }
+      })
+      this.subscriptions.clear()
+
+      // STOMP 연결 종료
+      this.stompClient.deactivate()
       this.isConnected = false
-      this.ws.close()
-      this.ws = null
+      this.stompClient = null
     }
   }
 
@@ -281,7 +346,7 @@ export class WebSocketClient {
    * @returns {boolean}
    */
   getConnectionState() {
-    return this.isConnected
+    return this.isConnected && this.stompClient?.connected
   }
 
   /**

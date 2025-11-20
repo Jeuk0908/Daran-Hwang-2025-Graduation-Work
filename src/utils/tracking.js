@@ -7,18 +7,18 @@
 /**
  * 미션 시작 이벤트 생성
  *
- * @param {string} missionId - 미션 ID ('portfolio' | 'vocabulary')
+ * @param {string} missionType - 미션 타입 ('PORTFOLIO' | 'VOCABULARY')
  * @param {string} missionName - 미션 이름 (한글)
+ * @param {string} userAgent - 사용자 에이전트 (선택)
  * @returns {Object} 이벤트 데이터
  */
-export function createMissionStartedEvent(missionId, missionName) {
+export function createMissionStartedEvent(missionType, missionName, userAgent = navigator.userAgent) {
   return {
     eventType: 'mission_started',
     data: {
-      missionId,
+      missionType,
       missionName,
-      startedAt: new Date().toISOString(),
-      isMissionRelevant: true
+      userAgent
     }
   }
 }
@@ -26,23 +26,21 @@ export function createMissionStartedEvent(missionId, missionName) {
 /**
  * 페이지 뷰 이벤트 생성
  *
- * @param {string} url - 페이지 URL
- * @param {string} pageName - 페이지 이름
- * @param {string} referrer - 이전 페이지 URL
- * @param {number} timeOnPreviousPage - 이전 페이지 체류 시간 (초)
- * @param {boolean} isMissionRelevant - 미션 관련 여부
+ * @param {string} page - 페이지 경로
+ * @param {number} duration - 현재 페이지 체류 시간 (밀리초, 선택)
+ * @param {number} scrollDepth - 스크롤 깊이 0-100% (선택)
+ * @param {string} referrer - 이전 페이지 (선택)
  * @returns {Object} 이벤트 데이터
  */
-export function createPageViewEvent(url, pageName, referrer = '', timeOnPreviousPage = 0, isMissionRelevant = true) {
+export function createPageViewEvent(page, duration = null, scrollDepth = null, referrer = null) {
+  const data = { page }
+  if (duration !== null) data.duration = duration
+  if (scrollDepth !== null) data.scrollDepth = scrollDepth
+  if (referrer !== null) data.referrer = referrer
+
   return {
     eventType: 'page_view',
-    data: {
-      url,
-      pageName,
-      referrer,
-      timeOnPreviousPage,
-      isMissionRelevant
-    }
+    data
   }
 }
 
@@ -64,8 +62,7 @@ export function createPortfolioCreationStepEvent(step, stepName, selectedValue, 
       stepName,
       selectedValue,
       selectedLabel,
-      timeOnStep,
-      isMissionRelevant: true
+      timeOnStep
     }
   }
 }
@@ -85,8 +82,7 @@ export function createPortfolioCreatedEvent(portfolioId, portfolioName, creation
       portfolioId,
       portfolioName,
       creationMethod,
-      createdAt: new Date().toISOString(),
-      isMissionRelevant: true
+      createdAt: new Date().toISOString()
     }
   }
 }
@@ -105,8 +101,7 @@ export function createVocabularyCardClickedEvent(cardId, term, isLocked) {
     data: {
       cardId,
       term,
-      isLocked,
-      isMissionRelevant: true
+      isLocked
     }
   }
 }
@@ -126,8 +121,7 @@ export function createVocabularyDetailViewedEvent(term, definition, openedVia) {
       term,
       definition,
       openedVia,
-      viewedAt: new Date().toISOString(),
-      isMissionRelevant: true
+      viewedAt: new Date().toISOString()
     }
   }
 }
@@ -142,8 +136,7 @@ export function createVocabularyCountdownTickEvent(remainingSeconds) {
   return {
     eventType: 'vocabulary_countdown_tick',
     data: {
-      remainingSeconds,
-      isMissionRelevant: true
+      remainingSeconds
     }
   }
 }
@@ -157,8 +150,7 @@ export function createVocabularyCountdownCompleteEvent() {
   return {
     eventType: 'vocabulary_countdown_complete',
     data: {
-      completedAt: new Date().toISOString(),
-      isMissionRelevant: true
+      completedAt: new Date().toISOString()
     }
   }
 }
@@ -176,8 +168,7 @@ export function createMissionCompleteModalShownEvent(missionId, missionName) {
     data: {
       missionId,
       missionName,
-      shownAt: new Date().toISOString(),
-      isMissionRelevant: true
+      shownAt: new Date().toISOString()
     }
   }
 }
@@ -199,8 +190,7 @@ export function createMissionRatingSubmittedEvent(rating, ratingText, feedback, 
       ratingText,
       feedback,
       hasFeedback,
-      submittedAt: new Date().toISOString(),
-      isMissionRelevant: true
+      submittedAt: new Date().toISOString()
     }
   }
 }
@@ -208,48 +198,36 @@ export function createMissionRatingSubmittedEvent(rating, ratingText, feedback, 
 /**
  * 미션 완료 이벤트 생성
  *
- * @param {string} missionId - 미션 ID
- * @param {string} missionName - 미션 이름
- * @param {number} totalDuration - 총 소요 시간 (초)
+ * @param {number} rating - 평점 1-5 (선택)
+ * @param {string} feedback - 피드백 (선택)
  * @returns {Object} 이벤트 데이터
  */
-export function createMissionCompletedEvent(missionId, missionName, totalDuration) {
+export function createMissionCompletedEvent(rating = null, feedback = null) {
+  const data = {}
+  if (rating !== null) data.rating = rating
+  if (feedback !== null) data.feedback = feedback
+
   return {
     eventType: 'mission_completed',
-    data: {
-      missionId,
-      missionName,
-      totalDuration,
-      completedAt: new Date().toISOString(),
-      wasQuitted: false,
-      isMissionRelevant: true
-    }
+    data
   }
 }
 
 /**
  * 미션 포기 이벤트 생성
  *
- * @param {string} missionId - 미션 ID
- * @param {string} missionName - 미션 이름
- * @param {string} quitReason - 포기 사유
- * @param {number} totalDuration - 총 소요 시간 (초)
- * @param {string} lastPage - 마지막 페이지
+ * @param {string} reason - 포기 사유 (선택)
+ * @param {number} durationBeforeQuit - 포기 전 소요 시간 밀리초 (선택)
  * @returns {Object} 이벤트 데이터
  */
-export function createMissionQuittedEvent(missionId, missionName, quitReason, totalDuration, lastPage) {
+export function createMissionQuittedEvent(reason = null, durationBeforeQuit = null) {
+  const data = {}
+  if (reason !== null) data.reason = reason
+  if (durationBeforeQuit !== null) data.durationBeforeQuit = durationBeforeQuit
+
   return {
     eventType: 'mission_quitted',
-    data: {
-      missionId,
-      missionName,
-      quitReason,
-      totalDuration,
-      lastPage,
-      quittedAt: new Date().toISOString(),
-      wasQuitted: true,
-      isMissionRelevant: true
-    }
+    data
   }
 }
 
@@ -272,8 +250,7 @@ export function createButtonClickedEvent(buttonText, variant, page) {
       buttonText,
       variant,
       page,
-      clickedAt: new Date().toISOString(),
-      isMissionRelevant: false
+      clickedAt: new Date().toISOString()
     }
   }
 }
@@ -295,8 +272,7 @@ export function createNavigationClickedEvent(navType, from, to, tabName = null) 
       from,
       to,
       tabName,
-      clickedAt: new Date().toISOString(),
-      isMissionRelevant: false
+      clickedAt: new Date().toISOString()
     }
   }
 }
@@ -318,8 +294,7 @@ export function createInputInteractionEvent(inputId, action, inputLength, page) 
       action,
       inputLength,
       page,
-      timestamp: new Date().toISOString(),
-      isMissionRelevant: false
+      timestamp: new Date().toISOString()
     }
   }
 }
@@ -341,8 +316,7 @@ export function createCardClickedEvent(cardType, cardId, cardTitle, page) {
       cardId,
       cardTitle,
       page,
-      clickedAt: new Date().toISOString(),
-      isMissionRelevant: false
+      clickedAt: new Date().toISOString()
     }
   }
 }
@@ -364,8 +338,7 @@ export function createModalInteractionEvent(modalType, action, modalId, page) {
       action,
       modalId,
       page,
-      timestamp: new Date().toISOString(),
-      isMissionRelevant: false
+      timestamp: new Date().toISOString()
     }
   }
 }
@@ -387,8 +360,7 @@ export function createSearchPerformedEvent(searchQuery, queryLength, resultCount
       queryLength,
       resultCount,
       page,
-      searchedAt: new Date().toISOString(),
-      isMissionRelevant: false
+      searchedAt: new Date().toISOString()
     }
   }
 }
@@ -410,8 +382,51 @@ export function createBookmarkToggledEvent(itemType, itemId, action, page) {
       itemId,
       action,
       page,
-      timestamp: new Date().toISOString(),
-      isMissionRelevant: false
+      timestamp: new Date().toISOString()
+    }
+  }
+}
+
+/**
+ * 콘텐츠 조회 이벤트 생성
+ *
+ * @param {string} contentType - 콘텐츠 타입 ('portfolio_detail' | 'etf_detail' | 'theme_detail' | 'rebalance')
+ * @param {string} contentId - 콘텐츠 ID
+ * @param {string} contentTitle - 콘텐츠 제목
+ * @param {string} page - 페이지 경로
+ * @returns {Object} 이벤트 데이터
+ */
+export function createContentViewedEvent(contentType, contentId, contentTitle, page) {
+  return {
+    eventType: 'content_viewed',
+    data: {
+      contentType,
+      contentId,
+      contentTitle,
+      page,
+      viewedAt: new Date().toISOString()
+    }
+  }
+}
+
+/**
+ * 섹션 조회 이벤트 생성 (탭 전환 등)
+ *
+ * @param {string} sectionType - 섹션 타입 ('returns' | 'info' | 'composition' | 'dividend')
+ * @param {string} parentContentType - 부모 콘텐츠 타입 ('portfolio_detail' | 'etf_detail')
+ * @param {string} parentContentId - 부모 콘텐츠 ID
+ * @param {string} page - 페이지 경로
+ * @returns {Object} 이벤트 데이터
+ */
+export function createSectionViewedEvent(sectionType, parentContentType, parentContentId, page) {
+  return {
+    eventType: 'section_viewed',
+    data: {
+      sectionType,
+      parentContentType,
+      parentContentId,
+      page,
+      viewedAt: new Date().toISOString()
     }
   }
 }

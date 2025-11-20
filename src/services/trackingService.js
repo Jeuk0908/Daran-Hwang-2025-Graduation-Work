@@ -47,11 +47,11 @@ async function apiRequest(endpoint, options = {}) {
  *
  * @param {string} sessionId - 세션 ID (UUID v4)
  * @param {string} missionType - 미션 타입 ('portfolio' | 'vocabulary')
- * @returns {Promise<Object>} { attemptId, wsUrl, wsToken, expiresIn }
+ * @returns {Promise<Object>} { attemptId, wsUrl }
  *
  * @example
  * const result = await startMission(sessionId, 'portfolio')
- * // { attemptId: 'attempt_1234567890', wsUrl: 'wss://...', wsToken: '...', expiresIn: 600 }
+ * // { attemptId: 'attempt_1234567890', wsUrl: 'wss://...' }
  */
 export async function startMission(sessionId, missionType) {
   console.log('[TrackingService] Starting mission:', { sessionId, missionType })

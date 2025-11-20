@@ -67,7 +67,7 @@ function Onboarding() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh', // iOS Safari 호환: Dynamic Viewport Height
       height: '100%',
       backgroundColor: '#ffffff'
     }}>

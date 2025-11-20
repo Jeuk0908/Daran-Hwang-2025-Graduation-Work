@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { useSession } from '../hooks/useSession'
-import { useWebSocket } from '../hooks/useWebSocket'
 import { getActiveMission } from '../utils/missionStorage'
+import { wsClient } from '../utils/websocket'
 
 /**
  * 추적 컨텍스트
@@ -27,23 +27,39 @@ export function TrackingProvider({ children }) {
   const sessionId = useSession()
   const [activeMission, setActiveMission] = useState(() => getActiveMission())
   const [attemptId, setAttemptId] = useState(null)
-  const [wsConfig, setWsConfig] = useState(null)
+  const [isConnected, setIsConnected] = useState(false)
+  const [error, setError] = useState(null)
 
-  // WebSocket 연결 (설정이 있을 때만)
-  const {
-    isConnected,
-    connect,
-    disconnect,
-    sendEvent,
-    pendingEvents,
-    connectionInfo,
-    error
-  } = useWebSocket({
-    wsUrl: wsConfig?.wsUrl,
-    attemptId: wsConfig?.attemptId,
-    wsToken: wsConfig?.wsToken,
-    autoConnect: false // 수동으로 연결 관리
-  })
+  // WebSocket 이벤트 리스너 설정
+  useEffect(() => {
+    const handleOpen = () => {
+      console.log('[TrackingContext] WebSocket connected')
+      setIsConnected(true)
+      setError(null)
+    }
+
+    const handleClose = () => {
+      console.log('[TrackingContext] WebSocket disconnected')
+      setIsConnected(false)
+    }
+
+    const handleError = (data) => {
+      console.error('[TrackingContext] WebSocket error:', data)
+      setError(data.error)
+    }
+
+    // 리스너 등록
+    wsClient.on('open', handleOpen)
+    wsClient.on('close', handleClose)
+    wsClient.on('error', handleError)
+
+    // 클린업
+    return () => {
+      wsClient.off('open', handleOpen)
+      wsClient.off('close', handleClose)
+      wsClient.off('error', handleError)
+    }
+  }, [])
 
   /**
    * 미션 추적 시작
@@ -57,37 +73,54 @@ export function TrackingProvider({ children }) {
     try {
       console.log('[TrackingContext] Starting tracking for mission:', missionType)
 
-      // TODO: API 호출하여 attemptId, wsUrl, wsToken 받기
-      // 현재는 임시로 하드코딩
-      const mockApiResponse = {
-        attemptId: `attempt_${Date.now()}`,
-        wsUrl: 'ws://localhost:3001/ws', // 개발 환경용
-        wsToken: 'mock-jwt-token',
-        expiresIn: 600
+      // 1. BE API 호출하여 MissionAttempt 생성 및 attemptId, wsUrl 받기
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/missions/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sessionId: sessionId,
+          missionType: missionType.toUpperCase(), // 'portfolio' -> 'PORTFOLIO'
+          timestamp: new Date().toISOString()
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to start mission: ${response.statusText}`)
       }
 
-      setAttemptId(mockApiResponse.attemptId)
-      setWsConfig({
-        wsUrl: mockApiResponse.wsUrl,
-        attemptId: mockApiResponse.attemptId,
-        wsToken: mockApiResponse.wsToken
-      })
-      setActiveMission(missionType)
+      const apiResponse = await response.json()
+      const data = apiResponse.data || apiResponse // { attemptId, wsUrl, expiresIn }
+      console.log('[TrackingContext] Mission attempt created:', data)
 
-      // WebSocket 연결
-      await connect()
+      if (!data.attemptId) {
+        throw new Error('API response missing attemptId')
+      }
+
+      // 2. 받은 attemptId와 wsUrl로 WebSocket 연결
+      await wsClient.connect(
+        data.wsUrl || import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws',
+        data.attemptId,
+        sessionId
+      )
+
+      // 3. 연결 성공 후 상태 업데이트
+      setAttemptId(data.attemptId)
+      setActiveMission(missionType)
 
       console.log('[TrackingContext] Tracking started:', {
         missionType,
-        attemptId: mockApiResponse.attemptId,
-        sessionId
+        attemptId: data.attemptId,
+        sessionId,
+        expiresIn: data.expiresIn
       })
 
     } catch (error) {
       console.error('[TrackingContext] Failed to start tracking:', error)
       throw error
     }
-  }, [sessionId, connect])
+  }, [sessionId])
 
   /**
    * 미션 추적 중지
@@ -96,11 +129,10 @@ export function TrackingProvider({ children }) {
    */
   const stopTracking = useCallback(() => {
     console.log('[TrackingContext] Stopping tracking...')
-    disconnect()
+    wsClient.disconnect()
     setAttemptId(null)
-    setWsConfig(null)
     setActiveMission(null)
-  }, [disconnect])
+  }, [])
 
   /**
    * 이벤트 전송 (sessionId 자동 추가)
@@ -117,8 +149,8 @@ export function TrackingProvider({ children }) {
       sessionId
     }
 
-    await sendEvent(eventWithSession)
-  }, [sessionId, sendEvent])
+    await wsClient.sendEvent(eventWithSession)
+  }, [sessionId])
 
   const value = {
     // 세션 정보
@@ -130,8 +162,6 @@ export function TrackingProvider({ children }) {
 
     // WebSocket 상태
     isConnected,
-    pendingEvents,
-    connectionInfo,
     error,
 
     // 추적 함수

@@ -37,15 +37,14 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
     if (!trackPageViews) return
 
     const currentTime = Date.now()
-    const timeOnPreviousPage = (currentTime - pageEnterTime.current) / 1000
+    const duration = currentTime - pageEnterTime.current
 
     // 페이지 뷰 이벤트 전송
     const event = trackingUtils.createPageViewEvent(
       location.pathname,
-      getPageName(location.pathname),
-      previousPath.current,
-      timeOnPreviousPage,
-      isMissionPage
+      duration,
+      null, // scrollDepth - 향후 구현
+      previousPath.current
     )
 
     context.trackEvent(event).catch((error) => {
@@ -56,7 +55,7 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
     pageEnterTime.current = currentTime
     previousPath.current = location.pathname
 
-  }, [location.pathname, trackPageViews, isMissionPage, context])
+  }, [location.pathname, trackPageViews, context])
 
   // ==========================================
   // 미션 관련 이벤트 추적 함수
@@ -65,8 +64,8 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
   /**
    * 미션 시작 추적
    */
-  const trackMissionStarted = useCallback((missionId, missionName) => {
-    const event = trackingUtils.createMissionStartedEvent(missionId, missionName)
+  const trackMissionStarted = useCallback((missionType, missionName, userAgent = navigator.userAgent) => {
+    const event = trackingUtils.createMissionStartedEvent(missionType, missionName, userAgent)
     return context.trackEvent(event)
   }, [context])
 
@@ -143,16 +142,16 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
   /**
    * 미션 완료 추적
    */
-  const trackMissionCompleted = useCallback((missionId, missionName, totalDuration) => {
-    const event = trackingUtils.createMissionCompletedEvent(missionId, missionName, totalDuration)
+  const trackMissionCompleted = useCallback((rating = null, feedback = null) => {
+    const event = trackingUtils.createMissionCompletedEvent(rating, feedback)
     return context.trackEvent(event)
   }, [context])
 
   /**
    * 미션 포기 추적
    */
-  const trackMissionQuitted = useCallback((missionId, missionName, quitReason, totalDuration, lastPage) => {
-    const event = trackingUtils.createMissionQuittedEvent(missionId, missionName, quitReason, totalDuration, lastPage)
+  const trackMissionQuitted = useCallback((reason = null, durationBeforeQuit = null) => {
+    const event = trackingUtils.createMissionQuittedEvent(reason, durationBeforeQuit)
     return context.trackEvent(event)
   }, [context])
 
@@ -221,13 +220,28 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
     return context.trackEvent(event)
   }, [context, location.pathname])
 
+  /**
+   * 콘텐츠 조회 추적
+   */
+  const trackContentViewed = useCallback((contentType, contentId, contentTitle) => {
+    const event = trackingUtils.createContentViewedEvent(contentType, contentId, contentTitle, location.pathname)
+    return context.trackEvent(event)
+  }, [context, location.pathname])
+
+  /**
+   * 섹션 조회 추적 (탭 전환 등)
+   */
+  const trackSectionViewed = useCallback((sectionType, parentContentType, parentContentId) => {
+    const event = trackingUtils.createSectionViewedEvent(sectionType, parentContentType, parentContentId, location.pathname)
+    return context.trackEvent(event)
+  }, [context, location.pathname])
+
   return {
     // Context 상태
     sessionId: context.sessionId,
     activeMission: context.activeMission,
     attemptId: context.attemptId,
     isConnected: context.isConnected,
-    pendingEvents: context.pendingEvents,
     error: context.error,
 
     // Context 함수
@@ -255,6 +269,8 @@ export function useTracking({ trackPageViews = false, isMissionPage = false } = 
     trackModalInteraction,
     trackSearch,
     trackBookmarkToggle,
+    trackContentViewed,
+    trackSectionViewed,
 
     // 직접 이벤트 전송 (커스텀 이벤트용)
     trackEvent: context.trackEvent

@@ -30,35 +30,30 @@ function MissionQuit() {
       }
 
       const missionName = missionNames[missionId] || missionId
-      const quitReason = feedback.trim() || '사용자 포기'
-      const lastPage = location.state?.from || location.pathname
+      const reason = feedback.trim() || null // 포기 사유 (선택)
 
-      // 총 소요 시간 계산 (임시: 0으로 설정)
-      // TODO: 실제 미션 시작 시간을 추적하여 정확한 duration 계산
-      const totalDuration = 0
+      // 포기 전 소요 시간 계산 (임시: null로 설정)
+      // TODO: 실제 미션 시작 시간을 추적하여 정확한 duration 계산 (밀리초 단위)
+      const durationBeforeQuit = null
 
       console.log('[MissionQuit] Tracking mission quit:', {
         missionId,
         missionName,
-        quitReason,
-        totalDuration,
-        lastPage
+        reason,
+        durationBeforeQuit
       })
 
-      // 미션 포기 이벤트 전송
-      await tracking.trackMissionQuitted(missionId, missionName, quitReason, totalDuration, lastPage)
-
-      // WebSocket 연결 종료
-      tracking.stopTracking()
-
-      // 미션 상태 초기화
-      clearActiveMission()
+      // 미션 포기 이벤트를 백그라운드에서 전송 (await 제거)
+      // 이벤트 전송 성공 여부와 관계없이 다음 페이지로 이동
+      tracking.trackMissionQuitted(reason, durationBeforeQuit).catch(error => {
+        console.error('[MissionQuit] Failed to track mission quit (background):', error)
+      })
 
       // 피드백을 localStorage에도 저장 (백업)
-      if (feedback.trim()) {
+      if (reason) {
         const existingFeedback = JSON.parse(localStorage.getItem('missionFeedback') || '[]')
         existingFeedback.push({
-          feedback: feedback.trim(),
+          reason: reason,
           timestamp: new Date().toISOString(),
           missionId,
           missionName
@@ -66,17 +61,28 @@ function MissionQuit() {
         localStorage.setItem('missionFeedback', JSON.stringify(existingFeedback))
       }
 
-      console.log('[MissionQuit] Mission quit tracked successfully')
+      // 1초 로딩 효과 (이벤트 전송 시간 확보)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // WebSocket 연결 종료
+      tracking.stopTracking()
+
+      // 미션 상태 초기화
+      clearActiveMission()
+
+      console.log('[MissionQuit] Navigating to mission complete')
 
       // 미션 완료 페이지로 이동
       navigate('/mission-complete', { replace: true })
 
     } catch (error) {
-      console.error('[MissionQuit] Failed to track mission quit:', error)
-      // 에러가 발생해도 미션 종료 프로세스 진행
-      tracking.stopTracking()
-      clearActiveMission()
-      navigate('/mission-complete', { replace: true })
+      console.error('[MissionQuit] Failed to complete quit process:', error)
+      // 에러가 발생해도 1초 후 미션 종료 프로세스 진행
+      setTimeout(() => {
+        tracking.stopTracking()
+        clearActiveMission()
+        navigate('/mission-complete', { replace: true })
+      }, 1000)
     } finally {
       setIsSubmitting(false)
     }

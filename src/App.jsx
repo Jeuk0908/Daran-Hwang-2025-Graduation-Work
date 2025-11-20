@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { BottomNav } from './components/common/BottomNav'
 import { QuitButton } from './components/common/QuitButton'
 import { TrackingProvider } from './contexts/TrackingContext'
+import { AutoTracker } from './components/common/AutoTracker'
 import Splash from './pages/Splash'
 import Onboarding from './pages/Onboarding'
 import MissionSelection from './pages/MissionSelection'
@@ -125,6 +126,9 @@ function AppContent() {
       position: 'relative',
       backgroundColor: '#ffffff'
     }}>
+      {/* 자동 추적 */}
+      <AutoTracker />
+
       {/* 스플래시 오버레이 */}
       {showSplash && <Splash onComplete={handleSplashComplete} />}
 

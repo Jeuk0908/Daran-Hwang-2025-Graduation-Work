@@ -1,20 +1,56 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTracking } from '../hooks/useTracking'
 import starFilled from '../assets/Star(bule).svg'
 import starUnfilled from '../assets/Star(gray).svg'
 
 function MissionRating() {
   const navigate = useNavigate()
+  const tracking = useTracking()
   const [rating, setRating] = useState(0)
   const [feedback, setFeedback] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleStarClick = (value) => {
     setRating(value)
   }
 
-  const handleComplete = () => {
-    // 평점과 피드백을 저장하고 미션 완료 페이지로 이동
-    navigate('/mission-complete', { replace: true })
+  const handleComplete = async () => {
+    if (isSubmitting || rating === 0) return
+
+    setIsSubmitting(true)
+
+    try {
+      const ratingText = getRatingText()
+      const hasFeedback = feedback.trim().length > 0
+
+      console.log('[MissionRating] Submitting rating:', {
+        rating,
+        ratingText,
+        feedback: feedback.trim(),
+        hasFeedback
+      })
+
+      // 미션 평가 제출 이벤트 전송
+      await tracking.trackMissionRatingSubmitted(
+        rating,
+        ratingText,
+        feedback.trim() || null,
+        hasFeedback
+      )
+
+      console.log('[MissionRating] Rating submitted successfully')
+
+      // 미션 완료 페이지로 이동
+      navigate('/mission-complete', { replace: true })
+
+    } catch (error) {
+      console.error('[MissionRating] Failed to submit rating:', error)
+      // 에러가 발생해도 미션 완료 페이지로 이동
+      navigate('/mission-complete', { replace: true })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // 별점에 따른 설명 텍스트
@@ -158,13 +194,14 @@ function MissionRating() {
         }}>
           <button
             onClick={handleComplete}
+            disabled={isSubmitting}
             style={{
               width: '100%',
               padding: '16px',
-              backgroundColor: '#3490FF',
+              backgroundColor: isSubmitting ? '#ADB2BD' : '#3490FF',
               border: 'none',
               borderRadius: '12px',
-              cursor: 'pointer',
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
               fontFamily: 'Pretendard',
               fontWeight: 600,
               fontSize: '16px',
@@ -173,7 +210,7 @@ function MissionRating() {
               textAlign: 'center'
             }}
           >
-            완료하기
+            {isSubmitting ? '전송 중...' : '완료하기'}
           </button>
         </div>
       )}

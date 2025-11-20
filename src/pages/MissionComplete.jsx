@@ -27,17 +27,13 @@ function MissionComplete() {
 
         const missionName = missionNames[missionId] || missionId
 
-        // 총 소요 시간 계산 (임시: 페이지 마운트 시간 기준)
-        // TODO: 실제 미션 시작 시간을 추적하여 정확한 duration 계산
-        const totalDuration = 0 // 실제 구현 시 정확한 시간 계산 필요
-
-        console.log('[MissionComplete] Tracking mission completion:', { missionId, missionName, totalDuration })
+        console.log('[MissionComplete] Tracking mission completion:', { missionId, missionName })
 
         // 미션 완료 모달 표시 이벤트
         await tracking.trackMissionCompleteModalShown(missionId, missionName)
 
-        // 미션 완료 이벤트
-        await tracking.trackMissionCompleted(missionId, missionName, totalDuration)
+        // 미션 완료 이벤트 (rating과 feedback은 MissionRating에서 수집)
+        await tracking.trackMissionCompleted()
 
         console.log('[MissionComplete] Mission completion tracked successfully')
 
