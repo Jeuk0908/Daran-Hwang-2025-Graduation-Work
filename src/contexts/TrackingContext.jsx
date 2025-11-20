@@ -128,9 +128,18 @@ export function TrackingProvider({ children }) {
   const startTracking = useCallback(async (missionType) => {
     try {
       console.log('[TrackingContext] Starting tracking for mission:', missionType)
+      console.log('[TrackingContext] Environment variables:', {
+        VITE_API_URL: import.meta.env.VITE_API_URL,
+        VITE_WS_URL: import.meta.env.VITE_WS_URL,
+        VITE_ENABLE_WS: import.meta.env.VITE_ENABLE_WS,
+        DEV: import.meta.env.DEV,
+        MODE: import.meta.env.MODE
+      })
 
       // 1. BE API 호출하여 MissionAttempt 생성 및 attemptId, wsUrl 받기
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/missions/start`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+      console.log('[TrackingContext] API URL:', apiUrl)
+      const response = await fetch(`${apiUrl}/api/missions/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -155,8 +164,14 @@ export function TrackingProvider({ children }) {
       }
 
       // 2. 받은 attemptId와 wsUrl로 WebSocket 연결
+      const wsUrl = data.wsUrl || import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
+      console.log('[TrackingContext] WebSocket URL:', wsUrl, {
+        fromAPI: data.wsUrl,
+        fromEnv: import.meta.env.VITE_WS_URL,
+        fallback: 'ws://localhost:8080/ws'
+      })
       await wsClient.connect(
-        data.wsUrl || import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws',
+        wsUrl,
         data.attemptId,
         sessionId
       )
