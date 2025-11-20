@@ -15,6 +15,10 @@ const ManualCreateStep3 = () => {
   const previousData = location.state || {};
   const selectedETFs = previousData.selectedETFs || [];
 
+  // 디버깅: 데이터 확인
+  console.log('ManualCreateStep3 - previousData:', previousData);
+  console.log('ManualCreateStep3 - selectedETFs:', selectedETFs);
+
   // 편집 중인 항목 ID 추적
   const [editingItemId, setEditingItemId] = useState(null);
 
@@ -46,32 +50,42 @@ const ManualCreateStep3 = () => {
           ? previousData.existingETFs.find(e => e.id === etf.id)
           : null;
 
+        // price 필드 안전하게 처리
+        const priceString = etf.price || etf.currentPrice?.toString() || '0';
+        const priceValue = parseInt(priceString.toString().replace(/,/g, '')) || 0;
+
         return {
           id: etf.id,
           name: etf.name,
           code: etf.code,
-          pricePerShare: parseInt(etf.price.replace(/,/g, '')),
+          pricePerShare: priceValue,
           targetWeight: isExistingETF && existingETF
             ? existingETF.targetWeight  // 기존 비중 유지
             : newETFWeight,              // 새 ETF는 남은 비중 균등 분배
           appliedWeight: 100,
           buyShares: 1,
-          totalAmount: parseInt(etf.price.replace(/,/g, ''))
+          totalAmount: priceValue
         };
       });
     } else {
       // create 모드: 균등 분배
       const initialWeight = selectedETFs.length > 0 ? Math.floor(100 / selectedETFs.length) : 0;
-      return selectedETFs.map((etf) => ({
-        id: etf.id,
-        name: etf.name,
-        code: etf.code,
-        pricePerShare: parseInt(etf.price.replace(/,/g, '')),
-        targetWeight: initialWeight,
-        appliedWeight: 100,
-        buyShares: 1,
-        totalAmount: parseInt(etf.price.replace(/,/g, ''))
-      }));
+      return selectedETFs.map((etf) => {
+        // price 필드 안전하게 처리
+        const priceString = etf.price || etf.currentPrice?.toString() || '0';
+        const priceValue = parseInt(priceString.toString().replace(/,/g, '')) || 0;
+
+        return {
+          id: etf.id,
+          name: etf.name,
+          code: etf.code,
+          pricePerShare: priceValue,
+          targetWeight: initialWeight,
+          appliedWeight: 100,
+          buyShares: 1,
+          totalAmount: priceValue
+        };
+      });
     }
   });
 

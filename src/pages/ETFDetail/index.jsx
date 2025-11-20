@@ -5,7 +5,6 @@ import { SubNav } from '../../components/common/SubNav';
 import { Chip } from '../../components/common/Chip';
 import { SmallToggle } from '../../components/common/ToggleButton';
 import { TermModal } from '../../components/common/TermModal';
-import { MissionCompleteModal } from '../../components/common/MissionCompleteModal';
 import { ETFInfoCard } from './components/ETFInfoCard';
 import { ETFChart } from './components/ETFChart';
 import { ETFReturnsTable } from './components/ETFReturnsTable';
@@ -17,7 +16,6 @@ import { CompositionTab } from './components/CompositionTab';
 import { DividendTab } from './components/DividendTab';
 import { getETFData } from './data/mockData';
 import { isETFBookmarked, toggleETFBookmark, addETFSearchHistory } from '../../utils/etfStorage';
-import { isActiveMission } from '../../utils/missionStorage';
 import { LAYOUT } from '../../constants/layout';
 import { useScrollShadow } from '../../hooks/useScrollShadow';
 import iconSearch from '../../assets/icon_search.svg';
@@ -40,9 +38,6 @@ const ETFDetail = () => {
   const [showChartTable, setShowChartTable] = useState(false);
   const [isTermModalOpen, setIsTermModalOpen] = useState(false);
   const [termModalImage, setTermModalImage] = useState('');
-  const [showMissionModal, setShowMissionModal] = useState(false);
-  const [countdown, setCountdown] = useState(null);
-  const [missionTimer, setMissionTimer] = useState(null);
 
   // ETF 데이터 가져오기
   const etfData = getETFData(id);
@@ -73,14 +68,6 @@ const ETFDetail = () => {
     }
   }, [id]);
 
-  // 컴포넌트 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (missionTimer) {
-        clearInterval(missionTimer);
-      }
-    };
-  }, [missionTimer]);
 
   // 최근 본 상품에 추가하는 함수
   const addRecentViewedETF = (etfId) => {
@@ -169,46 +156,11 @@ const ETFDetail = () => {
   const handleOpenTermModal = (imageSrc) => {
     setTermModalImage(imageSrc);
     setIsTermModalOpen(true);
-
-    // vocabulary 미션이 활성화되어 있으면 카운트다운 시작
-    if (isActiveMission('vocabulary')) {
-      setCountdown(3);
-
-      let count = 3;
-      const intervalId = setInterval(() => {
-        count -= 1;
-        setCountdown(count);
-
-        if (count === 0) {
-          clearInterval(intervalId);
-          setShowMissionModal(true);
-        }
-      }, 1000);
-
-      setMissionTimer(intervalId);
-    }
   };
 
   // 용어 설명 모달 닫기
   const handleCloseTermModal = () => {
     setIsTermModalOpen(false);
-    setCountdown(null);
-
-    // 타이머가 진행 중이면 중지
-    if (missionTimer) {
-      clearInterval(missionTimer);
-      setMissionTimer(null);
-    }
-  };
-
-  // 미션 완료 모달 핸들러
-  const handleMissionModalClose = () => {
-    setShowMissionModal(false);
-  };
-
-  const handleMissionModalNext = () => {
-    setShowMissionModal(false);
-    navigate('/mission-rating', { replace: true });
   };
 
   // 포트폴리오 태그 생성
@@ -616,14 +568,6 @@ const ETFDetail = () => {
         isOpen={isTermModalOpen}
         onClose={handleCloseTermModal}
         imageSrc={termModalImage}
-        countdown={countdown}
-      />
-
-      {/* 미션 완료 모달 */}
-      <MissionCompleteModal
-        isOpen={showMissionModal}
-        onClose={handleMissionModalClose}
-        onNext={handleMissionModalNext}
       />
     </div>
   );

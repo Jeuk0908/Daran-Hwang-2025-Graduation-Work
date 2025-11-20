@@ -65,17 +65,26 @@ const ManualCreateStep2 = ({ mode = 'create' }) => {
     const allMockETFs = getAllETFs();
     const newlySelectedETFs = selectedETFs.map(id => {
       const etf = allMockETFs.find(e => e.id === id);
+      if (!etf) {
+        console.error('ETF not found:', id);
+        return null;
+      }
       return {
         ...etf,
-        price: etf.currentPrice.toLocaleString('ko-KR') // price 필드 추가
+        price: etf.currentPrice?.toLocaleString('ko-KR') || '0' // price 필드 추가
       };
-    });
+    }).filter(Boolean); // null 제거
 
     // add 모드: 기존 ETF + 새로 선택한 ETF 합치기
     // create 모드: 새로 선택한 ETF만
     const allETFs = mode === 'add'
       ? [...(previousData.existingETFs || []), ...newlySelectedETFs]
       : newlySelectedETFs;
+
+    console.log('ManualCreateStep2 - Navigating to step3 with:', {
+      selectedETFs: allETFs,
+      isAddMode: mode === 'add'
+    });
 
     // 다음 단계로 이동 (3/4) - 모든 ETF 정보 전달
     navigate('/portfolio/create/step3', {

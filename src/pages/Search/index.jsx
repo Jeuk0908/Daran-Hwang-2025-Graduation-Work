@@ -14,8 +14,6 @@ import { IndexCardSkeleton } from '../../components/common/IndexCardSkeleton';
 import { ListItemSkeleton } from '../../components/common/ListItemSkeleton';
 import { ContentCardSkeleton } from '../../components/common/ContentCardSkeleton';
 import { TermModal } from '../../components/common/TermModal';
-import { MissionCompleteModal } from '../../components/common/MissionCompleteModal';
-import { isActiveMission } from '../../utils/missionStorage';
 import iconSearch from '../../assets/icon_search.svg';
 import iconCancel from '../../assets/icon_cancel(S).svg';
 import iconBookmarkOutline from '../../assets/icon_bookmark(s)_o.svg';
@@ -306,9 +304,6 @@ const Search = () => {
   const [expandedTipId, setExpandedTipId] = useState(null); // 펼쳐진 TIP 카드 ID
   const [isTermModalOpen, setIsTermModalOpen] = useState(false); // 용어 모달 열림 상태
   const [termModalImage, setTermModalImage] = useState(''); // 용어 모달 이미지
-  const [showMissionModal, setShowMissionModal] = useState(false); // 미션 완료 모달
-  const [countdown, setCountdown] = useState(null); // 카운트다운
-  const [missionTimer, setMissionTimer] = useState(null); // 미션 타이머
 
   // 최근 본 상품 로드
   useEffect(() => {
@@ -350,56 +345,12 @@ const Search = () => {
   const handleVocabCardClick = (imageSrc) => {
     setTermModalImage(imageSrc);
     setIsTermModalOpen(true);
-
-    // vocabulary 미션이 활성화되어 있으면 카운트다운 시작
-    if (isActiveMission('vocabulary')) {
-      setCountdown(3);
-
-      let count = 3;
-      const intervalId = setInterval(() => {
-        count -= 1;
-        setCountdown(count);
-
-        if (count === 0) {
-          clearInterval(intervalId);
-          setShowMissionModal(true);
-        }
-      }, 1000);
-
-      setMissionTimer(intervalId);
-    }
   };
 
   // 용어 모달 닫기 핸들러
   const handleCloseTermModal = () => {
     setIsTermModalOpen(false);
-    setCountdown(null);
-
-    // 타이머가 진행 중이면 중지
-    if (missionTimer) {
-      clearInterval(missionTimer);
-      setMissionTimer(null);
-    }
   };
-
-  // 미션 완료 모달 핸들러
-  const handleMissionModalClose = () => {
-    setShowMissionModal(false);
-  };
-
-  const handleMissionModalNext = () => {
-    setShowMissionModal(false);
-    navigate('/mission-rating', { replace: true });
-  };
-
-  // 컴포넌트 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (missionTimer) {
-        clearInterval(missionTimer);
-      }
-    };
-  }, [missionTimer]);
 
   // 검색창 활성화/비활성화 핸들러
   const handleSearchFocus = () => {
@@ -2170,14 +2121,6 @@ const Search = () => {
         isOpen={isTermModalOpen}
         onClose={handleCloseTermModal}
         imageSrc={termModalImage}
-        countdown={countdown}
-      />
-
-      {/* 미션 완료 모달 */}
-      <MissionCompleteModal
-        isOpen={showMissionModal}
-        onClose={handleMissionModalClose}
-        onNext={handleMissionModalNext}
       />
     </div>
   );
