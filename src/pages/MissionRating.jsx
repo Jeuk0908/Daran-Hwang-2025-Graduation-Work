@@ -31,23 +31,31 @@ function MissionRating() {
         hasFeedback
       })
 
-      // 미션 평가 제출 이벤트 전송
-      await tracking.trackMissionRatingSubmitted(
+      // 미션 평가 제출 이벤트를 백그라운드에서 전송 (await 제거)
+      // 이벤트 전송 성공 여부와 관계없이 다음 페이지로 이동
+      tracking.trackMissionRatingSubmitted(
         rating,
         ratingText,
         feedback.trim() || null,
         hasFeedback
-      )
+      ).catch(error => {
+        console.error('[MissionRating] Failed to submit rating (background):', error)
+      })
 
-      console.log('[MissionRating] Rating submitted successfully')
+      // 1초 로딩 효과 (이벤트 전송 시간 확보)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      console.log('[MissionRating] Navigating to mission complete')
 
       // 미션 완료 페이지로 이동
       navigate('/mission-complete', { replace: true })
 
     } catch (error) {
-      console.error('[MissionRating] Failed to submit rating:', error)
-      // 에러가 발생해도 미션 완료 페이지로 이동
-      navigate('/mission-complete', { replace: true })
+      console.error('[MissionRating] Failed to complete rating process:', error)
+      // 에러가 발생해도 1초 후 미션 완료 페이지로 이동
+      setTimeout(() => {
+        navigate('/mission-complete', { replace: true })
+      }, 1000)
     } finally {
       setIsSubmitting(false)
     }
@@ -69,7 +77,7 @@ function MissionRating() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh', // iOS Safari 호환: Dynamic Viewport Height
       backgroundColor: '#ffffff'
     }}>
       {/* 헤더 섹션 */}

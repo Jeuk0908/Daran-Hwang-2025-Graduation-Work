@@ -92,7 +92,7 @@ function MissionQuit() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh', // iOS Safari 호환: Dynamic Viewport Height
       backgroundColor: '#ffffff'
     }}>
       {/* 헤더 섹션 */}

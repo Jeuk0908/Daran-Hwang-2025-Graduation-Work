@@ -76,7 +76,7 @@ function MissionComplete() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh', // iOS Safari 호환: Dynamic Viewport Height
       backgroundColor: '#ffffff'
     }}>
       {/* 중앙 메시지 */}
