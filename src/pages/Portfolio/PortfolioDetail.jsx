@@ -793,7 +793,8 @@ const PortfolioDetail = () => {
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
-          width: '100%'
+          width: '100%',
+          paddingBottom: '152px' // 하단 고정 버튼 영역 높이 + 여유 공간
         }}
       >
         {/* 헤더 및 필터 */}
@@ -967,63 +968,72 @@ const PortfolioDetail = () => {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* 하단 버튼 영역 */}
+      {/* 하단 고정 버튼 영역 */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '34px', // Home Indicator 높이만큼
+          left: 0,
+          right: 0,
+          maxWidth: '430px',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          backgroundColor: '#FFFFFF',
+          paddingTop: '4px',
+          boxShadow: '0 -2px 8px 0 rgba(0, 0, 0, 0.04)',
+          zIndex: 50
+        }}
+      >
+        {/* 캡션 */}
         <div
           style={{
+            padding: `4px ${LAYOUT.HORIZONTAL_PADDING}px 0`,
             display: 'flex',
-            flexDirection: 'column',
-            width: '100%'
+            gap: '10px',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
-          {/* 캡션 */}
-          <div
+          <p
             style={{
-              padding: `4px ${LAYOUT.HORIZONTAL_PADDING}px 0`,
-              display: 'flex',
-              gap: '10px',
-              alignItems: 'center',
-              justifyContent: 'center'
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '12px',
+              fontWeight: 400,
+              lineHeight: 1.5,
+              color: '#757E8F',
+              textAlign: 'center',
+              margin: 0,
+              whiteSpace: 'nowrap'
             }}
           >
-            <p
-              style={{
-                fontFamily: 'Pretendard, sans-serif',
-                fontSize: '12px',
-                fontWeight: 400,
-                lineHeight: 1.5,
-                color: '#757E8F',
-                textAlign: 'center',
-                margin: 0,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {isMaxETFs
-                ? '포트폴리오에 최대 5개의 상품까지 담을 수 있어요.'
-                : '목표 비중의 합계는 100%가 되어야 해요.'}
-            </p>
-          </div>
+            {isMaxETFs
+              ? '포트폴리오에 최대 5개의 상품까지 담을 수 있어요.'
+              : '목표 비중의 합계는 100%가 되어야 해요.'}
+          </p>
+        </div>
 
-          {/* 버튼 */}
-          <div
-            style={{
-              padding: `12px ${LAYOUT.HORIZONTAL_PADDING}px`,
-              display: 'flex',
-              gap: '12px',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '8px'
-            }}
+        {/* 버튼 */}
+        <div
+          style={{
+            padding: `12px ${LAYOUT.HORIZONTAL_PADDING}px`,
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Button
+            variant={isMaxETFs ? 'grey' : 'primary'}
+            fullWidth={true}
+            onClick={handleAddProduct}
+            disabled={isMaxETFs}
           >
-            <Button
-              variant={isMaxETFs ? 'grey' : 'primary'}
-              fullWidth={true}
-              onClick={handleAddProduct}
-              disabled={isMaxETFs}
-            >
-              상품 추가하기
-            </Button>
-          </div>
+            상품 추가하기
+          </Button>
         </div>
       </div>
 
