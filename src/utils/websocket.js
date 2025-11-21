@@ -213,6 +213,8 @@ export class WebSocketClient {
           sessionId: event.sessionId
         })
         this.pendingEvents.push({ message, resolve, reject })
+        // 큐에 저장 후 즉시 resolve (나중에 연결되면 전송됨)
+        resolve()
         return
       }
 

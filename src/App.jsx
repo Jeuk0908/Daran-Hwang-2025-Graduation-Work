@@ -46,42 +46,117 @@ function AppContent() {
   const tracking = useTracking();
   const [showWarning, setShowWarning] = useState(false);
 
+  // 페이지 경로 체크 (비활동 타이머 제외 페이지 판단에 사용)
+  const isSplashPage = location.pathname === '/';
+  const isOnboardingPage = location.pathname === '/onboarding';
+  const isMissionSelectionPage = location.pathname === '/mission-selection';
+  const isMissionStartPage = location.pathname === '/mission-start';
+  const isMissionQuitPage = location.pathname === '/mission-quit';
+  const isMissionCompletePage = location.pathname === '/mission-complete';
+  const isMissionRatingPage = location.pathname === '/mission-rating';
+
+  // 디버깅: tracking 상태 로그
+  useEffect(() => {
+    console.log('[App] Tracking state changed:', {
+      activeMission: tracking.activeMission,
+      sessionId: tracking.sessionId,
+      attemptId: tracking.attemptId,
+      isConnected: tracking.isConnected,
+      timerActive: !!tracking.activeMission
+    })
+  }, [tracking.activeMission, tracking.sessionId, tracking.attemptId, tracking.isConnected])
+
   // 자동 포기 처리 함수
   const handleAutoQuit = useCallback(async () => {
-    console.log('[App] Auto-quitting mission due to inactivity (2 minutes)')
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('[App] 🔴 AUTO-QUIT TRIGGERED (2 minutes inactivity)')
+    console.log('[App] Mission:', tracking.activeMission)
+    console.log('[App] Session ID:', tracking.sessionId)
+    console.log('[App] Attempt ID:', tracking.attemptId)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     try {
+      // 경고 화면 닫기
+      console.log('[App] Step 0/5: Closing warning screen...')
+      setShowWarning(false)
+      console.log('[App] ✓ Step 0/5: Warning screen closed')
+
       // 미션 포기 이벤트 전송
+      console.log('[App] Step 1/5: Sending mission_quitted event...')
       await tracking.trackMissionQuitted('자동 포기 (2분 비활동)', null)
+      console.log('[App] ✓ Step 1/5: Event sent successfully')
 
       // WebSocket 연결 종료
+      console.log('[App] Step 2/5: Stopping WebSocket tracking...')
       tracking.stopTracking()
+      console.log('[App] ✓ Step 2/5: WebSocket disconnected')
 
       // 미션 상태 초기화
+      console.log('[App] Step 3/5: Clearing mission state from localStorage...')
       clearActiveMission()
+      console.log('[App] ✓ Step 3/5: Mission state cleared')
 
       // 스플래시 페이지로 이동
+      console.log('[App] Step 4/5: Navigating to splash screen...')
       navigate('/', { replace: true, state: { resetSplash: true } })
+      console.log('[App] ✓ Step 4/5: Navigation triggered')
+      console.log('[App] ✅ AUTO-QUIT COMPLETED SUCCESSFULLY')
 
     } catch (error) {
-      console.error('[App] Failed to handle auto-quit:', error)
+      console.error('[App] ❌ AUTO-QUIT ERROR:', error)
+      console.error('[App] Error details:', error.message, error.stack)
+
       // 에러가 발생해도 미션 종료 프로세스 진행
+      console.log('[App] Proceeding with fallback cleanup...')
+      setShowWarning(false)
       clearActiveMission()
       navigate('/', { replace: true, state: { resetSplash: true } })
+      console.log('[App] ⚠️ AUTO-QUIT COMPLETED WITH ERRORS')
     }
+
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   }, [tracking, navigate])
+
+  // 경고 표시 콜백 (useCallback으로 메모이제이션)
+  const handleWarning = useCallback(() => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('[App] ⚠️ INACTIVITY WARNING TRIGGERED')
+    console.log('[App] 90 seconds of inactivity detected')
+    console.log('[App] 30 seconds remaining before auto-quit')
+    console.log('[App] Mission:', tracking.activeMission)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    setShowWarning(true)
+  }, [tracking.activeMission])
+
+  // 비활동 타이머 제외 페이지들
+  const isInactivityTimerExcludedPage = isSplashPage || isOnboardingPage ||
+    isMissionSelectionPage || isMissionStartPage || isMissionQuitPage ||
+    isMissionCompletePage || isMissionRatingPage
 
   // 비활동 타이머 (2분 비활동 시 자동 포기)
   useInactivityTimer({
-    isActive: !!tracking.activeMission,
-    onWarning: () => {
-      console.log('[App] Inactivity warning: 15 seconds remaining')
-      setShowWarning(true)
-    },
+    isActive: !!tracking.activeMission && !isInactivityTimerExcludedPage,
+    onWarning: handleWarning,
     onTimeout: handleAutoQuit,
-    warningTime: 105000, // 1분 45초
+    warningTime: 90000, // 1분 30초
     timeoutDuration: 120000 // 2분
   })
+
+  // showWarning 상태 변화 추적
+  useEffect(() => {
+    console.log('[App] 📊 showWarning state changed:', showWarning)
+    if (!showWarning) {
+      console.log('[App] ✅ Inactivity warning is now hidden')
+    } else {
+      console.log('[App] ⚠️ Inactivity warning is now visible')
+    }
+  }, [showWarning])
+
+  // onDismiss 콜백 (경고 닫기)
+  const handleDismissWarning = useCallback(() => {
+    console.log('[App] 🔔 handleDismissWarning called, setting showWarning to false')
+    setShowWarning(false)
+  }, [])
 
   // 브라우저의 자동 스크롤 복원 비활성화
   useEffect(() => {
@@ -111,17 +186,12 @@ function AppContent() {
 
     return () => clearTimeout(timer);
   }, [location.pathname, location.state]);
+
+  // 추가 페이지 체크 (네비게이션 표시 여부 등에 사용)
   const isDevPage = location.pathname.startsWith('/dev');
   const isVocabularyPage = location.pathname === '/vocabulary';
   const isBookmarkPage = location.pathname === '/bookmark';
   const isHomePage = location.pathname === '/home';
-  const isSplashPage = location.pathname === '/';
-  const isOnboardingPage = location.pathname === '/onboarding';
-  const isMissionSelectionPage = location.pathname === '/mission-selection';
-  const isMissionStartPage = location.pathname === '/mission-start';
-  const isMissionQuitPage = location.pathname === '/mission-quit';
-  const isMissionCompletePage = location.pathname === '/mission-complete';
-  const isMissionRatingPage = location.pathname === '/mission-rating';
   const isPortfolioCreatePage = location.pathname.startsWith('/portfolio/create');
   const isRebalancePage = location.pathname.includes('/rebalance');
   const isPortfolioDeletePage = location.pathname === '/portfolio/delete';
@@ -173,7 +243,7 @@ function AppContent() {
       <AutoTracker />
 
       {/* 비활동 경고 */}
-      <InactivityWarning show={showWarning} />
+      {showWarning && <InactivityWarning onDismiss={handleDismissWarning} />}
 
       {/* 스플래시 오버레이 */}
       {showSplash && <Splash onComplete={handleSplashComplete} />}

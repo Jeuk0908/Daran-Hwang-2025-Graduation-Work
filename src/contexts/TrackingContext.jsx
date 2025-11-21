@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSession } from '../hooks/useSession'
-import { getActiveMission } from '../utils/missionStorage'
+import { getActiveMission, setActiveMission as setActiveMissionStorage } from '../utils/missionStorage'
 import { wsClient } from '../utils/websocket'
 
 /**
@@ -180,16 +180,33 @@ export function TrackingProvider({ children }) {
       setAttemptId(data.attemptId)
       setActiveMission(missionType)
 
-      console.log('[TrackingContext] Tracking started:', {
+      // localStorage에도 저장
+      setActiveMissionStorage(missionType)
+
+      console.log('[TrackingContext] ✅ Tracking started successfully:', {
         missionType,
         attemptId: data.attemptId,
         sessionId,
-        expiresIn: data.expiresIn
+        expiresIn: data.expiresIn,
+        storedInLocalStorage: true
       })
 
     } catch (error) {
       console.error('[TrackingContext] Failed to start tracking:', error)
-      throw error
+      console.warn('[TrackingContext] ⚠️ WebSocket connection failed, but mission will start in offline mode')
+
+      // WebSocket 연결 실패해도 미션은 시작 (오프라인 모드)
+      setActiveMission(missionType)
+      setActiveMissionStorage(missionType)
+
+      console.log('[TrackingContext] ⚠️ Mission started in offline mode:', {
+        missionType,
+        sessionId,
+        offlineMode: true
+      })
+
+      // 에러를 throw하지 않음 (미션은 계속 진행)
+      // throw error
     }
   }, [sessionId])
 
